@@ -1,0 +1,5 @@
+*.bpl
+build/
+
+# Aptos stuff
+.aptos

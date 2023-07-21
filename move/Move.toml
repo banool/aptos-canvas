@@ -1,0 +1,15 @@
+[package]
+name = "tontine07"
+version = "0.0.1"
+
+[dependencies.AptosFramework]
+git = "https://github.com/aptos-labs/aptos-core.git"
+rev = "main"
+subdir = "aptos-move/framework/aptos-framework"
+
+[dependencies.DportStdlib]
+git = 'https://github.com/banool/aptos-dport-std.git'
+rev = 'main'
+
+[addresses]
+addr = "_"
