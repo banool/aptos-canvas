@@ -1,11 +1,16 @@
 [package]
-name = "tontine07"
+name = "canvas"
 version = "0.0.1"
 
 [dependencies.AptosFramework]
 git = "https://github.com/aptos-labs/aptos-core.git"
 rev = "main"
 subdir = "aptos-move/framework/aptos-framework"
+
+[dependencies.AptosTokenObjects]
+git = "https://github.com/aptos-labs/aptos-core.git"
+rev = "main"
+subdir = "aptos-move/framework/aptos-token-objects"
 
 [dependencies.DportStdlib]
 git = 'https://github.com/banool/aptos-dport-std.git'
