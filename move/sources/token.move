@@ -18,12 +18,14 @@
 module addr::canvas_token {
     use addr::canvas_collection::{get_collection, get_collection_name};
     use std::error;
-    use std::option::Self;
+    use std::option::{Self, Option};
     use std::signer;
     use std::string::String;
     use std::vector;
-    //use std::timestamp::now_seconds;
-    use aptos_std::object::{Self, Object};
+    use std::timestamp::now_seconds;
+    use aptos_framework::aptos_coin::AptosCoin;
+    use aptos_framework::coin::Self;
+    use aptos_std::object::{Self, ExtendRef, Object};
     use aptos_std::string_utils::format2;
     use aptos_std::smart_table::{Self, SmartTable};
     use aptos_token_objects::collection::Self;
@@ -45,81 +47,30 @@ module addr::canvas_token {
     /// but they're not an admin / there are no admins at all.
     const E_CALLER_NOT_ADMIN: u64 = 3;
 
-    /// `per_member_amount_octa` was zero.
-    const E_CREATION_PlER_MEMBER_AMOUNT_ZERO: u64 = 3;
+    /// The caller tried to draw a pixel but the canvas is no longer open for new
+    /// contributions, and never will be, as per `can_draw_for_s`.
+    const E_CANVAS_CLOSED: u64 = 4;
 
-    /// `check_in_frequency_secs` was out of the accepted range.
-    const E_CREATION_CHECK_IN_FREQUENCY_OUT_OF_RANGE: u64 = 4;
-
-    /// `claim_window_secs` was too small. If the tontine is being configured to stake funds to a delegation pool, the claim window needs to be large enough to allow for unlocking the funds.
-    const E_CREATION_CLAIM_WINDOW_TOO_SMALL: u64 = 5;
-
-    /// `fallback_policy` was invalid.
-    const E_CREATION_INVALID_FALLBACK_POLICY: u64 = 6;
-
-    /// There was no delegation pool at the specified address.
-    const E_CREATION_NO_DELEGATION_POOL: u64 = 7;
-
-    /// The required minimum was too small to allow for staking. If staking, each member must contribute at least 20 APT / <number of members>.
-    const E_CREATION_MINIMUM_TOO_SMALL: u64 = 8;
-
-    /// Tried to interact with an account with no TontineStore.
-    const E_TONTINE_STORE_NOT_FOUND: u64 = 10;
-
-    /// Tried to get a Tontine from a TontineStore but there was nothing found with the requested index.
-    const E_TONTINE_NOT_FOUND: u64 = 11;
-
-    /// Tried to perform an action but the given caller is not in the tontine.
-    const E_CALLER_NOT_IN_TONTINE: u64 = 12;
-
-    /// Tried to perform an action that relies on the member having contributed a certain amount that they haven't actually contributed.
-    const E_INSUFFICIENT_CONTRIBUTION: u64 = 13;
-
-    /// Tried to lock the tontine but the conditions aren't yet met.
-    const E_LOCK_CONDITIONS_NOT_MET: u64 = 14;
-
-    /// Tried to perform an action but the given tontine is locked.
-    const E_TONTINE_LOCKED: u64 = 15;
-
-    /// Tried to perform an action but the caller was not the creator.
-    const E_CALLER_IS_NOT_CREATOR: u64 = 16;
-
-    /// Tried to perform an action that the creator is not allowed to take.
-    const E_CALLER_IS_CREATOR: u64 = 17;
-
-    /// Tried to add a member to the tontine but they were already in it.
-    const E_MEMBER_ALREADY_IN_TONTINE: u64 = 18;
-
-    /// Tried to remove a member from the tontine but they're not in it.
-    const E_MEMBER_NOT_IN_TONTINE: u64 = 19;
-
-    /// The creator tried to remove themselves from the tontine.
-    const E_CREATOR_CANNOT_REMOVE_SELF: u64 = 20;
-
-    /// The creator tried to contribute / withdraw zero OCTA.
-    const E_AMOUNT_ZERO: u64 = 21;
-
-    /// Someone tried to unlock funds but funds were never staked.
-    const E_FUNDS_WERE_NOT_STAKED: u64 = 22;
-
-    /// Tried to unlock staked funds but there was nothing to unlock.
-    const E_NO_FUNDS_TO_UNLOCK: u64 = 23;
-
-    /// Tried to withdraw staked funds but there was nothing withdrawable.
-    const E_NO_FUNDS_TO_WITHDRAW: u64 = 24;
-
-    /// todo
-    const STATUS_ALLOWED: u8 = 1;
-
-    const STATUS_IN_BLOCKLIST: u8 = 2;
-
-    const STATUS_NOT_IN_ALLOWLIST: u8 = 3;
+    /// The caller tried to draw a pixel but they contributed too recently based on
+    /// the configured `per_account_timeout_s`. They must try again later.
+    const E_MUST_WAIT: u64 = 5;
 
     /// The caller is not allowe to contribute to the canvas.
-    const E_CALLER_IN_BLOCKLIST: u64 = 30;
+    const E_CALLER_IN_BLOCKLIST: u64 = 6;
 
     /// The caller is not in the allowlist for contributing to the canvas.
-    const E_CALLER_NOT_IN_ALLOWLIST: u64 = 31;
+    const E_CALLER_NOT_IN_ALLOWLIST: u64 = 7;
+
+    /// Based on the allowlist and/or blocklist (or lack thereof), the caller is
+    /// allowed to contribute to the canvas.
+    const STATUS_ALLOWED: u8 = 1;
+
+    /// The caller is in the blocklist and is not allowed to contribute to the canvas.
+    const STATUS_IN_BLOCKLIST: u8 = 2;
+
+    /// The caller is not in the allowlist and is therefore not allowed to contribute
+    /// to the canvas.
+    const STATUS_NOT_IN_ALLOWLIST: u8 = 3;
 
     #[resource_group_member(group = aptos_framework::object::ObjectGroup)]
     struct Canvas has key {
@@ -131,7 +82,7 @@ module addr::canvas_token {
 
         /// When each artist last contributed. Only tracked if
         /// per_account_timeout_s is non-zero.
-        last_contributions_s: SmartTable<address, u64>,
+        last_contribution_s: SmartTable<address, u64>,
 
         /// Accounts that are allowed to contribute. If empty, anyone can contribute.
         /// One notable application of this list is the owner of the canvas, if
@@ -145,6 +96,13 @@ module addr::canvas_token {
         /// Accounts that have admin privileges. It is only possible to have admins if
         /// there is a super admin.
         admins: SimpleSet<address>,
+
+        /// We use this to generate a signer, which we need for
+        /// `clear_contribution_timeouts`.
+        extend_ref: ExtendRef,
+
+        /// When the canvas was created.
+        created_at_s: u64,
     }
 
     struct CanvasConfig has store, drop {
@@ -157,6 +115,10 @@ module addr::canvas_token {
         /// How long artists have to wait between contributions. If zero, when
         /// artists contribute is not tracked.
         per_account_timeout_s: u64,
+
+        /// If non-zero, it will only be possible to draw on the canvas for this long,
+        /// after which the canvas will be irrevocably locked forever.
+        can_draw_for_s: u64,
 
         // todo, for this ^ perhaps instead of the canvas maintaining a table of when
         // people last contributed, we put a simplemap on the artist's account?
@@ -173,6 +135,10 @@ module addr::canvas_token {
 
         /// How much it costs in OCTA to contribute.
         cost: u64,
+
+        /// If a cost is set, this is where the funds are sent. If not set, funds will
+        /// go to the owner of the token.
+        funds_recipient: Option<address>,
 
         /// The default color of the pixels. If a paletter is set, this color must be a
         /// part of the palette.
@@ -197,12 +163,14 @@ module addr::canvas_token {
         // Arguments for the token + object.
         description: String,
         name: String,
-        // Arguments for the canvas.
+        // Arguments for the canvas. For now we don't allow setting the palette
+        // because it is a pain to express vector<Color> in an entry function.
         width: u32,
         height: u32,
         per_account_timeout_s: u64,
-        // Note, for now we don't allow setting palette because it's a pain
+        can_draw_for_s: u64,
         cost: u64,
+        funds_recipient: Option<address>,
         default_color_r: u8,
         default_color_g: u8,
         default_color_b: u8,
@@ -212,8 +180,10 @@ module addr::canvas_token {
             width,
             height,
             per_account_timeout_s,
+            can_draw_for_s,
             palette: vector::empty(),
             cost,
+            funds_recipient,
             default_color: Color {
                 r: default_color_r,
                 g: default_color_g,
@@ -276,10 +246,12 @@ module addr::canvas_token {
         let canvas = Canvas {
             config,
             pixels,
-            last_contributions_s: smart_table::new(),
+            last_contribution_s: smart_table::new(),
             allowlisted_artists: simple_set::create(),
             blocklisted_artists: simple_set::create(),
             admins: simple_set::create(),
+            extend_ref: object::generate_extend_ref(&constructor_ref),
+            created_at_s: now_seconds(),
         };
 
         let object_signer = object::generate_signer(&constructor_ref);
@@ -301,15 +273,50 @@ module addr::canvas_token {
         b: u8,
     ) acquires Canvas {
         let caller_addr = signer::address_of(caller);
+        let canvas_owner_addr = object::owner(canvas);
 
         // Make sure the caller is allowed to draw.
         assert_allowlisted_to_draw(canvas, caller_addr);
 
         let canvas_ = borrow_global_mut<Canvas>(object::object_address(&canvas));
 
+        // If `can_draw_for_s` is non-zero, confirm that the canvas is still open.
+        if (canvas_.config.can_draw_for_s > 0) {
+            let now = now_seconds();
+            assert!(
+                now <= (canvas_.created_at_s + canvas_.config.can_draw_for_s),
+                error::invalid_state(E_CANVAS_CLOSED),
+            );
+        };
+
         // Confirm the coordinates are not out of bounds.
         assert!(x < canvas_.config.width, error::invalid_argument(E_COORDINATE_OUT_OF_BOUNDS));
         assert!(y < canvas_.config.height, error::invalid_argument(E_COORDINATE_OUT_OF_BOUNDS));
+
+        // If there is a cost, transfer the funds.
+        if (canvas_.config.cost > 0) {
+            let recipient = option::borrow_with_default(
+                &canvas_.config.funds_recipient,
+                &canvas_owner_addr,
+            );
+            coin::transfer<AptosCoin>(caller, *recipient, canvas_.config.cost);
+        };
+
+        // If there is a per-account timeout, first confirm that the caller is allowed
+        // to write a pixel, and if so, update their last contribution time.
+        if (canvas_.config.per_account_timeout_s > 0) {
+            let now = now_seconds();
+            if (smart_table::contains(&canvas_.last_contribution_s, caller_addr)) {
+                let last_contribution = smart_table::borrow(&canvas_.last_contribution_s, caller_addr);
+                assert!(
+                    now > (*last_contribution + canvas_.config.per_account_timeout_s),
+                    error::invalid_state(E_MUST_WAIT),
+                );
+                *smart_table::borrow_mut(&mut canvas_.last_contribution_s, caller_addr) = now;
+            } else {
+                smart_table::add(&mut canvas_.last_contribution_s, caller_addr, now);
+            };
+        };
 
         // Write the pixel.
         let color = Color { r, g, b };
@@ -380,6 +387,59 @@ module addr::canvas_token {
 
     fun assert_is_super_admin(canvas: Object<Canvas>, caller_addr: address) acquires Canvas {
         assert!(is_super_admin(canvas, caller_addr), error::invalid_state(E_CALLER_NOT_SUPER_ADMIN));
+    }
+
+    /// Set what account receives the funds. Does nothing if `cost` is zero.
+    public entry fun set_funds_recipient(
+        caller: &signer,
+        canvas: Object<Canvas>,
+        recipient: Option<address>,
+    ) acquires Canvas {
+        let caller_addr = signer::address_of(caller);
+        assert_is_super_admin(canvas, caller_addr);
+        let canvas_ = borrow_global_mut<Canvas>(object::object_address(&canvas));
+        canvas_.config.funds_recipient = recipient;
+    }
+
+    /// If `last_contribution_s` is non-zero the Canvas tracks when users contributed.
+    /// Over time this table will get quite large. By calling this function the super
+    /// admin can completely wipe the table, likely getting a nice little storage refund.
+    /// Naturally this might let people contribute sooner than they were meant to be
+    /// able to, but this is really the only viable approach since there is no way to
+    /// iterate through the table from within a Move function. Anyway, occasionally
+    /// letting someone draw more often than intended is not a big deal.
+    public entry fun clear_contribution_timeouts(
+        caller: &signer,
+        canvas: Object<Canvas>,
+    ) acquires Canvas {
+        // TODO: This approach with moving out and back is sorta messy. If smart_table
+        // had a method that took &mut this wouldn't be necessary.
+        let caller_addr = signer::address_of(caller);
+        assert_is_super_admin(canvas, caller_addr);
+        let old_canvas_ = move_from<Canvas>(object::object_address(&canvas));
+        let Canvas {
+            config,
+            pixels,
+            last_contribution_s,
+            allowlisted_artists,
+            blocklisted_artists,
+            admins,
+            extend_ref,
+            created_at_s,
+        } = old_canvas_;
+        let object_signer = object::generate_signer_for_extending(&extend_ref);
+        let new_canvas_ = Canvas {
+            config,
+            pixels,
+            last_contribution_s: smart_table::new(),
+            allowlisted_artists,
+            blocklisted_artists,
+            admins,
+            extend_ref,
+            created_at_s,
+        };
+        move_to(&object_signer, new_canvas_);
+        smart_table::destroy(last_contribution_s);
     }
 
     #[view]
