@@ -20,7 +20,6 @@ import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { draw } from "../api/transactions";
 import { getModuleId, useGlobalState } from "../GlobalState";
 import { useParams } from "react-router-dom";
-import { useCallback } from "react";
 
 export const MySquare = ({
   color,
@@ -54,9 +53,12 @@ export const MySquare = ({
   const onSubmitDraw = async () => {
     setPopoverCanBeClosed(false);
 
-    const { r, g, b } = hexToRgb(colorToSubmit)!;
-
     try {
+      const out = hexToRgb(colorToSubmit);
+      if (out === null) {
+        throw `Failed to parse color: ${colorToSubmit}`;
+      }
+      const { r, g, b } = out;
       await draw(
         signAndSubmitTransaction,
         moduleId,
@@ -129,7 +131,11 @@ export const MySquare = ({
                   color={colorToSubmit}
                   onChange={setColorToSubmit}
                 />
-                <Button mt={2} onClick={onSubmitDraw}>
+                <Button
+                  mt={2}
+                  onClick={onSubmitDraw}
+                  isDisabled={hexToRgb(colorToSubmit) === null}
+                >
                   {popoverCanBeClosed ? `Draw` : <Spinner />}
                 </Button>
               </>
@@ -144,6 +150,10 @@ export const MySquare = ({
 };
 
 function hexToRgb(hex: string) {
+  console.log("Hex color: ", hex);
+  if (hex.includes("Nan")) {
+    return null;
+  }
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
     ? {
