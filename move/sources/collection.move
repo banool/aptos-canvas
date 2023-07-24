@@ -71,7 +71,7 @@ module addr::canvas_collection {
     public entry fun set_uri(caller: &signer, uri: String) acquires CollectionRefs {
         let collection = get_collection();
         assert!(
-            object::is_owner<Collection>(collection, signer::address_of(caller)),
+            is_owner(caller, collection),
             error::invalid_argument(E_COLLECTION_MUTATOR_FORBIDDEN),
         );
         let collection_refs = borrow_global<CollectionRefs>(object::object_address(&collection));
@@ -82,7 +82,7 @@ module addr::canvas_collection {
     public entry fun set_description(caller: &signer, description: String) acquires CollectionRefs {
         let collection = get_collection();
         assert!(
-            object::is_owner<Collection>(collection, signer::address_of(caller)),
+            is_owner(caller, collection),
             error::invalid_argument(E_COLLECTION_MUTATOR_FORBIDDEN),
         );
         let collection_refs = borrow_global<CollectionRefs>(object::object_address(&collection));
@@ -92,7 +92,7 @@ module addr::canvas_collection {
     /// Transfer ownership of the collection.
     public entry fun transfer(caller: &signer, collection: Object<Collection>, to: address) acquires CollectionRefs {
         assert!(
-            object::is_owner<Collection>(collection, signer::address_of(caller)),
+            is_owner(caller, collection),
             error::invalid_argument(E_COLLECTION_TRANSFERER_FORBIDDEN),
         );
         let collection_refs = borrow_global<CollectionRefs>(object::object_address(&collection));
@@ -109,6 +109,10 @@ module addr::canvas_collection {
             &string::utf8(COLLECTION_NAME),
         );
         object::address_to_object<Collection>(collection_address)
+    }
+
+    public fun is_owner(caller: &signer, collection: Object<Collection>): bool {
+        object::is_owner<Collection>(collection, signer::address_of(caller))
     }
 
     public fun get_collection_name(): String {

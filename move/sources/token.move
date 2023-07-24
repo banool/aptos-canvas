@@ -16,20 +16,20 @@
 // to entry functions, e.g. CanvasConfig, Coords, Color, etc.
 
 module addr::canvas_token {
-    use addr::canvas_collection::{get_collection, get_collection_name};
+    use addr::canvas_collection::{get_collection, get_collection_name, is_owner as is_owner_of_collection};
     use std::error;
     use std::option::{Self, Option};
     use std::signer;
-    use std::string::String;
+    use std::string::{Self, String};
     use std::vector;
     use std::timestamp::now_seconds;
     use aptos_framework::aptos_coin::AptosCoin;
+    use aptos_framework::chain_id::{get as get_chain_id};
     use aptos_framework::coin::Self;
     use aptos_std::object::{Self, ExtendRef, Object};
-    use aptos_std::string_utils::format2;
+    use aptos_std::string_utils;
     use aptos_std::smart_table::{Self, SmartTable};
-    use aptos_token_objects::collection::Self;
-    use aptos_token_objects::token::Self;
+    use aptos_token_objects::token::{Self, MutatorRef};
     use dport_std::simple_set::{Self, SimpleSet};
 
     /// `default_color` was not in the palette.
@@ -46,6 +46,9 @@ module addr::canvas_token {
     /// The caller tried to call a function that requires admin privileges
     /// but they're not an admin / there are no admins at all.
     const E_CALLER_NOT_ADMIN: u64 = 4;
+
+    /// The caller tried to call a function that requires collection owner privileges.
+    const E_CALLER_NOT_COLLECTION_OWNER: u64 = 9;
 
     /// The caller tried to draw a pixel but the canvas is no longer open for new
     /// contributions, and never will be, as per `can_draw_for_s`.
@@ -97,12 +100,15 @@ module addr::canvas_token {
         /// there is a super admin.
         admins: SimpleSet<address>,
 
+        /// When the canvas was created.
+        created_at_s: u64,
+
         /// We use this to generate a signer, which we need for
         /// `clear_contribution_timeouts`.
         extend_ref: ExtendRef,
 
-        /// When the canvas was created.
-        created_at_s: u64,
+        /// We need this so the collection owner can update the URI if necessary.
+        mutator_ref: MutatorRef,
     }
 
     struct CanvasConfig has store, drop {
@@ -203,16 +209,6 @@ module addr::canvas_token {
             );
         };
 
-        // Get the collection, which we need to build the URI.
-        let collection = get_collection();
-
-        // Build the URI, for example: https://canvas.dport.me/view/0x123
-        let uri = format2(
-            &b"{}/view/{}",
-            collection::uri(collection),
-            object::object_address(&collection),
-        );
-
         // Create the token. This creates an ObjectCore and Token.
         // TODO: Use token::create when AUIDs are enabled.
         let constructor_ref = token::create_from_account(
@@ -221,7 +217,8 @@ module addr::canvas_token {
             description,
             name,
             option::none(),
-            uri,
+            // We use a dummy URI and then change it after once we know the object address.
+            string::utf8(b"dummy"),
         );
 
         // Create the pixels.
@@ -241,8 +238,9 @@ module addr::canvas_token {
             allowlisted_artists: simple_set::create(),
             blocklisted_artists: simple_set::create(),
             admins: simple_set::create(),
-            extend_ref: object::generate_extend_ref(&constructor_ref),
             created_at_s: now_seconds(),
+            extend_ref: object::generate_extend_ref(&constructor_ref),
+            mutator_ref: token::generate_mutator_ref(&constructor_ref),
         };
 
         let object_signer = object::generate_signer(&constructor_ref);
@@ -250,7 +248,25 @@ module addr::canvas_token {
         // Move the canvas resource into the object.
         move_to(&object_signer, canvas);
 
-        object::object_from_constructor_ref(&constructor_ref)
+        let obj = object::object_from_constructor_ref(&constructor_ref);
+
+        // See https://aptos-org.slack.com/archives/C03N9HNSUB1/p1686764312687349 for more info on this mess.
+        // Trim the the leading @
+        let object_address_string = string_utils::to_string_with_canonical_addresses(&object::object_address(&obj));
+        let object_address_string = string::sub_string(
+            &object_address_string,
+            1,
+            string::length(&object_address_string),
+        );
+        let uri = string::utf8(b"https://aptos-canvas-renderer.d-479.workers.dev/0x");
+        string::append(&mut uri, object_address_string);
+        string::append(&mut uri, string::utf8(b"?chain_id="));
+        string::append(&mut uri, string_utils::to_string(&get_chain_id()));
+
+        // Set the real URI.
+        token::set_uri(&token::generate_mutator_ref(&constructor_ref), uri);
+
+        obj
     }
 
     /// Draw a pixel to the canvas. We consider the top left corner 0,0.
@@ -415,8 +431,9 @@ module addr::canvas_token {
             allowlisted_artists,
             blocklisted_artists,
             admins,
-            extend_ref,
             created_at_s,
+            extend_ref,
+            mutator_ref,
         } = old_canvas_;
         let object_signer = object::generate_signer_for_extending(&extend_ref);
         let new_canvas_ = Canvas {
@@ -426,8 +443,9 @@ module addr::canvas_token {
             allowlisted_artists,
             blocklisted_artists,
             admins,
-            extend_ref,
             created_at_s,
+            extend_ref,
+            mutator_ref,
         };
         move_to(&object_signer, new_canvas_);
         smart_table::destroy(last_contribution_s);
@@ -529,6 +547,22 @@ module addr::canvas_token {
     }
 
     ///////////////////////////////////////////////////////////////////////////////////
+    //                                 Collection owner                              //
+    ///////////////////////////////////////////////////////////////////////////////////
+    // Functions that only the collection owner can call.
+
+    /// Set the URI for the token. This is necessary if down the line we change how we generate the image.
+    public entry fun set_uri(caller: &signer, canvas: Object<Canvas>, uri: String) acquires Canvas {
+        let collection = get_collection();
+        assert!(
+            is_owner_of_collection(caller, collection),
+            error::invalid_argument(E_CALLER_NOT_COLLECTION_OWNER),
+        );
+        let canvas_ = borrow_global<Canvas>(object::object_address(&canvas));
+        token::set_uri(&canvas_.mutator_ref, uri);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////
     //                                     Tests                                     //
     ///////////////////////////////////////////////////////////////////////////////////
 
@@ -594,6 +628,7 @@ module addr::canvas_token {
             width: 50,
             height: 50,
             per_account_timeout_s: 0,
+            can_draw_for_s: 0,
             palette: vector::empty(),
             cost: 0,
             default_color: Color {
@@ -610,6 +645,6 @@ module addr::canvas_token {
     #[test(caller = @addr, friend1 = @0x456, friend2 = @0x789, aptos_framework = @aptos_framework)]
     fun test_create(caller: signer, friend1: signer, friend2: signer, aptos_framework: signer) {
         create_canvas_collection(&caller);
-        create_canvas(&caller, &friend1, &friend2, &aptos_framework);
+        create_canvas(&caller, &friend1, &friend2, &aptos_framework)
     }
 }
