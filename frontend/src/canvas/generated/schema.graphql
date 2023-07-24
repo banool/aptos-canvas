@@ -179,6 +179,10 @@ type _0x1__aptos_governance__VotingRecords {
 	votes: _0x1__table__Table!
 }
 
+type _0x1__aptos_governance__VotingRecordsV2 {
+	votes: _0x1__smart_table__SmartTable!
+}
+
 type _0x1__big_vector__BigVector {
 	buckets: _0x1__table_with_length__TableWithLength!
 	end_index: U64!
@@ -427,6 +431,25 @@ type _0x1__delegation_pool__AddStakeEvent {
 	add_stake_fee: U64!
 }
 
+type _0x1__delegation_pool__CreateProposalEvent {
+	proposal_id: U64!
+	voter: Address!
+	delegation_pool: Address!
+}
+
+type _0x1__delegation_pool__DelegateVotingPowerEvent {
+	pool_address: Address!
+	delegator: Address!
+	voter: Address!
+}
+
+type _0x1__delegation_pool__DelegatedVotes {
+	active_shares: U128!
+	pending_inactive_shares: U128!
+	active_shares_next_lockup: U128!
+	last_locked_until_secs: U64!
+}
+
 type _0x1__delegation_pool__DelegationPool {
 	active_shares: _0x1__pool_u64_unbound__Pool!
 	observed_lockup_cycle: _0x1__delegation_pool__ObservedLockupCycle!
@@ -453,6 +476,16 @@ type _0x1__delegation_pool__DistributeCommissionEvent {
 	commission_pending_inactive: U64!
 }
 
+type _0x1__delegation_pool__GovernanceRecords {
+	votes: _0x1__smart_table__SmartTable!
+	votes_per_proposal: _0x1__smart_table__SmartTable!
+	vote_delegation: _0x1__smart_table__SmartTable!
+	delegated_votes: _0x1__smart_table__SmartTable!
+	vote_events: _0x1__event__EventHandle!
+	create_proposal_events: _0x1__event__EventHandle!
+	delegate_voting_power_events: _0x1__event__EventHandle!
+}
+
 type _0x1__delegation_pool__ObservedLockupCycle {
 	index: U64!
 }
@@ -467,6 +500,25 @@ type _0x1__delegation_pool__UnlockStakeEvent {
 	pool_address: Address!
 	delegator_address: Address!
 	amount_unlocked: U64!
+}
+
+type _0x1__delegation_pool__VoteDelegation {
+	voter: Address!
+	pending_voter: Address!
+	last_locked_until_secs: U64!
+}
+
+type _0x1__delegation_pool__VoteEvent {
+	voter: Address!
+	proposal_id: U64!
+	delegation_pool: Address!
+	num_votes: U64!
+	should_pass: Boolean!
+}
+
+type _0x1__delegation_pool__VotingRecordKey {
+	voter: Address!
+	proposal_id: U64!
 }
 
 type _0x1__delegation_pool__WithdrawStakeEvent {
@@ -696,6 +748,14 @@ type _0x1__multisig_account__MultisigAccountCreationMessage {
 	num_signatures_required: U64!
 }
 
+type _0x1__multisig_account__MultisigAccountCreationWithAuthKeyRevocationMessage {
+	chain_id: U8!
+	account_address: Address!
+	sequence_number: U64!
+	owners: [Address!]!
+	num_signatures_required: U64!
+}
+
 type _0x1__multisig_account__MultisigTransaction {
 	payload: [U8!]
 	payload_hash: [U8!]
@@ -843,6 +903,28 @@ type _0x1__ristretto255__RistrettoPoint {
 
 type _0x1__ristretto255__Scalar {
 	data: [U8!]!
+}
+
+type _0x1__ristretto255_bulletproofs__RangeProof {
+	bytes: [U8!]!
+}
+
+type _0x1__ristretto255_elgamal__Ciphertext {
+	left: _0x1__ristretto255__RistrettoPoint!
+	right: _0x1__ristretto255__RistrettoPoint!
+}
+
+type _0x1__ristretto255_elgamal__CompressedCiphertext {
+	left: _0x1__ristretto255__CompressedRistretto!
+	right: _0x1__ristretto255__CompressedRistretto!
+}
+
+type _0x1__ristretto255_elgamal__CompressedPubkey {
+	point: _0x1__ristretto255__CompressedRistretto!
+}
+
+type _0x1__ristretto255_pedersen__Commitment {
+	point: _0x1__ristretto255__RistrettoPoint!
 }
 
 type _0x1__secp256k1__ECDSARawPublicKey {
@@ -1211,6 +1293,10 @@ type _0x1__timestamp__CurrentTimeMicroseconds {
 	microseconds: U64!
 }
 
+type _0x1__transaction_context__AUID {
+	unique_address: Address!
+}
+
 type _0x1__transaction_fee__AptosCoinCapabilities {
 	burn_cap: _0x1__coin__BurnCapability!
 }
@@ -1417,92 +1503,146 @@ type _0x1__voting__VotingForum {
 	next_proposal_id: U64!
 }
 
-type _0x3__tontine07__FallbackExecutedEvent {
-	dummy_field: Boolean!
+type _0x3__canvas_collection__CollectionRefs {
+	transfer_ref: _0x1__object__TransferRef!
+	mutator_ref: _0x4__collection__MutatorRef!
 }
 
-type _0x3__tontine07__FundsClaimedEvent {
-	member: Address!
+type _0x3__canvas_token__Canvas {
+	config: _0x3__canvas_token__CanvasConfig!
+	pixels: [_0x3__canvas_token__Color!]!
+	last_contribution_s: _0x1__smart_table__SmartTable!
+	allowlisted_artists: _0x626b96faa14f38242ec223e214101791920325665f4f7fc25f8865d6338b0053__simple_set__SimpleSet!
+	blocklisted_artists: _0x626b96faa14f38242ec223e214101791920325665f4f7fc25f8865d6338b0053__simple_set__SimpleSet!
+	admins: _0x626b96faa14f38242ec223e214101791920325665f4f7fc25f8865d6338b0053__simple_set__SimpleSet!
+	extend_ref: _0x1__object__ExtendRef!
+	created_at_s: U64!
 }
 
-type _0x3__tontine07__MemberCheckedInEvent {
-	member: Address!
+type _0x3__canvas_token__CanvasConfig {
+	width: U32!
+	height: U32!
+	per_account_timeout_s: U64!
+	can_draw_for_s: U64!
+	palette: [_0x3__canvas_token__Color!]!
+	cost: U64!
+	funds_recipient: Address
+	default_color: _0x3__canvas_token__Color!
+	owner_is_super_admin: Boolean!
 }
 
-type _0x3__tontine07__MemberContributedEvent {
-	member: Address!
-	amount_octa: U64!
+type _0x3__canvas_token__Color {
+	r: U8!
+	g: U8!
+	b: U8!
 }
 
-type _0x3__tontine07__MemberData {
-	contributed_octa: U64!
-	reconfirmation_required: Boolean!
-	last_check_in_time_secs: U64
+type _0x4__aptos_token__AptosCollection {
+	mutator_ref: _0x4__collection__MutatorRef
+	royalty_mutator_ref: _0x4__royalty__MutatorRef
+	mutable_description: Boolean!
+	mutable_uri: Boolean!
+	mutable_token_description: Boolean!
+	mutable_token_name: Boolean!
+	mutable_token_properties: Boolean!
+	mutable_token_uri: Boolean!
+	tokens_burnable_by_creator: Boolean!
+	tokens_freezable_by_creator: Boolean!
 }
 
-type _0x3__tontine07__MemberInvitedEvent {
-	member: Address!
+type _0x4__aptos_token__AptosToken {
+	burn_ref: _0x4__token__BurnRef
+	transfer_ref: _0x1__object__TransferRef
+	mutator_ref: _0x4__token__MutatorRef
+	property_mutator_ref: _0x4__property_map__MutatorRef!
 }
 
-type _0x3__tontine07__MemberLeftEvent {
-	member: Address!
-	removed: Boolean!
+type _0x4__collection__BurnEvent {
+	index: U64!
+	token: Address!
 }
 
-type _0x3__tontine07__MemberRemovedEvent {
-	member: Address!
-}
-
-type _0x3__tontine07__MemberWithdrewEvent {
-	member: Address!
-	amount_octa: U64!
-}
-
-type _0x3__tontine07__Testing {
-	blah: [[[U32!]]!]
-}
-
-type _0x3__tontine07__Tontine {
-	config: _0x3__tontine07__TontineConfig!
-	creation_time_secs: U64!
-	member_data: _0x626b96faa14f38242ec223e214101791920325665f4f7fc25f8865d6338b0053__simple_map__SimpleMap!
-	locked_time_secs: U64!
-	funds_claimed_secs: U64!
-	funds_claimed_by: Address
-	fallback_executed: Boolean!
-	tontine_created_events: _0x1__event__EventHandle!
-	member_invited_events: _0x1__event__EventHandle!
-	member_removed_events: _0x1__event__EventHandle!
-	member_contributed_events: _0x1__event__EventHandle!
-	member_withdrew_events: _0x1__event__EventHandle!
-	member_left_events: _0x1__event__EventHandle!
-	tontine_locked_events: _0x1__event__EventHandle!
-	member_checked_in_events: _0x1__event__EventHandle!
-	funds_claimed_events: _0x1__event__EventHandle!
-	fallback_executed_events: _0x1__event__EventHandle!
-	funds_account_signer_cap: _0x1__account__SignerCapability!
-	delete_ref: _0x1__object__DeleteRef!
-}
-
-type _0x3__tontine07__TontineConfig {
-	description: String!
-	per_member_amount_octa: U64!
-	check_in_frequency_secs: U64!
-	claim_window_secs: U64!
-	fallback_policy: _0x3__tontine07__TontineFallbackPolicy!
-	delegation_pool: Address
-}
-
-type _0x3__tontine07__TontineCreatedEvent {
+type _0x4__collection__Collection {
 	creator: Address!
+	description: String!
+	name: String!
+	uri: String!
+	mutation_events: _0x1__event__EventHandle!
 }
 
-type _0x3__tontine07__TontineFallbackPolicy {
-	policy: U8!
+type _0x4__collection__FixedSupply {
+	current_supply: U64!
+	max_supply: U64!
+	total_minted: U64!
+	burn_events: _0x1__event__EventHandle!
+	mint_events: _0x1__event__EventHandle!
 }
 
-type _0x3__tontine07__TontineLockedEvent {
-	dummy_field: Boolean!
+type _0x4__collection__MintEvent {
+	index: U64!
+	token: Address!
+}
+
+type _0x4__collection__MutationEvent {
+	mutated_field_name: String!
+}
+
+type _0x4__collection__MutatorRef {
+	self: Address!
+}
+
+type _0x4__collection__UnlimitedSupply {
+	current_supply: U64!
+	total_minted: U64!
+	burn_events: _0x1__event__EventHandle!
+	mint_events: _0x1__event__EventHandle!
+}
+
+type _0x4__property_map__MutatorRef {
+	self: Address!
+}
+
+type _0x4__property_map__PropertyMap {
+	inner: _0x1__simple_map__SimpleMap!
+}
+
+type _0x4__property_map__PropertyValue {
+	type: U8!
+	value: [U8!]!
+}
+
+type _0x4__royalty__MutatorRef {
+	inner: _0x1__object__ExtendRef!
+}
+
+type _0x4__royalty__Royalty {
+	numerator: U64!
+	denominator: U64!
+	payee_address: Address!
+}
+
+type _0x4__token__BurnRef {
+	inner: _0x1__object__DeleteRef
+	self: Address
+}
+
+type _0x4__token__MutationEvent {
+	mutated_field_name: String!
+	old_value: String!
+	new_value: String!
+}
+
+type _0x4__token__MutatorRef {
+	self: Address!
+}
+
+type _0x4__token__Token {
+	collection: _0x1__object__Object!
+	index: U64!
+	description: String!
+	name: String!
+	uri: String!
+	mutation_events: _0x1__event__EventHandle!
 }
 
 type _0x626b96faa14f38242ec223e214101791920325665f4f7fc25f8865d6338b0053__simple_map__Element {

@@ -5,7 +5,7 @@ import { NetworkName } from "../../constants";
 
 export type AnsAddressLookup = {
   name: string;
-  address: string | undefined;
+  address: string | null;
 };
 
 const fetchAddresses = async (

@@ -1,10 +1,11 @@
 import React from "react";
-import { Box, Flex, Heading, IconButton } from "@chakra-ui/react";
+import { Box, Flex, Heading, IconButton, Text } from "@chakra-ui/react";
 import { ColorModeSwitcher } from "../components/ColorModeSwitcher";
 import NetworkSelect from "../components/NetworkSelect";
 import { ConnectWalletComponent } from "../components/ConnectWalletComponent";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { DisconnectWalletComponent } from "../components/DisconnectWalletComponent";
+import { Link } from "react-router-dom";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -16,43 +17,33 @@ export default function MainLayout({ children }: LayoutProps) {
   const { connected } = useWallet();
 
   var headerMiddle = null;
-  /*
-  const { isLoading, aptToUsd, error } = useGetAptToUsd();
-  if (isLoading) {
-    headerMiddle = <Text textAlign={"center"}>Loading APT price...</Text>;
-  }
-  if (aptToUsd) {
-    headerMiddle = (
-      <Text textAlign={"center"}>{`1 APT = ${aptToUsd.toFixed(2)} USD`}</Text>
-    );
-  }
-  if (!isLoading && aptToUsd === undefined) {
-    headerMiddle = (
-      <Text textAlign={"center"}>
-        Error loading APT price, see console logs
-      </Text>
-    );
-    console.log("Error loading APT price:");
-    console.log(error);
-  }
-  */
 
   function getRandomFaceEmoji(): string {
-    const emojis = ["😀", "😃", "😄", "😁", "😆", "🤠", "😊", "🥳"];
+    const emojis = [
+      "😀",
+      "😃",
+      "😄",
+      "😁",
+      "😆",
+      "🤠",
+      "😊",
+      "🥳",
+      "🫨",
+      "🤧",
+      "😐",
+      "😳",
+    ];
     const randomIndex = Math.floor(Math.random() * emojis.length);
     return emojis[randomIndex];
   }
 
-  /*
   headerMiddle = (
     <Text textAlign="center" letterSpacing={5} fontSize={18}>
       {getRandomFaceEmoji().repeat(3)}
     </Text>
   );
-  */
 
-  // headerMiddle = <Image src={aptosLogo} maxHeight="30px" alt="Aptos logo" />;
-
+  // TODO: Use the ant wallet selector package.
   let walletConnectComponent = null;
   if (connected) {
     walletConnectComponent = <DisconnectWalletComponent />;
@@ -67,14 +58,16 @@ export default function MainLayout({ children }: LayoutProps) {
         <Flex alignItems="center" gap="2">
           <Flex alignItems="center" gap="2" flex="1">
             <Box>
-              <Heading size="md">Aptos Tontine</Heading>
+              <Link to="/">
+                <Heading size="md">Aptos Canvas</Heading>
+              </Link>
             </Box>
           </Flex>
           <Flex justifyContent="center" alignItems="center" gap="2" flex="1">
             {headerMiddle}
           </Flex>
           <Flex justifyContent="flex-end" alignItems="center" gap="2" flex="1">
-            <a href="https://github.com/banool/aptos-tontine">
+            <a href="https://github.com/banool/aptos-canvas">
               <IconButton
                 size="xs"
                 fontSize="sm"

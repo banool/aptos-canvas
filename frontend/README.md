@@ -1,10 +1,12 @@
-# Aptos Tontine: Frontend
+# Aptos Canvas: Frontend
 
 The frontend lets you do the following:
-1. Create a tontine.
-1. See what tontines you have created, joined, or been invited to.
-1. View information about tontines.
-1. Interact with tontines.
+1. Create canvases.
+1. View canvases.
+1. Draw on canvases.
+1. Perform various admin operations.
+
+For token-related operations use a marketplace.
 
 ## Development
 To get started, run:
