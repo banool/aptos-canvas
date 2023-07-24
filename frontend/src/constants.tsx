@@ -30,7 +30,7 @@ export const moduleLocations = {
 export const featuredCanvases = {
   mainnet: [],
   testnet: [
-    "0xa0a74d4677d38e895a1ac92b5940f2063406c0d2bd945e998ab87066da6932ab",
+    "0xcca44167497f4b2a8c7b3953bd66165e98bd9008b84b445a1ed332bf33d5a766",
   ],
   local: [],
 };
