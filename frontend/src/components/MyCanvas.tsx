@@ -17,15 +17,18 @@ import { MySquare } from "./MySquare";
 
 export const MyCanvas = ({
   canvasData,
+  writeable,
+  canvasVh = 88,
 }: {
   canvasData: _0x3__canvas_token__Canvas;
+  writeable: boolean;
+  canvasVh?: number;
 }) => {
   // To determine the size of each pixel we do the following.
   // 1. Get canvas height.
   // 2. Get the size of a pixel as a percentage of the total canvas size.
   // 3. Multiply that by the vh we're using for the canvas.
   // This then gets used as both width and height of the pixels.
-  const canvasVh = 88;
   const shortestEdge = canvasData.config.height;
   const sizePercent = 1 / shortestEdge;
   const sizeViewport = sizePercent * canvasVh;
@@ -36,7 +39,7 @@ export const MyCanvas = ({
       limitToBounds={false}
       initialPositionX={canvasData.config.width / 2}
       initialPositionY={canvasData.config.height / 2}
-      initialScale={1}
+      initialScale={0.95}
       minScale={0.1}
       maxScale={10}
       centerOnInit={true}
@@ -45,35 +48,37 @@ export const MyCanvas = ({
         <React.Fragment>
           <Center>
             <Box position="relative" borderWidth={1}>
-              <VStack
-                position="absolute"
-                bottom="5"
-                right="10"
-                zIndex="100"
-                spacing={3}
-              >
-                <Button
-                  colorScheme="cyan"
-                  title="Zoom in"
-                  onClick={() => zoomIn()}
+              {writeable && (
+                <VStack
+                  position="absolute"
+                  bottom="5"
+                  right="10"
+                  zIndex="100"
+                  spacing={3}
                 >
-                  +
-                </Button>
-                <Button
-                  colorScheme="cyan"
-                  title="Zoom out"
-                  onClick={() => zoomOut()}
-                >
-                  -
-                </Button>
-                <Button
-                  colorScheme="cyan"
-                  title="Reset"
-                  onClick={() => resetTransform()}
-                >
-                  x
-                </Button>
-              </VStack>
+                  <Button
+                    colorScheme="cyan"
+                    title="Zoom in"
+                    onClick={() => zoomIn()}
+                  >
+                    +
+                  </Button>
+                  <Button
+                    colorScheme="cyan"
+                    title="Zoom out"
+                    onClick={() => zoomOut()}
+                  >
+                    -
+                  </Button>
+                  <Button
+                    colorScheme="cyan"
+                    title="Reset"
+                    onClick={() => resetTransform()}
+                  >
+                    x
+                  </Button>
+                </VStack>
+              )}
               <TransformComponent>
                 <Box h={`${canvasVh}vh`} w={"95vw"}>
                   <Center>
@@ -84,6 +89,9 @@ export const MyCanvas = ({
                             key={index}
                             color={color}
                             sizeViewportStr={sizeViewportStr}
+                            x={index % canvasData.config.width}
+                            y={Math.floor(index / canvasData.config.width)}
+                            writeable={writeable}
                           />
                         );
                       })}

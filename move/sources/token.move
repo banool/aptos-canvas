@@ -120,16 +120,6 @@ module addr::canvas_token {
         /// after which the canvas will be irrevocably locked forever.
         can_draw_for_s: u64,
 
-        // todo, for this ^ perhaps instead of the canvas maintaining a table of when
-        // people last contributed, we put a simplemap on the artist's account?
-        // or perhaps we have a table and just allow the creator of the canvas to call
-        // some function to prune it as appropriate, giving them a tasty gas refund.
-        // for this to work the caller would have to determine which keys to wipe from
-        // the outside, since you can't iterate through a table from in Move. this is
-        // probably only possible with writeset analysis in a processor. alternatively
-        // we could just let the owner wipe the table at will.
-        // also, for everything where we care about creator, use owner instead.
-
         /// Allowed colors. If empty, all colors are allowed.
         palette: vector<Color>,
 
@@ -170,7 +160,8 @@ module addr::canvas_token {
         per_account_timeout_s: u64,
         can_draw_for_s: u64,
         cost: u64,
-        funds_recipient: Option<address>,
+        // todo this doesn't work with the CLI but should work with the TS SDK
+        // funds_recipient: Option<address>,
         default_color_r: u8,
         default_color_g: u8,
         default_color_b: u8,
@@ -183,7 +174,7 @@ module addr::canvas_token {
             can_draw_for_s,
             palette: vector::empty(),
             cost,
-            funds_recipient,
+            funds_recipient: option::none(),
             default_color: Color {
                 r: default_color_r,
                 g: default_color_g,
@@ -263,7 +254,7 @@ module addr::canvas_token {
     }
 
     /// Draw a pixel to the canvas. We consider the top left corner 0,0.
-    public fun draw(
+    public entry fun draw(
         caller: &signer,
         canvas: Object<Canvas>,
         x: u32,

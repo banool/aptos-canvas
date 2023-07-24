@@ -8,6 +8,7 @@ import {
   FeatureName,
   moduleLocations,
   indexerUrls,
+  featuredCanvases,
 } from "./constants";
 
 const selected_network = safeGetSelectedNetworkName();
@@ -96,6 +97,14 @@ export const getModuleId = (state: GlobalState): string => {
   const address = moduleLocations[state.network_name].address;
   const name = moduleLocations[state.network_name].name;
   return `${address}::${name}`;
+};
+
+export const getFeaturedCanvas = (state: GlobalState): string | null => {
+  var c = featuredCanvases[state.network_name];
+  if (c.length === 0) {
+    return null;
+  }
+  return c[Math.floor(Math.random() * c.length)];
 };
 
 export const getIndexerUrl = (state: GlobalState): string => {

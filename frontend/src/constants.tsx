@@ -17,7 +17,7 @@ export const moduleLocations = {
   },
   testnet: {
     address:
-      "0xfbc45a84bd65b000d259ac91a8f314c93313e6d6787dbac71bdaf044f661a4f8",
+      "0xb078d693856a65401d492f99ca0d6a29a0c5c0e371bc2521570a86e40d95f823",
     name: "canvas_token",
   },
   local: {
@@ -25,6 +25,14 @@ export const moduleLocations = {
       "0xfbc45a84bd65b000d259ac91a8f314c93313e6d6787dbac71bdaf044f661a4f8",
     name: "canvas_token",
   },
+};
+
+export const featuredCanvases = {
+  mainnet: [],
+  testnet: [
+    "0x86964eefb1efb89f82ce290c1dc20ba7c548517228ff0053f08f0c5b8108186c",
+  ],
+  local: [],
 };
 
 export const indexerUrls = {
@@ -74,31 +82,3 @@ if (!(defaultFeatureName in features)) {
 }
 
 export const defaultFeature = features[defaultFeatureName];
-
-export const MEMBER_STATUS_MUST_CONTRIBUTE_FUNDS: number = 128;
-export const MEMBER_STATUS_MUST_RECONFIRM: number = 129;
-export const MEMBER_STATUS_READY: number = 130;
-export const MEMBER_STATUS_STILL_ELIGIBLE: number = 131;
-export const MEMBER_STATUS_INELIGIBLE: number = 132;
-export const MEMBER_STATUS_CAN_CLAIM_FUNDS: number = 133;
-export const MEMBER_STATUS_CLAIMED_FUNDS: number = 134;
-export const MEMBER_STATUS_NEVER_CLAIMED_FUNDS: number = 135;
-
-export const OVERALL_STATUS_STAGING: number = 64;
-export const OVERALL_STATUS_CAN_BE_LOCKED: number = 66;
-export const OVERALL_STATUS_LOCKED: number = 67;
-export const OVERALL_STATUS_FUNDS_CLAIMABLE: number = 68;
-export const OVERALL_STATUS_FUNDS_CLAIMED: number = 69;
-export const OVERALL_STATUS_FUNDS_NEVER_CLAIMED: number = 70;
-export const OVERALL_STATUS_FALLBACK_EXECUTED: number = 71;
-
-export const FALLBACK_POLICY_RETURN_TO_MEMBERS: number = 1;
-
-export const getFallbackPolicyText = (fallbackPolicy: number) => {
-  switch (fallbackPolicy) {
-    case FALLBACK_POLICY_RETURN_TO_MEMBERS:
-      return "Return to members";
-    default:
-      return "Unknown";
-  }
-};
