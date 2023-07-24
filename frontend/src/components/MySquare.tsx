@@ -83,9 +83,9 @@ export const MySquare = ({
         duration: 7000,
         isClosable: true,
       });
+      setColorToSubmit(bg);
     } finally {
       setPopoverCanBeClosed(true);
-      setColorToSubmit(bg);
       onClose();
     }
   };
@@ -119,7 +119,7 @@ export const MySquare = ({
       </PopoverTrigger>
       {isOpen && (
         <PopoverContent zIndex={"10"}>
-          <PopoverHeader>Draw!</PopoverHeader>
+          <PopoverHeader>Make your beautiful mark!!</PopoverHeader>
           <PopoverCloseButton />
           <PopoverArrow />
           <PopoverBody>

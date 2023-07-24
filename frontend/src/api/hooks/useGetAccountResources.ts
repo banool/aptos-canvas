@@ -26,7 +26,6 @@ export function useGetAccountResources(
     {
       refetchOnWindowFocus: false,
       enabled: options.enabled,
-      // Refetch every 5 seconds.
       refetchInterval: REFETCH_INTERVAL_MS,
     },
   );

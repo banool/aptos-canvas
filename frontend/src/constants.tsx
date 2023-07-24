@@ -17,7 +17,7 @@ export const moduleLocations = {
   },
   testnet: {
     address:
-      "0xb078d693856a65401d492f99ca0d6a29a0c5c0e371bc2521570a86e40d95f823",
+      "0x81e2e2499407693c81fe65c86405ca70df529438339d9da7a6fc2520142b591e",
     name: "canvas_token",
   },
   local: {
@@ -30,7 +30,7 @@ export const moduleLocations = {
 export const featuredCanvases = {
   mainnet: [],
   testnet: [
-    "0x86964eefb1efb89f82ce290c1dc20ba7c548517228ff0053f08f0c5b8108186c",
+    "0xa7b52eb38f27f7bc1721ccb329de8c4bb969ea39992e1c2a1d4a2d9661b53251",
   ],
   local: [],
 };

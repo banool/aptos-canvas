@@ -65,7 +65,7 @@ export async function draw(
     type: "entry_function_payload",
     function: `${moduleId}::draw`,
     type_arguments: [],
-    arguments: [canvasAddress, `${x}`, `${y}`, `${red}`, `${green}`, `${blue}`],
+    arguments: [canvasAddress, x, y, red, green, blue],
   };
   await submitTransaction(signAndSubmitTransaction, fullnodeUrl, transaction);
 }

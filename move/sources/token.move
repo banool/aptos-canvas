@@ -41,25 +41,25 @@ module addr::canvas_token {
     /// The caller tried to call a function that requires super admin privileges
     /// but they're not the super admin (the owner) or there is no super admin
     /// at all (as per owner_is_super_admin).
-    const E_CALLER_NOT_SUPER_ADMIN: u64 = 2;
+    const E_CALLER_NOT_SUPER_ADMIN: u64 = 3;
 
     /// The caller tried to call a function that requires admin privileges
     /// but they're not an admin / there are no admins at all.
-    const E_CALLER_NOT_ADMIN: u64 = 3;
+    const E_CALLER_NOT_ADMIN: u64 = 4;
 
     /// The caller tried to draw a pixel but the canvas is no longer open for new
     /// contributions, and never will be, as per `can_draw_for_s`.
-    const E_CANVAS_CLOSED: u64 = 4;
+    const E_CANVAS_CLOSED: u64 = 5;
 
     /// The caller tried to draw a pixel but they contributed too recently based on
     /// the configured `per_account_timeout_s`. They must try again later.
-    const E_MUST_WAIT: u64 = 5;
+    const E_MUST_WAIT: u64 = 6;
 
     /// The caller is not allowe to contribute to the canvas.
-    const E_CALLER_IN_BLOCKLIST: u64 = 6;
+    const E_CALLER_IN_BLOCKLIST: u64 = 7;
 
     /// The caller is not in the allowlist for contributing to the canvas.
-    const E_CALLER_NOT_IN_ALLOWLIST: u64 = 7;
+    const E_CALLER_NOT_IN_ALLOWLIST: u64 = 8;
 
     /// Based on the allowlist and/or blocklist (or lack thereof), the caller is
     /// allowed to contribute to the canvas.
@@ -107,10 +107,10 @@ module addr::canvas_token {
 
     struct CanvasConfig has store, drop {
         /// The width of the canvas.
-        width: u32,
+        width: u64,
 
         /// The width of the canvas.
-        height: u32,
+        height: u64,
 
         /// How long artists have to wait between contributions. If zero, when
         /// artists contribute is not tracked.
@@ -155,8 +155,8 @@ module addr::canvas_token {
         name: String,
         // Arguments for the canvas. For now we don't allow setting the palette
         // because it is a pain to express vector<Color> in an entry function.
-        width: u32,
-        height: u32,
+        width: u64,
+        height: u64,
         per_account_timeout_s: u64,
         can_draw_for_s: u64,
         cost: u64,
@@ -257,8 +257,8 @@ module addr::canvas_token {
     public entry fun draw(
         caller: &signer,
         canvas: Object<Canvas>,
-        x: u32,
-        y: u32,
+        x: u64,
+        y: u64,
         r: u8,
         g: u8,
         b: u8,
@@ -311,7 +311,7 @@ module addr::canvas_token {
 
         // Write the pixel.
         let color = Color { r, g, b };
-        let index = ((y * canvas_.config.width + x) as u64);
+        let index = y * canvas_.config.width + x;
         *vector::borrow_mut(&mut canvas_.pixels, index) = color;
     }
 
