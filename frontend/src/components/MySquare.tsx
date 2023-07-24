@@ -20,6 +20,7 @@ import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { draw } from "../api/transactions";
 import { getModuleId, useGlobalState } from "../GlobalState";
 import { useParams } from "react-router-dom";
+import { useCallback } from "react";
 
 export const MySquare = ({
   color,
@@ -52,7 +53,6 @@ export const MySquare = ({
 
   const onSubmitDraw = async () => {
     setPopoverCanBeClosed(false);
-    console.log(colorToSubmit);
 
     const { r, g, b } = hexToRgb(colorToSubmit)!;
 
