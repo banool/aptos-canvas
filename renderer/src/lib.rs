@@ -96,6 +96,10 @@ async fn main(req: Request, _env: Env, _ctx: Context) -> Result<Response> {
         .headers_mut()
         .set("content-type", "image/png")
         .unwrap();
+    response
+        .headers_mut()
+        .set("access-control-allow-origin", "*")
+        .unwrap();
 
     #[cfg(all(target_arch = "wasm32", target_os = "unknown"))]
     console_log!("Returning response!!");
