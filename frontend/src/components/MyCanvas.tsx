@@ -185,15 +185,15 @@ export const MyCanvas = ({
         pixelSize, // Reduce the pixel's width by the margin
         pixelSize, // Reduce the pixel's height by the margin
       );
-
-      return () => {
-        if (canvas) {
-          canvas.removeEventListener("wheel", handleWheel);
-        }
-      };
     });
 
     context.restore();
+
+    return () => {
+      if (canvas) {
+        canvas.removeEventListener("wheel", handleWheel);
+      }
+    };
   }, [canvasData, parentRef, scale, pan, pixels, getOffsets, handleWheel]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -205,10 +205,6 @@ export const MyCanvas = ({
     const offsets = getOffsets()!;
 
     const rectSize = 1.5;
-
-    // Clear the previous overlay cursor element. Note, there is a bug with this where
-    // it doesn't clear the cursor element if it is on the left or top edge of the canvas.
-    overlayContext.clearRect(0, 0, overlay.width, overlay.height);
 
     if (dragging) {
       const newPan = {
@@ -222,6 +218,15 @@ export const MyCanvas = ({
       const rect = overlay.getBoundingClientRect();
       const x = Math.floor((e.clientX - rect.left - pan.x) / scale - offsets.x);
       const y = Math.floor((e.clientY - rect.top - pan.y) / scale - offsets.y);
+
+      // Clear the previous overlay cursor element.
+      // Clear rectangle taking into account the transformations (scale and pan).
+      overlayContext.clearRect(
+        (-pan.x + offsets.x) / scale,
+        (-pan.y + offsets.y) / scale,
+        parent.clientWidth / scale,
+        parent.clientHeight / scale,
+      );
 
       // Return if the cursor is outside the canvas.
       if (
@@ -243,6 +248,8 @@ export const MyCanvas = ({
         { lineWidth: 0.1, color: "yellow" },
       ];
 
+      overlayContext.save();
+
       strokes.forEach((stroke) => {
         overlayContext.lineWidth = stroke.lineWidth;
         overlayContext.strokeStyle = stroke.color;
@@ -253,6 +260,8 @@ export const MyCanvas = ({
           rectSize + stroke.lineWidth,
         );
       });
+
+      overlayContext.restore();
     }
   };
 
@@ -450,8 +459,6 @@ export const MyCanvas = ({
         >
           <PopoverTrigger>
             <Box
-              w={0}
-              h={1}
               style={{
                 left: `${popoverPos.left}px`,
                 top: `${popoverPos.top}px`,
