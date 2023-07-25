@@ -58,6 +58,7 @@ export const MyCanvas = ({
     undefined,
   );
   const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [lastPan, setLastPan] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
   const [lastMousePos, setLastMousePos] = useState({ x: 0, y: 0 });
 
@@ -224,8 +225,10 @@ export const MyCanvas = ({
       overlayContext.clearRect(
         (-pan.x + offsets.x) / scale,
         (-pan.y + offsets.y) / scale,
-        parent.clientWidth / scale,
-        parent.clientHeight / scale,
+        // We clear 1000x wide just for good measure, since I saw with this change that
+        // it'd still appear on the far right sometimes.
+        (parent.clientWidth / scale) * 1000,
+        (parent.clientHeight / scale) * 1000,
       );
 
       // Return if the cursor is outside the canvas.
@@ -268,13 +271,19 @@ export const MyCanvas = ({
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     setDragging(true);
     setLastMousePos({ x: e.clientX, y: e.clientY });
+    setLastPan(pan);
   };
 
-  const handleMouseUp = () => {
+  const handleMouseUp = (e: React.MouseEvent<HTMLCanvasElement>) => {
     setDragging(false);
+    if (pan.x === lastPan.x && pan.y === lastPan.y) {
+      // This means the user didn't drag the canvas, they just clicked it. We only want
+      // to show the color picker if they click on a square, not drag, so we handle the
+      // onClick event here rather than setting onClick on the canvas.
+      handleClick(e);
+    }
   };
 
-  // TODO: Somehow make this trigger only on a stationary click, not after a drag.
   const handleClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const parent = parentRef.current;
     const canvas = canvasRef.current;
@@ -408,7 +417,6 @@ export const MyCanvas = ({
           style={{ position: "absolute", cursor: "pointer" }}
           width={canvasData.config.width * (scale ?? 0)}
           height={canvasData.config.height * (scale ?? 0)}
-          onClick={writeable ? handleClick : undefined}
           onMouseMove={writeable ? handleMouseMove : undefined}
           onMouseDown={writeable ? handleMouseDown : undefined}
           onMouseUp={writeable ? handleMouseUp : undefined}
