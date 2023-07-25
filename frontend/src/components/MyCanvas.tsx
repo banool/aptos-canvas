@@ -45,6 +45,11 @@ export const MyCanvas = ({
 
   const [pixels, setPixels] = useState(canvasData.pixels);
 
+  // Make sure we update the pixels when the canvasData changes.
+  useEffect(() => {
+    setPixels(canvasData.pixels);
+  }, [canvasData.pixels]);
+
   const parentRef = useRef<HTMLDivElement>(null);
 
   // Store scale and pan in state
