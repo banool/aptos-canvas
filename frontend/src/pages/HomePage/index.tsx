@@ -13,7 +13,7 @@ import {
 import { getFeaturedCanvas, useGlobalState } from "../../GlobalState";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { MyCanvas } from "../../components/MyCanvas";
+import { MyCanvas } from "../../components/MySlowCanvas";
 import { MyCanvasLoader } from "../ViewPage/MyCanvasLoader";
 import { isValidAccountAddress } from "../../utils";
 import { FiEye } from "react-icons/fi";

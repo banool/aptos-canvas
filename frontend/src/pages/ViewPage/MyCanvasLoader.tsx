@@ -10,6 +10,7 @@ import {
   _0x3__canvas_token__Canvas,
 } from "../../canvas/generated/types";
 import { MyCanvas } from "../../components/MyCanvas";
+import { MyCanvasOuter } from "../../components/MyCanvasOuter";
 
 export const MyCanvasLoader = ({
   address,
