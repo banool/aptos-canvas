@@ -94,7 +94,7 @@ export const CreatePage = () => {
         </FormLabel>
         <Input
           id="width"
-          defaultValue={80}
+          defaultValue={150}
           {...register("width", {
             required: "Must specify width",
             valueAsNumber: true,
@@ -107,7 +107,7 @@ export const CreatePage = () => {
         </FormLabel>
         <Input
           id="height"
-          defaultValue={45}
+          defaultValue={100}
           {...register("height", {
             required: "Must specify height",
             valueAsNumber: true,
@@ -188,9 +188,9 @@ export const CreatePage = () => {
         nanToZero(values.per_account_timeout_s),
         nanToZero(values.can_draw_for_s),
         nanToZero(values.cost),
-        0,
-        0,
-        0,
+        200,
+        200,
+        200,
         values.owner_is_super_admin,
       );
       toast({
