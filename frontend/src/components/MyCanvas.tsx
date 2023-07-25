@@ -106,7 +106,7 @@ export const MyCanvas = ({
     let s = Math.min(scaleX, scaleY) * initialScaleOffset;
     setInitialScale(s);
     setScale(s);
-  }, [canvasData, parentRef]);
+  }, [canvasData.config.height, canvasData.config.width, parentRef]);
 
   // This one uses the native DOM API WheelEvent, not the React synthetic event.
   // https://stackoverflow.com/a/67258046/3846032
@@ -298,6 +298,7 @@ export const MyCanvas = ({
   const zoomOut = () => {
     setScale((scale) => scale! * 0.8);
   };
+
   const resetTransform = () => {
     setScale(initialScale);
     setPan({ x: 0, y: 0 });
