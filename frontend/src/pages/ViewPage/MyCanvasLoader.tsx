@@ -1,7 +1,6 @@
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { Box, Center, Flex, Text } from "@chakra-ui/react";
 import { getModuleId, useGlobalState } from "../../GlobalState";
-import { useParams } from "react-router-dom";
 import { NetworkMismatchPage } from "../../components/NetworkMismatchPage";
 import { useGetAccountResources } from "../../api/hooks/useGetAccountResources";
 import {
@@ -10,7 +9,6 @@ import {
   _0x3__canvas_token__Canvas,
 } from "../../canvas/generated/types";
 import { MyCanvas } from "../../components/MyCanvas";
-import { MyCanvasOuter } from "../../components/MyCanvasOuter";
 
 export const MyCanvasLoader = ({
   address,

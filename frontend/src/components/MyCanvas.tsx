@@ -359,7 +359,11 @@ export const MyCanvas = ({
     const newPixels = [...pixels];
     const pixelIndex =
       squareToDraw.y * canvasData.config.width + squareToDraw.x;
-    const { r, g, b } = hexToRgb(color)!;
+    const destructured = hexToRgb(color);
+    if (destructured === null) {
+      return;
+    }
+    const { r, g, b } = destructured;
     newPixels[pixelIndex] = { r, g, b };
     setPixels(newPixels);
   };
