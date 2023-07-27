@@ -1,0 +1,31 @@
+[package]
+name = "txn-stream"
+description = "Client for streaming from the txn stream service"
+version = "0.1.0"
+
+# Workspace inherited keys
+authors = { workspace = true }
+edition = { workspace = true }
+homepage = { workspace = true }
+license = { workspace = true }
+publish = { workspace = true }
+repository = { workspace = true }
+rust-version = { workspace = true }
+
+[dependencies]
+aptos-indexer-protos = { workspace = true }
+async-trait = { workspace = true }
+duration-str = { workspace = true }
+futures = { workspace = true }
+once_cell = { workspace = true }
+serde = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+tonic = { workspace = true }
+tracing = { workspace = true }
+
+# Dependencies for features.
+prometheus = { workspace = true, optional = true }
+
+[features]
+counters = ["prometheus"]
