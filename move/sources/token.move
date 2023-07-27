@@ -81,7 +81,7 @@ module addr::canvas_token {
         config: CanvasConfig,
 
         /// The pixels of the canvas.
-        pixels: vector<Color>,
+        pixels: SmartTable<u64, Color>,
 
         /// When each artist last contributed. Only tracked if
         /// per_account_timeout_s is non-zero.
@@ -221,19 +221,10 @@ module addr::canvas_token {
             string::utf8(b"dummy"),
         );
 
-        // Create the pixels.
-        // TODO: There has to be a faster way than this.
-        let pixels = vector::empty();
-        let i = 0;
-        while (i < config.width * config.height) {
-            vector::push_back(&mut pixels, config.default_color);
-            i = i + 1;
-        };
-
         // Create the canvas.
         let canvas = Canvas {
             config,
-            pixels,
+            pixels: smart_table::new(),
             last_contribution_s: smart_table::new(),
             allowlisted_artists: simple_set::create(),
             blocklisted_artists: simple_set::create(),
@@ -328,7 +319,7 @@ module addr::canvas_token {
         // Write the pixel.
         let color = Color { r, g, b };
         let index = y * canvas_.config.width + x;
-        *vector::borrow_mut(&mut canvas_.pixels, index) = color;
+        smart_table::upsert(&mut canvas_.pixels, index, color);
     }
 
     fun assert_allowlisted_to_draw(canvas: Object<Canvas>, caller_addr: address) acquires Canvas {
@@ -522,12 +513,32 @@ module addr::canvas_token {
     ) acquires Canvas {
         let caller_addr = signer::address_of(caller);
         assert_is_admin(canvas, caller_addr);
-        let canvas_ = borrow_global_mut<Canvas>(object::object_address(&canvas));
-        let i = 0;
-        while (i < canvas_.config.width * canvas_.config.height) {
-            *vector::borrow_mut(&mut canvas_.pixels, (i as u64)) = canvas_.config.default_color;
-            i = i + 1;
+        let old_canvas_ = move_from<Canvas>(object::object_address(&canvas));
+        let Canvas {
+            config,
+            pixels,
+            last_contribution_s,
+            allowlisted_artists,
+            blocklisted_artists,
+            admins,
+            created_at_s,
+            extend_ref,
+            mutator_ref,
+        } = old_canvas_;
+        let object_signer = object::generate_signer_for_extending(&extend_ref);
+        let new_canvas_ = Canvas {
+            config,
+            pixels: smart_table::new(),
+            last_contribution_s,
+            allowlisted_artists,
+            blocklisted_artists,
+            admins,
+            created_at_s,
+            extend_ref,
+            mutator_ref,
         };
+        move_to(&object_signer, new_canvas_);
+        smart_table::destroy(pixels);
     }
 
     fun assert_is_admin(canvas: Object<Canvas>, caller_addr: address) acquires Canvas {

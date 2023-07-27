@@ -34,7 +34,7 @@ curl localhost:8080/v1/transactions/by_hash/0xe6a7b044015180e07e5878dc8d87729010
 
 Drawing on the canvas:
 ```
-aptos move run --assume-yes --function-id `yq .profiles.$NETWORK.account < .aptos/config.yaml`::canvas_token::draw --args address:0x123 u64:5 u64:5 u8:64 u8:215 u8:178 --profile $NETWORK
+aptos move run --assume-yes --function-id `yq .profiles.$NETWORK.account < .aptos/config.yaml`::canvas_token::draw --args address:0x123 u64:42 u64:24 u8:64 u8:215 u8:178 --profile $NETWORK
 ```
 
 
