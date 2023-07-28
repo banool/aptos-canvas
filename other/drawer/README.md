@@ -12,3 +12,5 @@ Make sure the bmp is bmp3:
 ```
 mogrify -format bmp -define bmp:format=bmp4 hokusai.bmp
 ```
+
+See more on that issue: https://github.com/shaozilee/bmp-js/issues/16#issuecomment-418509274.
