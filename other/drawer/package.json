@@ -1,0 +1,28 @@
+{
+  "name": "drawer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node-esm src/main.ts",
+    "fmt": "prettier --write 'src/**/*.(ts|tsx)'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@supercharge/promise-pool": "^3.0.0",
+    "@types/bmp-js": "^0.1.0",
+    "aptos": "^1.14.0",
+    "bmp-js": "^0.1.0",
+    "fs": "0.0.1-security",
+    "node-fetch": "^3.3.2"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^20.4.5",
+    "eslint": "^8.45.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6"
+  }
+}
