@@ -352,7 +352,7 @@ export const MyCanvas = ({
         title: "Success!",
         description: "Successfully drew pixel!!",
         status: "success",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     } catch (e) {

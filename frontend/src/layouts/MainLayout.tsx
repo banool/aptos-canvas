@@ -2,10 +2,16 @@ import React from "react";
 import { Box, Flex, Heading, IconButton, Text } from "@chakra-ui/react";
 import { ColorModeSwitcher } from "../components/ColorModeSwitcher";
 import NetworkSelect from "../components/NetworkSelect";
-import { ConnectWalletComponent } from "../components/ConnectWalletComponent";
-import { useWallet } from "@aptos-labs/wallet-adapter-react";
-import { DisconnectWalletComponent } from "../components/DisconnectWalletComponent";
 import { Link } from "react-router-dom";
+import "../css/wallet_selector.css";
+import "@aptos-labs/wallet-adapter-ant-design/dist/index.css";
+import { WalletSelector } from "@aptos-labs/wallet-adapter-ant-design";
+import { useWallet } from "@aptos-labs/wallet-adapter-react";
+
+export const ConnectWalletComponent = () => {
+  // Wallet icon component.
+  return <WalletSelector />;
+};
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -14,7 +20,7 @@ interface LayoutProps {
 // TODO: Figure out how to make IconButton padding for GitHub button the same
 // as the color switcher button.
 export default function MainLayout({ children }: LayoutProps) {
-  const { connected } = useWallet();
+  const { isLoading } = useWallet();
 
   var headerMiddle = null;
 
@@ -43,16 +49,10 @@ export default function MainLayout({ children }: LayoutProps) {
     </Text>
   );
 
-  // TODO: Use the ant wallet selector package.
-  let walletConnectComponent = null;
-  if (connected) {
-    walletConnectComponent = <DisconnectWalletComponent />;
-  } else {
-    walletConnectComponent = <ConnectWalletComponent />;
-  }
+  let walletConnectComponent = <WalletSelector />;
 
   // Courtesy of https://stackoverflow.com/q/75175422/3846032.
-  return (
+  const body = (
     <Box display="flex" flexDirection="column" minHeight="100vh">
       <Box paddingTop={5} paddingBottom={5} paddingLeft={8} paddingRight={8}>
         <Flex alignItems="center" gap="2">
@@ -98,4 +98,24 @@ export default function MainLayout({ children }: LayoutProps) {
       {children}
     </Box>
   );
+
+  // Blur the content if we're connecting a wallet.
+  let out;
+  if (isLoading) {
+    out = (
+      <Box
+        filter="blur(4px) brightness(0.8)"
+        pointerEvents="none"
+        position="absolute"
+        width="100%"
+        height="100%"
+      >
+        {body}
+      </Box>
+    );
+  } else {
+    out = body;
+  }
+
+  return out;
 }

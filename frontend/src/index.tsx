@@ -3,10 +3,11 @@ import * as React from "react";
 import * as ReactDOM from "react-dom/client";
 import { App } from "./App";
 import reportWebVitals from "./reportWebVitals";
-import { AptosWalletAdapterProvider } from "@aptos-labs/wallet-adapter-react";
-import { PetraWallet } from "petra-plugin-wallet-adapter";
+import { Buffer as BufferPolyFill } from "buffer";
 
-const wallets = [new PetraWallet()];
+// Needed for IdentityConnectWallet for now.
+// https://aptos-org.slack.com/archives/C057G4U6RAB/p1690526344354569
+window.Buffer = BufferPolyFill;
 
 const container = document.getElementById("root");
 if (!container) throw new Error("Failed to find the root element");
@@ -14,10 +15,8 @@ const root = ReactDOM.createRoot(container);
 
 root.render(
   <React.StrictMode>
-    <AptosWalletAdapterProvider plugins={wallets} autoConnect={true}>
-      <ColorModeScript />
-      <App />
-    </AptosWalletAdapterProvider>
+    <ColorModeScript />
+    <App />
   </React.StrictMode>,
 );
 
