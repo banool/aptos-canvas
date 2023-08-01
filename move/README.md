@@ -41,7 +41,7 @@ aptos move run --assume-yes --function-id `yq .profiles.$NETWORK.account < .apto
 ## Generating schema
 Using an Aptos CLI built from the `banool/dynamic-schema` branch.
 ```
-aptos move generate-schema --named-addresses addr=0x3 --schema-path ../frontend/src/canvas/generated
+aptos move generate-schema --named-addresses addr=0x3 --schema-path ./
 ```
 
 The from within `frontend/` run this:

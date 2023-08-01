@@ -1,4 +1,5 @@
 mod config;
+mod generated;
 mod processor;
 mod storage;
 

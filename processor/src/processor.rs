@@ -1,4 +1,6 @@
+use crate::generated::{_0x1__object__Object, _0x1__smart_table__Entry, _0x3__canvas_token__Color};
 use anyhow::{Context as AnyhowContext, Result};
+use aptos_move_graphql_scalars::Address;
 use aptos_processor_framework::{
     indexer_protos::transaction::v1::{
         transaction::TxnData, transaction_payload::Payload, write_set_change::Change,
@@ -8,6 +10,7 @@ use aptos_processor_framework::{
     ProcessingResult, ProcessorTrait,
 };
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use tracing::{debug, error, info, warn};
 
 const CANVAS_TOKEN_MODULE_NAME: &str = "canvas_token";
@@ -59,7 +62,6 @@ impl ProcessorTrait for CanvasProcessor {
 
         // Write pixels.
 
-
         Ok((start_version, end_version))
     }
 }
@@ -86,11 +88,6 @@ impl CanvasProcessor {
         let clean_entry_function_payload =
             get_clean_entry_function_payload(&entry_function_payload, 0);
 
-        let canvas_address = clean_entry_function_payload.arguments[0]
-            .as_str()
-            .context("Failed to get canvas address from payload")?
-            .to_string();
-
         let draw_function_id = EntryFunctionId {
             module: Some(MoveModuleId {
                 address: self.config.canvas_contract_address.clone(),
@@ -103,6 +100,16 @@ impl CanvasProcessor {
         if function_id != &draw_function_id {
             return Ok(None);
         }
+
+        eprintln!(
+            "canvas_address: {:?}",
+            clean_entry_function_payload.arguments
+        );
+
+        let first_arg = clean_entry_function_payload.arguments[0].clone();
+
+        let obj: _0x1__object__Object = serde_json::from_value(first_arg).unwrap();
+        let canvas_address = obj.inner;
 
         let draw_value_type = format!(
             "vector<0x1::smart_table::Entry<u64, {}::canvas_token::Color>>",
@@ -118,9 +125,12 @@ impl CanvasProcessor {
                     if data.value_type != draw_value_type {
                         continue;
                     }
-                    let value: Vec<MyWriteData> = serde_json::from_str(&data.value).unwrap();
-                    let index = value[0].key.parse::<u64>().unwrap();
-                    let color = value[0].value.clone();
+                    let values: Vec<Value> = serde_json::from_str(&data.value).unwrap();
+                    let value: _0x1__smart_table__Entry =
+                        serde_json::from_value(values.into_iter().next().unwrap()).unwrap();
+                    let index = value.key.as_str().unwrap().parse::<u64>().unwrap();
+                    let color: _0x3__canvas_token__Color =
+                        serde_json::from_value(value.value).unwrap();
                     return Ok(Some(Pixel {
                         canvas_address: canvas_address.clone(),
                         index,
@@ -135,26 +145,12 @@ impl CanvasProcessor {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
-struct MyWriteData {
-    hash: String,
-    key: String,
-    value: Color,
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize)]
-struct Color {
-    r: u64,
-    g: u64,
-    b: u64,
-}
-
 #[derive(Clone, Debug)]
 struct Pixel {
     /// The address of the object containing the canvas.
-    pub canvas_address: String,
+    pub canvas_address: Address,
     pub index: u64,
-    pub color: Color,
+    pub color: _0x3__canvas_token__Color,
 }
 
 // Functions we need:

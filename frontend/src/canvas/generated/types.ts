@@ -39,7 +39,7 @@ export type _0x1__account__Account = {
 
 export type _0x1__account__CapabilityOffer = {
   __typename?: "_0x1__account__CapabilityOffer";
-  for: Maybe<Scalars["Address"]>;
+  for: _0x1__option__Option;
 };
 
 export type _0x1__account__CoinRegisterEvent = {
@@ -404,7 +404,7 @@ export type _0x1__code__AllowedDep = {
 
 export type _0x1__code__ModuleMetadata = {
   __typename?: "_0x1__code__ModuleMetadata";
-  extension: Maybe<_0x1__copyable_any__Any>;
+  extension: _0x1__option__Option;
   name: Scalars["String"];
   source: Array<Scalars["U8"]>;
   source_map: Array<Scalars["U8"]>;
@@ -419,7 +419,7 @@ export type _0x1__code__PackageDep = {
 export type _0x1__code__PackageMetadata = {
   __typename?: "_0x1__code__PackageMetadata";
   deps: Array<_0x1__code__PackageDep>;
-  extension: Maybe<_0x1__copyable_any__Any>;
+  extension: _0x1__option__Option;
   manifest: Array<Scalars["U8"]>;
   modules: Array<_0x1__code__ModuleMetadata>;
   name: Scalars["String"];
@@ -457,7 +457,7 @@ export type _0x1__coin__CoinInfo = {
   __typename?: "_0x1__coin__CoinInfo";
   decimals: Scalars["U8"];
   name: Scalars["String"];
-  supply: Maybe<_0x1__optional_aggregator__OptionalAggregator>;
+  supply: _0x1__option__Option;
   symbol: Scalars["String"];
 };
 
@@ -732,7 +732,7 @@ export type _0x1__fungible_asset__MintRef = {
 export type _0x1__fungible_asset__Supply = {
   __typename?: "_0x1__fungible_asset__Supply";
   current: Scalars["U128"];
-  maximum: Maybe<Scalars["U128"]>;
+  maximum: _0x1__option__Option;
 };
 
 export type _0x1__fungible_asset__TransferRef = {
@@ -879,7 +879,7 @@ export type _0x1__multisig_account__MultisigAccount = {
   num_signatures_required: Scalars["U64"];
   owners: Array<Scalars["Address"]>;
   remove_owners_events: _0x1__event__EventHandle;
-  signer_cap: Maybe<_0x1__account__SignerCapability>;
+  signer_cap: _0x1__option__Option;
   transaction_execution_failed_events: _0x1__event__EventHandle;
   transactions: _0x1__table__Table;
   update_signature_required_events: _0x1__event__EventHandle;
@@ -909,8 +909,8 @@ export type _0x1__multisig_account__MultisigTransaction = {
   __typename?: "_0x1__multisig_account__MultisigTransaction";
   creation_time_secs: Scalars["U64"];
   creator: Scalars["Address"];
-  payload: Maybe<Array<Scalars["U8"]>>;
-  payload_hash: Maybe<Array<Scalars["U8"]>>;
+  payload: _0x1__option__Option;
+  payload_hash: _0x1__option__Option;
   votes: _0x1__simple_map__SimpleMap;
 };
 
@@ -1019,8 +1019,8 @@ export type _0x1__optional_aggregator__Integer = {
 
 export type _0x1__optional_aggregator__OptionalAggregator = {
   __typename?: "_0x1__optional_aggregator__OptionalAggregator";
-  aggregator: Maybe<_0x1__aggregator__Aggregator>;
-  integer: Maybe<_0x1__optional_aggregator__Integer>;
+  aggregator: _0x1__option__Option;
+  integer: _0x1__option__Option;
 };
 
 export type _0x1__pool_u64__Pool = {
@@ -1150,9 +1150,9 @@ export type _0x1__smart_table__SmartTable = {
 
 export type _0x1__smart_vector__SmartVector = {
   __typename?: "_0x1__smart_vector__SmartVector";
-  big_vec: Maybe<_0x1__big_vector__BigVector>;
-  bucket_size: Maybe<Scalars["U64"]>;
-  inline_capacity: Maybe<Scalars["U64"]>;
+  big_vec: _0x1__option__Option;
+  bucket_size: _0x1__option__Option;
+  inline_capacity: _0x1__option__Option;
   inline_vec: Array<Scalars["Any"]>;
 };
 
@@ -1551,7 +1551,7 @@ export type _0x1__transaction_fee__CollectedFeesPerBlock = {
   __typename?: "_0x1__transaction_fee__CollectedFeesPerBlock";
   amount: _0x1__coin__AggregatableCoin;
   burn_percentage: Scalars["U8"];
-  proposer: Maybe<Scalars["Address"]>;
+  proposer: _0x1__option__Option;
 };
 
 export type _0x1__transaction_validation__TransactionValidation = {
@@ -1717,7 +1717,7 @@ export type _0x1__vesting__VestingSchedule = {
 
 export type _0x1__voting__CreateProposalEvent = {
   __typename?: "_0x1__voting__CreateProposalEvent";
-  early_resolution_vote_threshold: Maybe<Scalars["U128"]>;
+  early_resolution_vote_threshold: _0x1__option__Option;
   execution_hash: Array<Scalars["U8"]>;
   expiration_secs: Scalars["U64"];
   metadata: _0x1__simple_map__SimpleMap;
@@ -1728,8 +1728,8 @@ export type _0x1__voting__CreateProposalEvent = {
 export type _0x1__voting__Proposal = {
   __typename?: "_0x1__voting__Proposal";
   creation_time_secs: Scalars["U64"];
-  early_resolution_vote_threshold: Maybe<Scalars["U128"]>;
-  execution_content: Maybe<Scalars["Address"]>;
+  early_resolution_vote_threshold: _0x1__option__Option;
+  execution_content: _0x1__option__Option;
   execution_hash: Array<Scalars["U8"]>;
   expiration_secs: Scalars["U64"];
   is_resolved: Scalars["Boolean"];
@@ -1791,7 +1791,8 @@ export type _0x3__canvas_token__Canvas = {
   created_at_s: Scalars["U64"];
   extend_ref: _0x1__object__ExtendRef;
   last_contribution_s: _0x1__smart_table__SmartTable;
-  pixels: Array<_0x3__canvas_token__Color>;
+  mutator_ref: _0x4__token__MutatorRef;
+  pixels: _0x1__smart_table__SmartTable;
 };
 
 export type _0x3__canvas_token__CanvasConfig = {
@@ -1799,12 +1800,12 @@ export type _0x3__canvas_token__CanvasConfig = {
   can_draw_for_s: Scalars["U64"];
   cost: Scalars["U64"];
   default_color: _0x3__canvas_token__Color;
-  funds_recipient: Maybe<Scalars["Address"]>;
-  height: Scalars["U32"];
+  funds_recipient: _0x1__option__Option;
+  height: Scalars["U64"];
   owner_is_super_admin: Scalars["Boolean"];
   palette: Array<_0x3__canvas_token__Color>;
   per_account_timeout_s: Scalars["U64"];
-  width: Scalars["U32"];
+  width: Scalars["U64"];
 };
 
 export type _0x3__canvas_token__Color = {
@@ -1822,18 +1823,18 @@ export type _0x4__aptos_token__AptosCollection = {
   mutable_token_properties: Scalars["Boolean"];
   mutable_token_uri: Scalars["Boolean"];
   mutable_uri: Scalars["Boolean"];
-  mutator_ref: Maybe<_0x4__collection__MutatorRef>;
-  royalty_mutator_ref: Maybe<_0x4__royalty__MutatorRef>;
+  mutator_ref: _0x1__option__Option;
+  royalty_mutator_ref: _0x1__option__Option;
   tokens_burnable_by_creator: Scalars["Boolean"];
   tokens_freezable_by_creator: Scalars["Boolean"];
 };
 
 export type _0x4__aptos_token__AptosToken = {
   __typename?: "_0x4__aptos_token__AptosToken";
-  burn_ref: Maybe<_0x4__token__BurnRef>;
-  mutator_ref: Maybe<_0x4__token__MutatorRef>;
+  burn_ref: _0x1__option__Option;
+  mutator_ref: _0x1__option__Option;
   property_mutator_ref: _0x4__property_map__MutatorRef;
-  transfer_ref: Maybe<_0x1__object__TransferRef>;
+  transfer_ref: _0x1__option__Option;
 };
 
 export type _0x4__collection__BurnEvent = {
@@ -1914,8 +1915,8 @@ export type _0x4__royalty__Royalty = {
 
 export type _0x4__token__BurnRef = {
   __typename?: "_0x4__token__BurnRef";
-  inner: Maybe<_0x1__object__DeleteRef>;
-  self: Maybe<Scalars["Address"]>;
+  inner: _0x1__option__Option;
+  self: _0x1__option__Option;
 };
 
 export type _0x4__token__MutationEvent = {
