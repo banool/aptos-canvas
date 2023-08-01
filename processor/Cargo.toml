@@ -12,6 +12,7 @@ repository = "https://github.com/banool/aptos-canvas"
 rust-version = "1.70"
 
 [dependencies]
+aptos-move-graphql-scalars = { path = "/Users/dport/a/core/crates/aptos-move-graphql/scalars" }
 aptos-processor-framework = { git = "https://github.com/aptos-labs/aptos-indexer-processors", branch = "banool/txn-parsers" }
 anyhow = "1.0.62"
 async-trait = "0.1.53"

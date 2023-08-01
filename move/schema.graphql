@@ -30,7 +30,7 @@ type _0x1__account__Account {
 }
 
 type _0x1__account__CapabilityOffer {
-	for: Address
+	for: _0x1__option__Option!
 }
 
 type _0x1__account__CoinRegisterEvent {
@@ -334,7 +334,7 @@ type _0x1__code__ModuleMetadata {
 	name: String!
 	source: [U8!]!
 	source_map: [U8!]!
-	extension: _0x1__copyable_any__Any
+	extension: _0x1__option__Option!
 }
 
 type _0x1__code__PackageDep {
@@ -350,7 +350,7 @@ type _0x1__code__PackageMetadata {
 	manifest: [U8!]!
 	modules: [_0x1__code__ModuleMetadata!]!
 	deps: [_0x1__code__PackageDep!]!
-	extension: _0x1__copyable_any__Any
+	extension: _0x1__option__Option!
 }
 
 type _0x1__code__PackageRegistry {
@@ -377,7 +377,7 @@ type _0x1__coin__CoinInfo {
 	name: String!
 	symbol: String!
 	decimals: U8!
-	supply: _0x1__optional_aggregator__OptionalAggregator
+	supply: _0x1__option__Option!
 }
 
 type _0x1__coin__CoinStore {
@@ -608,7 +608,7 @@ type _0x1__fungible_asset__MintRef {
 
 type _0x1__fungible_asset__Supply {
 	current: U128!
-	maximum: U128
+	maximum: _0x1__option__Option!
 }
 
 type _0x1__fungible_asset__TransferRef {
@@ -727,7 +727,7 @@ type _0x1__multisig_account__MultisigAccount {
 	transactions: _0x1__table__Table!
 	last_executed_sequence_number: U64!
 	next_sequence_number: U64!
-	signer_cap: _0x1__account__SignerCapability
+	signer_cap: _0x1__option__Option!
 	metadata: _0x1__simple_map__SimpleMap!
 	add_owners_events: _0x1__event__EventHandle!
 	remove_owners_events: _0x1__event__EventHandle!
@@ -757,8 +757,8 @@ type _0x1__multisig_account__MultisigAccountCreationWithAuthKeyRevocationMessage
 }
 
 type _0x1__multisig_account__MultisigTransaction {
-	payload: [U8!]
-	payload_hash: [U8!]
+	payload: _0x1__option__Option!
+	payload_hash: _0x1__option__Option!
 	votes: _0x1__simple_map__SimpleMap!
 	creator: Address!
 	creation_time_secs: U64!
@@ -851,8 +851,8 @@ type _0x1__optional_aggregator__Integer {
 }
 
 type _0x1__optional_aggregator__OptionalAggregator {
-	aggregator: _0x1__aggregator__Aggregator
-	integer: _0x1__optional_aggregator__Integer
+	aggregator: _0x1__option__Option!
+	integer: _0x1__option__Option!
 }
 
 type _0x1__pool_u64__Pool {
@@ -961,9 +961,9 @@ type _0x1__smart_table__SmartTable {
 
 type _0x1__smart_vector__SmartVector {
 	inline_vec: [Any!]!
-	big_vec: _0x1__big_vector__BigVector
-	inline_capacity: U64
-	bucket_size: U64
+	big_vec: _0x1__option__Option!
+	inline_capacity: _0x1__option__Option!
+	bucket_size: _0x1__option__Option!
 }
 
 type _0x1__stake__AddStakeEvent {
@@ -1303,7 +1303,7 @@ type _0x1__transaction_fee__AptosCoinCapabilities {
 
 type _0x1__transaction_fee__CollectedFeesPerBlock {
 	amount: _0x1__coin__AggregatableCoin!
-	proposer: Address
+	proposer: _0x1__option__Option!
 	burn_percentage: U8!
 }
 
@@ -1451,7 +1451,7 @@ type _0x1__vesting__VestingSchedule {
 
 type _0x1__voting__CreateProposalEvent {
 	proposal_id: U64!
-	early_resolution_vote_threshold: U128
+	early_resolution_vote_threshold: _0x1__option__Option!
 	execution_hash: [U8!]!
 	expiration_secs: U64!
 	metadata: _0x1__simple_map__SimpleMap!
@@ -1460,13 +1460,13 @@ type _0x1__voting__CreateProposalEvent {
 
 type _0x1__voting__Proposal {
 	proposer: Address!
-	execution_content: Address
+	execution_content: _0x1__option__Option!
 	metadata: _0x1__simple_map__SimpleMap!
 	creation_time_secs: U64!
 	execution_hash: [U8!]!
 	min_vote_threshold: U128!
 	expiration_secs: U64!
-	early_resolution_vote_threshold: U128
+	early_resolution_vote_threshold: _0x1__option__Option!
 	yes_votes: U128!
 	no_votes: U128!
 	is_resolved: Boolean!
@@ -1510,23 +1510,24 @@ type _0x3__canvas_collection__CollectionRefs {
 
 type _0x3__canvas_token__Canvas {
 	config: _0x3__canvas_token__CanvasConfig!
-	pixels: [_0x3__canvas_token__Color!]!
+	pixels: _0x1__smart_table__SmartTable!
 	last_contribution_s: _0x1__smart_table__SmartTable!
 	allowlisted_artists: _0x626b96faa14f38242ec223e214101791920325665f4f7fc25f8865d6338b0053__simple_set__SimpleSet!
 	blocklisted_artists: _0x626b96faa14f38242ec223e214101791920325665f4f7fc25f8865d6338b0053__simple_set__SimpleSet!
 	admins: _0x626b96faa14f38242ec223e214101791920325665f4f7fc25f8865d6338b0053__simple_set__SimpleSet!
-	extend_ref: _0x1__object__ExtendRef!
 	created_at_s: U64!
+	extend_ref: _0x1__object__ExtendRef!
+	mutator_ref: _0x4__token__MutatorRef!
 }
 
 type _0x3__canvas_token__CanvasConfig {
-	width: U32!
-	height: U32!
+	width: U64!
+	height: U64!
 	per_account_timeout_s: U64!
 	can_draw_for_s: U64!
 	palette: [_0x3__canvas_token__Color!]!
 	cost: U64!
-	funds_recipient: Address
+	funds_recipient: _0x1__option__Option!
 	default_color: _0x3__canvas_token__Color!
 	owner_is_super_admin: Boolean!
 }
@@ -1538,8 +1539,8 @@ type _0x3__canvas_token__Color {
 }
 
 type _0x4__aptos_token__AptosCollection {
-	mutator_ref: _0x4__collection__MutatorRef
-	royalty_mutator_ref: _0x4__royalty__MutatorRef
+	mutator_ref: _0x1__option__Option!
+	royalty_mutator_ref: _0x1__option__Option!
 	mutable_description: Boolean!
 	mutable_uri: Boolean!
 	mutable_token_description: Boolean!
@@ -1551,9 +1552,9 @@ type _0x4__aptos_token__AptosCollection {
 }
 
 type _0x4__aptos_token__AptosToken {
-	burn_ref: _0x4__token__BurnRef
-	transfer_ref: _0x1__object__TransferRef
-	mutator_ref: _0x4__token__MutatorRef
+	burn_ref: _0x1__option__Option!
+	transfer_ref: _0x1__option__Option!
+	mutator_ref: _0x1__option__Option!
 	property_mutator_ref: _0x4__property_map__MutatorRef!
 }
 
@@ -1622,8 +1623,8 @@ type _0x4__royalty__Royalty {
 }
 
 type _0x4__token__BurnRef {
-	inner: _0x1__object__DeleteRef
-	self: Address
+	inner: _0x1__option__Option!
+	self: _0x1__option__Option!
 }
 
 type _0x4__token__MutationEvent {
