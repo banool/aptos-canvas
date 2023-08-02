@@ -1,4 +1,4 @@
-use crate::generated::{_0x1__object__Object, _0x1__smart_table__Entry, _0x3__canvas_token__Color};
+use crate::generated::{Object, Entry, Color};
 use anyhow::{Context as AnyhowContext, Result};
 use aptos_move_graphql_scalars::Address;
 use aptos_processor_framework::{
@@ -108,7 +108,7 @@ impl CanvasProcessor {
 
         let first_arg = clean_entry_function_payload.arguments[0].clone();
 
-        let obj: _0x1__object__Object = serde_json::from_value(first_arg).unwrap();
+        let obj: Object = serde_json::from_value(first_arg).unwrap();
         let canvas_address = obj.inner;
 
         let draw_value_type = format!(
@@ -126,10 +126,10 @@ impl CanvasProcessor {
                         continue;
                     }
                     let values: Vec<Value> = serde_json::from_str(&data.value).unwrap();
-                    let value: _0x1__smart_table__Entry =
+                    let value: Entry =
                         serde_json::from_value(values.into_iter().next().unwrap()).unwrap();
                     let index = value.key.as_str().unwrap().parse::<u64>().unwrap();
-                    let color: _0x3__canvas_token__Color =
+                    let color: Color =
                         serde_json::from_value(value.value).unwrap();
                     return Ok(Some(Pixel {
                         canvas_address: canvas_address.clone(),
@@ -150,7 +150,7 @@ struct Pixel {
     /// The address of the object containing the canvas.
     pub canvas_address: Address,
     pub index: u64,
-    pub color: _0x3__canvas_token__Color,
+    pub color: Color,
 }
 
 // Functions we need:

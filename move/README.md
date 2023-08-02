@@ -39,12 +39,17 @@ aptos move run --assume-yes --function-id `yq .profiles.$NETWORK.account < .apto
 
 
 ## Generating schema
-Using an Aptos CLI built from the `banool/dynamic-schema` branch.
+Using an Aptos CLI built from the `banool/rust-move-codegen` branch.
 ```
-aptos move generate-schema --named-addresses addr=0x3 --schema-path ./
+aptos move generate schema --named-addresses addr=0x3 --schema-path ./
 ```
 
 The from within `frontend/` run this:
 ```
 pnpm generate-canvas-types
+```
+
+For Rust code, you can generate it with the CLI directly. Use this:
+```
+aptos move generate rust --named-addresses addr=0x3 --generate-to ../processor/src/generated
 ```
