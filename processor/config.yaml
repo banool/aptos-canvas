@@ -5,3 +5,6 @@ dispatcher_config:
 common_storage_config:
 canvas_processor_config:
   canvas_contract_address: "0xfbc45a84bd65b000d259ac91a8f314c93313e6d6787dbac71bdaf044f661a4f8"
+canvas_storage_config:
+  canvas_storage_directory: /tmp/canvases
+api_config:
