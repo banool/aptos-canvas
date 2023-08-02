@@ -1,4 +1,6 @@
-use crate::processor::CanvasProcessorConfig;
+use crate::{
+    api::ApiConfig, canvas_storage::MmapCanvasStorageConfig, processor::CanvasProcessorConfig,
+};
 use anyhow::Context as AnyhowContext;
 use aptos_processor_framework::{
     CommonStorageConfig, DispatcherConfig, GrpcStreamSubscriberConfig,
@@ -19,6 +21,8 @@ pub struct Config {
     pub dispatcher_config: DispatcherConfig,
     pub common_storage_config: CommonStorageConfig,
     pub canvas_processor_config: CanvasProcessorConfig,
+    pub canvas_storage_config: MmapCanvasStorageConfig,
+    pub api_config: ApiConfig,
 }
 
 impl TryFrom<Args> for Config {
