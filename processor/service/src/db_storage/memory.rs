@@ -11,6 +11,7 @@ pub struct MemoryStorage {
 }
 
 impl MemoryStorage {
+    #[allow(dead_code)]
     pub fn new() -> Self {
         Self {
             chain_id: Arc::new(Mutex::new(None)),
