@@ -6,7 +6,7 @@ use tokio::sync::Mutex;
 /// An in-memory, transient storage implementation.
 #[derive(Debug)]
 pub struct MemoryStorage {
-    chain_id: Arc<Mutex<Option<u64>>>,
+    chain_id: Arc<Mutex<Option<u8>>>,
     last_processed_version: Arc<Mutex<Option<u64>>>,
 }
 
@@ -21,11 +21,11 @@ impl MemoryStorage {
 
 #[async_trait::async_trait]
 impl StorageTrait for MemoryStorage {
-    async fn read_chain_id(&self) -> Result<Option<u64>> {
+    async fn read_chain_id(&self) -> Result<Option<u8>> {
         Ok(*self.chain_id.lock().await)
     }
 
-    async fn write_chain_id(&self, chain_id: u64) -> Result<()> {
+    async fn write_chain_id(&self, chain_id: u8) -> Result<()> {
         *self.chain_id.lock().await = Some(chain_id);
         Ok(())
     }
@@ -34,7 +34,11 @@ impl StorageTrait for MemoryStorage {
         Ok(*self.last_processed_version.lock().await)
     }
 
-    async fn write_last_processed_version(&self, version: u64) -> Result<()> {
+    async fn write_last_processed_version(
+        &self,
+        _processor_name: &str,
+        version: u64,
+    ) -> Result<()> {
         *self.last_processed_version.lock().await = Some(version);
         Ok(())
     }

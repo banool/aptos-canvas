@@ -1,5 +1,6 @@
 use crate::{
-    api::ApiConfig, canvas_storage::MmapCanvasStorageConfig, processor::CanvasProcessorConfig,
+    api::ApiConfig, canvas_storage::MmapCanvasStorageConfig, db_storage::PostgresStorageConfig,
+    processor::CanvasProcessorConfig,
 };
 use anyhow::Context as AnyhowContext;
 use aptos_processor_framework::{
@@ -22,6 +23,7 @@ pub struct Config {
     pub common_storage_config: CommonStorageConfig,
     pub canvas_processor_config: CanvasProcessorConfig,
     pub canvas_storage_config: MmapCanvasStorageConfig,
+    pub postgres_storage_config: PostgresStorageConfig,
     pub api_config: ApiConfig,
 }
 

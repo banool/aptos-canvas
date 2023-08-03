@@ -8,3 +8,5 @@ canvas_processor_config:
 canvas_storage_config:
   canvas_storage_directory: /tmp/canvases
 api_config:
+postgres_storage_config:
+  connection_string: "postgres://dport:@localhost:5432/canvas"

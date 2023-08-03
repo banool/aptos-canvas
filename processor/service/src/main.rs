@@ -1,14 +1,13 @@
 mod api;
 mod canvas_storage;
 mod config;
+mod db_storage;
 mod generated;
 mod processor;
-mod db_storage;
 
 use crate::{
     config::{Args, Config},
     processor::CanvasProcessor,
-    db_storage::MemoryStorage,
 };
 use anyhow::{Context as AnyhowContext, Result};
 use api::Api;
@@ -17,6 +16,7 @@ use aptos_processor_framework::{
 };
 use canvas_storage::MmapCanvasStorage;
 use clap::Parser;
+use db_storage::PostgresStorage;
 use std::sync::Arc;
 use tracing::Level;
 use tracing_subscriber::FmtSubscriber;
@@ -41,7 +41,11 @@ async fn main() -> Result<()> {
     // Build the storage, which is what lets us read and write to the DB. This is
     // generally necessary for all processors since they need somewhere to at least
     // keep track of the last version they processed.
-    let storage = Arc::new(MemoryStorage::new());
+    let storage = Arc::new(
+        PostgresStorage::new(config.postgres_storage_config.clone())
+            .await
+            .context("Failed to initialize Postgres storage")?,
+    );
 
     // Build the canvas processor, which is what processes transactions and updates the
     // canvas storage and the DB.

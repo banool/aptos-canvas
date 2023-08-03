@@ -1,8 +1,8 @@
-[package]
-name = "aptos-canvas-processor"
-description = "todo"
-version = "0.1.0"
+[workspace]
+resolver = "2"
+members = ["service", "entities", "migrations"]
 
+[workspace.package]
 authors = ["Daniel Porteous <daniel@dport.me>"]
 edition = "2021"
 homepage = "https://github.com/banool/aptos-canvas"
@@ -11,14 +11,21 @@ publish = false
 repository = "https://github.com/banool/aptos-canvas"
 rust-version = "1.71"
 
-[dependencies]
+[workspace.dependencies]
+# Internal
+service = { path = "service" }
+entities = { path = "entities" }
+migrations = { path = "migrations" }
+
+# External
 aptos-move-graphql-scalars = { path = "/Users/dport/a/core/crates/aptos-move-graphql/scalars" }
 aptos-processor-framework = { git = "https://github.com/aptos-labs/aptos-indexer-processors", branch = "banool/txn-parsers" }
 anyhow = "1.0.62"
 async-trait = "0.1.53"
 clap = { version = "4.3.5", features = ["derive", "unstable-styles"] }
 futures = "0.3.24"
-sea-orm = { version = "0.11.3", features = [ "sqlx-postgres", "runtime-tokio-rustls", "macros" ] }
+sea-orm = { version = "0.12.1", features = [ "sqlx-postgres", "runtime-tokio-rustls", "macros" ] }
+sea-orm-migration = { version = "0.12.1", features = [ "runtime-tokio-rustls", "sqlx-postgres" ] }
 cloud-storage = { version = "0.11.1", features = ["global-client"] }
 memmap2 = "0.7.1"
 log = "0.4.17"
