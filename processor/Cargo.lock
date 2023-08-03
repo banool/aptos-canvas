@@ -134,7 +134,7 @@ checksum = "3b13c32d80ecc7ab747b80c3784bce54ee8a7a0cc4fbda9bf4cda2cf6fe90854"
 [[package]]
 name = "aptos-indexer-protos"
 version = "1.0.9"
-source = "git+https://github.com/aptos-labs/aptos-indexer-processors?branch=banool/txn-parsers#189e44c59cc4a4016fef9a03174a633c18b60125"
+source = "git+https://github.com/aptos-labs/aptos-indexer-processors?branch=banool/txn-parsers#8a9214da1c5a4873d668da0fe1cf6c6efa1ab1d4"
 dependencies = [
  "pbjson",
  "prost",
@@ -145,6 +145,7 @@ dependencies = [
 [[package]]
 name = "aptos-move-graphql-scalars"
 version = "0.1.0"
+source = "git+https://github.com/aptos-labs/aptos-core?branch=banool/custom-scalars#de7bf04e6e69197068016b00bdedaf6e0f61ff99"
 dependencies = [
  "anyhow",
  "move-core-types",
@@ -156,7 +157,7 @@ dependencies = [
 [[package]]
 name = "aptos-moving-average"
 version = "0.1.0"
-source = "git+https://github.com/aptos-labs/aptos-indexer-processors?branch=banool/txn-parsers#189e44c59cc4a4016fef9a03174a633c18b60125"
+source = "git+https://github.com/aptos-labs/aptos-indexer-processors?branch=banool/txn-parsers#8a9214da1c5a4873d668da0fe1cf6c6efa1ab1d4"
 dependencies = [
  "chrono",
 ]
@@ -164,7 +165,7 @@ dependencies = [
 [[package]]
 name = "aptos-processor-framework"
 version = "0.1.0"
-source = "git+https://github.com/aptos-labs/aptos-indexer-processors?branch=banool/txn-parsers#189e44c59cc4a4016fef9a03174a633c18b60125"
+source = "git+https://github.com/aptos-labs/aptos-indexer-processors?branch=banool/txn-parsers#8a9214da1c5a4873d668da0fe1cf6c6efa1ab1d4"
 dependencies = [
  "anyhow",
  "aptos-indexer-protos",
@@ -184,7 +185,7 @@ dependencies = [
 [[package]]
 name = "aptos-txn-parsers"
 version = "0.1.0"
-source = "git+https://github.com/aptos-labs/aptos-indexer-processors?branch=banool/txn-parsers#189e44c59cc4a4016fef9a03174a633c18b60125"
+source = "git+https://github.com/aptos-labs/aptos-indexer-processors?branch=banool/txn-parsers#8a9214da1c5a4873d668da0fe1cf6c6efa1ab1d4"
 dependencies = [
  "aptos-indexer-protos",
  "bcs",
@@ -1733,6 +1734,7 @@ dependencies = [
 [[package]]
 name = "move-core-types"
 version = "0.0.4"
+source = "git+https://github.com/aptos-labs/aptos-core?branch=banool/custom-scalars#de7bf04e6e69197068016b00bdedaf6e0f61ff99"
 dependencies = [
  "anyhow",
  "bcs",

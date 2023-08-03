@@ -18,7 +18,7 @@ entities = { path = "entities" }
 migrations = { path = "migrations" }
 
 # External
-aptos-move-graphql-scalars = { path = "/Users/dport/a/core/crates/aptos-move-graphql/scalars" }
+aptos-move-graphql-scalars = { git = "https://github.com/aptos-labs/aptos-core", branch = "banool/custom-scalars" }
 aptos-processor-framework = { git = "https://github.com/aptos-labs/aptos-indexer-processors", branch = "banool/txn-parsers" }
 anyhow = "1.0.62"
 async-trait = "0.1.53"
