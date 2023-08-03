@@ -3,8 +3,9 @@ use anyhow::{Context, Result};
 use aptos_move_graphql_scalars::Address;
 use poem::{
     get, handler,
+    http::Method,
     listener::TcpListener,
-    middleware::Tracing,
+    middleware::{Cors, Tracing},
     web::{Data, Path},
     EndpointExt, Response, Route, Server,
 };
@@ -59,10 +60,12 @@ impl Api {
 
     pub async fn start_api(&self) -> Result<()> {
         info!("API server starting");
+        let cors = Cors::new().allow_methods(vec![Method::GET]);
         let app = Route::new()
             .at("/", get(root))
             .at("/media/:address", get(get_image))
             .data(self.canvas_storage.clone())
+            .with(cors)
             .with(Tracing);
         Server::new(TcpListener::bind((
             self.config.listen_address.as_str(),
