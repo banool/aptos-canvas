@@ -1,9 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
-import {
-  _0x3__canvas_token__Canvas,
-  _0x3__canvas_token__Color,
-} from "../canvas/generated/types";
+import { Token, Canvas, Color } from "../canvas/generated/types";
 import {
   Box,
   Button,
@@ -26,13 +23,17 @@ import { useParams } from "react-router-dom";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { HexColorPicker } from "react-colorful";
 import { draw } from "../api/transactions";
+import { useQuery } from "react-query";
+import { REFETCH_INTERVAL_MS } from "../api/helpers";
 
 export const MyCanvas = ({
   canvasData,
+  tokenData,
   writeable,
   canvasVh = 88,
 }: {
-  canvasData: _0x3__canvas_token__Canvas;
+  canvasData: Canvas;
+  tokenData: Token;
   writeable: boolean;
   canvasVh?: number;
 }) => {
@@ -43,12 +44,26 @@ export const MyCanvas = ({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const overlayRef = useRef<HTMLCanvasElement | null>(null);
 
-  const [pixels, setPixels] = useState(canvasData.pixels);
+  const { data: pngData, error: pngError } = useQuery(
+    ["canvasPng", tokenData.uri],
+    () => fetch(tokenData.uri).then((res) => res.blob()),
+    {
+      refetchOnWindowFocus: false,
+      refetchInterval: REFETCH_INTERVAL_MS,
+    },
+  );
+
+  const [pixels, setPixels] = useState<Color[]>([]);
+
+  const canvasWidth = parseInt(canvasData.config.width);
+  const canvasHeight = parseInt(canvasData.config.height);
 
   // Make sure we update the pixels when the canvasData changes.
   useEffect(() => {
-    setPixels(canvasData.pixels);
-  }, [canvasData.pixels]);
+    pngToPixels(pngData ?? new Blob()).then((pixels) => {
+      setPixels(pixels);
+    });
+  }, [pngData]);
 
   const parentRef = useRef<HTMLDivElement>(null);
 
@@ -91,10 +106,10 @@ export const MyCanvas = ({
   const getOffsets = useCallback(() => {
     const parent = parentRef.current;
     if (!parent || scale === undefined) return;
-    const x = (parent.clientWidth / scale - canvasData.config.width) / 2;
-    const y = (parent.clientHeight / scale - canvasData.config.height) / 2;
+    const x = (parent.clientWidth / scale - canvasWidth) / 2;
+    const y = (parent.clientHeight / scale - canvasHeight) / 2;
     return { x, y };
-  }, [canvasData.config.height, canvasData.config.width, scale]);
+  }, [canvasHeight, canvasWidth, scale]);
 
   useEffect(() => {
     const parent = parentRef.current;
@@ -105,14 +120,14 @@ export const MyCanvas = ({
     const parentWidth = parent.clientWidth;
     const parentHeight = parent.clientHeight;
 
-    const scaleX = parentWidth / canvasData.config.width;
-    const scaleY = parentHeight / canvasData.config.height;
+    const scaleX = parentWidth / canvasWidth;
+    const scaleY = parentHeight / canvasHeight;
 
     // Use the smaller scale factor to ensure the canvas fits within the parent without stretching
     let s = Math.min(scaleX, scaleY) * initialScaleOffset;
     setInitialScale(s);
     setScale(s);
-  }, [canvasData.config.height, canvasData.config.width, parentRef]);
+  }, [canvasHeight, canvasWidth, parentRef]);
 
   // This one uses the native DOM API WheelEvent, not the React synthetic event.
   // https://stackoverflow.com/a/67258046/3846032
@@ -171,8 +186,8 @@ export const MyCanvas = ({
     const margin = 1 - pixelSize;
 
     pixels.forEach((color, index) => {
-      const x = (index % canvasData.config.width) + offsets.x;
-      const y = Math.floor(index / canvasData.config.width) + offsets.y;
+      const x = (index % canvasWidth) + offsets.x;
+      const y = Math.floor(index / canvasWidth) + offsets.y;
 
       // Draw underneath the squares so a margin appears.
       context.fillStyle = marginColor;
@@ -232,14 +247,7 @@ export const MyCanvas = ({
       );
 
       // Return if the cursor is outside the canvas.
-      if (
-        !(
-          x >= 0 &&
-          y >= 0 &&
-          x < canvasData.config.width &&
-          y < canvasData.config.height
-        )
-      ) {
+      if (!(x >= 0 && y >= 0 && x < canvasWidth && y < canvasHeight)) {
         return;
       }
 
@@ -298,14 +306,7 @@ export const MyCanvas = ({
     const y = Math.floor((e.clientY - rect.top - pan.y) / scale - offsets.y);
 
     // Quit out here if the click is outside the canvas.
-    if (
-      !(
-        x >= 0 &&
-        y >= 0 &&
-        x < canvasData.config.width &&
-        y < canvasData.config.height
-      )
-    ) {
+    if (!(x >= 0 && y >= 0 && x < canvasWidth && y < canvasHeight)) {
       return;
     }
 
@@ -330,6 +331,8 @@ export const MyCanvas = ({
 
   const onSubmitDraw = async () => {
     setPopoverCanBeClosed(false);
+
+    const originalColor = pixels[squareToDraw.y * canvasWidth + squareToDraw.x];
 
     try {
       const out = hexToRgb(colorToSubmit);
@@ -365,7 +368,7 @@ export const MyCanvas = ({
       });
       setColorToSubmit(marginColor);
       // On failure, reset the color of the square.
-      resetSquare(squareToDraw.x, squareToDraw.y);
+      resetSquare(squareToDraw.x, squareToDraw.y, originalColor);
     } finally {
       setPopoverCanBeClosed(true);
       onClose();
@@ -381,8 +384,7 @@ export const MyCanvas = ({
 
   const setSquare = (x: number, y: number, color: string) => {
     const newPixels = [...pixels];
-    const pixelIndex =
-      squareToDraw.y * canvasData.config.width + squareToDraw.x;
+    const pixelIndex = squareToDraw.y * canvasWidth + squareToDraw.x;
     const destructured = hexToRgb(color);
     if (destructured === null) {
       return;
@@ -392,10 +394,10 @@ export const MyCanvas = ({
     setPixels(newPixels);
   };
 
-  const resetSquare = (x: number, y: number) => {
+  const resetSquare = (x: number, y: number, originalColor: Color) => {
     const newPixels = [...pixels];
-    const pixelIndex = y * canvasData.config.width + x;
-    newPixels[pixelIndex] = canvasData.pixels[pixelIndex];
+    const pixelIndex = y * canvasWidth + x;
+    newPixels[pixelIndex] = originalColor;
     setPixels(newPixels);
   };
 
@@ -415,8 +417,8 @@ export const MyCanvas = ({
         <canvas
           ref={canvasRef}
           style={{ position: "absolute", cursor: "pointer" }}
-          width={canvasData.config.width * (scale ?? 0)}
-          height={canvasData.config.height * (scale ?? 0)}
+          width={canvasWidth * (scale ?? 0)}
+          height={canvasHeight * (scale ?? 0)}
           onMouseMove={writeable ? handleMouseMove : undefined}
           onMouseDown={writeable ? handleMouseDown : undefined}
           onMouseUp={writeable ? handleMouseUp : undefined}
@@ -424,8 +426,8 @@ export const MyCanvas = ({
         <canvas
           ref={overlayRef}
           style={{ position: "absolute", pointerEvents: "none" }}
-          width={canvasData.config.width * (scale ?? 0)}
-          height={canvasData.config.height * (scale ?? 0)}
+          width={canvasWidth * (scale ?? 0)}
+          height={canvasHeight * (scale ?? 0)}
         />
         {writeable && (
           <div style={{ position: "absolute", bottom: 20, right: 20 }}>
@@ -460,7 +462,11 @@ export const MyCanvas = ({
           onClose={() => {
             onClose();
             setPopoverPos({ left: 0, top: 0 });
-            resetSquare(squareToDraw.x, squareToDraw.y);
+            resetSquare(
+              squareToDraw.x,
+              squareToDraw.y,
+              pixels[squareToDraw.y * canvasWidth + squareToDraw.x],
+            );
           }}
           closeOnBlur={popoverCanBeClosed}
           closeOnEsc={popoverCanBeClosed}
@@ -521,4 +527,49 @@ function hexToRgb(hex: string) {
         b: parseInt(result[3], 16),
       }
     : null;
+}
+
+// TODO: It'd be better to just write the PNG to the main canvas directly.
+function pngToPixels(pngData: Blob): Promise<Color[]> {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    const url = URL.createObjectURL(pngData);
+
+    image.onload = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
+      if (ctx === undefined) {
+        resolve([]);
+        return;
+      }
+
+      canvas.width = image.width;
+      canvas.height = image.height;
+
+      ctx!.drawImage(image, 0, 0);
+      const imageData = ctx!.getImageData(0, 0, canvas.width, canvas.height);
+      const pixels = [];
+
+      for (let i = 0; i < imageData.data.length; i += 4) {
+        const color = {
+          r: imageData.data[i],
+          g: imageData.data[i + 1],
+          b: imageData.data[i + 2],
+        };
+
+        pixels.push(color);
+      }
+
+      URL.revokeObjectURL(url);
+      resolve(pixels); // Resolve the Promise with the pixels array
+    };
+
+    image.onerror = (err) => {
+      // Reject the Promise if there's an error
+      reject(err);
+    };
+
+    image.src = url;
+  });
 }

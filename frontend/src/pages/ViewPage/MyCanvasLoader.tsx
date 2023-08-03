@@ -4,9 +4,9 @@ import { getModuleId, useGlobalState } from "../../GlobalState";
 import { NetworkMismatchPage } from "../../components/NetworkMismatchPage";
 import { useGetAccountResources } from "../../api/hooks/useGetAccountResources";
 import {
-  _0x1__object__ObjectCore,
-  _0x4__token__Token,
-  _0x3__canvas_token__Canvas,
+  ObjectCore,
+  Token,
+  Canvas,
 } from "../../canvas/generated/types";
 import { MyCanvas } from "../../components/MyCanvas";
 
@@ -74,15 +74,15 @@ export const MyCanvasLoader = ({
     );
   }
 
-  const canvasData: _0x3__canvas_token__Canvas = canvasResource.data as any;
-  const objectCoreData: _0x3__canvas_token__Canvas = objectCoreResource!
-    .data as any;
-  const tokenData: _0x3__canvas_token__Canvas = tokenResource!.data as any;
+  const canvasData: Canvas = canvasResource.data as any;
+  const objectCoreData: ObjectCore  = objectCoreResource!.data as any;
+  const tokenData: Token = tokenResource!.data as any;
 
   return (
     <Box>
       <MyCanvas
         canvasData={canvasData}
+        tokenData={tokenData}
         writeable={writeable}
         canvasVh={canvasVh}
       />
