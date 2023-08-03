@@ -168,6 +168,7 @@ impl CanvasProcessor {
                     let values: Vec<Value> = serde_json::from_str(&data.value).unwrap();
                     let value: Entry = serde_json::from_value(values.into_iter().next().unwrap())
                         .context("Failed to parse as Entry")?;
+                    info!("Data: {:?}", data);
                     let index = value.key.as_str().unwrap().parse::<u64>().unwrap();
                     let color: Color = serde_json::from_value(value.value).unwrap();
                     return Ok(Some(WritePixelIntent {
