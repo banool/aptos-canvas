@@ -21,3 +21,4 @@ To generate entities (which uses the data in the DB):
 sea-orm-cli generate entity --lib --seaography -o entities/src  --database-url postgres://dport:@localhost:5432/canvas
 ```
 
+todo make it possible to disable running the processor and just run the API
