@@ -52,7 +52,6 @@ impl StorageTrait for PostgresStorage {
         let query = chain_id::Entity::insert(new_chain_id)
             .on_conflict(
                 OnConflict::column(chain_id::Column::ChainId)
-                    .update_column(chain_id::Column::ChainId)
                     .value(chain_id::Column::ChainId, chain_id)
                     .to_owned(),
             )

@@ -1,0 +1,13 @@
+stream_subscriber_config:
+  indexer_grpc_data_service_address: 35.223.137.149:50051
+  auth_token: "todo"
+dispatcher_config:
+common_storage_config:
+  initial_starting_version: 
+canvas_processor_config:
+  canvas_contract_address: ""
+canvas_storage_config:
+  canvas_storage_directory: /var/canvases
+api_config:
+postgres_storage_config:
+  connection_string: "postgres://canvas:@localhost:5432/canvas"

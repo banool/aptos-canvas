@@ -1,6 +1,7 @@
 # Mine
 *.swp
 /pages
+configs/testnet.yaml
 
 # From https://github.com/rust-lang/rust/blob/master/.gitignore
 *~
