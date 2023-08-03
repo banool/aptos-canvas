@@ -26,225 +26,867 @@ export type Scalars = {
   U256: string;
 };
 
-export type _0x1__account__Account = {
-  __typename?: "_0x1__account__Account";
-  authentication_key: Array<Scalars["U8"]>;
-  coin_register_events: _0x1__event__EventHandle;
-  guid_creation_num: Scalars["U64"];
-  key_rotation_events: _0x1__event__EventHandle;
-  rotation_capability_offer: _0x1__account__CapabilityOffer;
-  sequence_number: Scalars["U64"];
-  signer_capability_offer: _0x1__account__CapabilityOffer;
-};
-
-export type _0x1__account__CapabilityOffer = {
-  __typename?: "_0x1__account__CapabilityOffer";
-  for: _0x1__option__Option;
-};
-
-export type _0x1__account__CoinRegisterEvent = {
-  __typename?: "_0x1__account__CoinRegisterEvent";
-  type_info: _0x1__type_info__TypeInfo;
-};
-
-export type _0x1__account__KeyRotationEvent = {
-  __typename?: "_0x1__account__KeyRotationEvent";
-  new_authentication_key: Array<Scalars["U8"]>;
-  old_authentication_key: Array<Scalars["U8"]>;
-};
-
-export type _0x1__account__OriginatingAddress = {
-  __typename?: "_0x1__account__OriginatingAddress";
-  address_map: _0x1__table__Table;
-};
-
-export type _0x1__account__RotationCapability = {
-  __typename?: "_0x1__account__RotationCapability";
-  account: Scalars["Address"];
-};
-
-export type _0x1__account__RotationCapabilityOfferProofChallenge = {
-  __typename?: "_0x1__account__RotationCapabilityOfferProofChallenge";
-  recipient_address: Scalars["Address"];
-  sequence_number: Scalars["U64"];
-};
-
-export type _0x1__account__RotationCapabilityOfferProofChallengeV2 = {
-  __typename?: "_0x1__account__RotationCapabilityOfferProofChallengeV2";
-  chain_id: Scalars["U8"];
-  recipient_address: Scalars["Address"];
-  sequence_number: Scalars["U64"];
-  source_address: Scalars["Address"];
-};
-
-export type _0x1__account__RotationProofChallenge = {
-  __typename?: "_0x1__account__RotationProofChallenge";
-  current_auth_key: Scalars["Address"];
-  new_public_key: Array<Scalars["U8"]>;
-  originator: Scalars["Address"];
-  sequence_number: Scalars["U64"];
-};
-
-export type _0x1__account__SignerCapability = {
-  __typename?: "_0x1__account__SignerCapability";
-  account: Scalars["Address"];
-};
-
-export type _0x1__account__SignerCapabilityOfferProofChallenge = {
-  __typename?: "_0x1__account__SignerCapabilityOfferProofChallenge";
-  recipient_address: Scalars["Address"];
-  sequence_number: Scalars["U64"];
-};
-
-export type _0x1__account__SignerCapabilityOfferProofChallengeV2 = {
-  __typename?: "_0x1__account__SignerCapabilityOfferProofChallengeV2";
-  recipient_address: Scalars["Address"];
-  sequence_number: Scalars["U64"];
-  source_address: Scalars["Address"];
-};
-
-export type _0x1__acl__ACL = {
-  __typename?: "_0x1__acl__ACL";
+export type ACL = {
+  __typename?: "ACL";
   list: Array<Scalars["Address"]>;
 };
 
-export type _0x1__aggregator__Aggregator = {
-  __typename?: "_0x1__aggregator__Aggregator";
+export type AUID = {
+  __typename?: "AUID";
+  unique_address: Scalars["Address"];
+};
+
+export type Account = {
+  __typename?: "Account";
+  authentication_key: Array<Scalars["U8"]>;
+  coin_register_events: EventHandle;
+  guid_creation_num: Scalars["U64"];
+  key_rotation_events: EventHandle;
+  rotation_capability_offer: CapabilityOffer;
+  sequence_number: Scalars["U64"];
+  signer_capability_offer: CapabilityOffer;
+};
+
+export type AccountMap = {
+  __typename?: "AccountMap";
+  account_address: Scalars["Address"];
+  balance: Scalars["U64"];
+};
+
+export type AddDistributionEvent = {
+  __typename?: "AddDistributionEvent";
+  amount: Scalars["U64"];
+  operator: Scalars["Address"];
+  pool_address: Scalars["Address"];
+};
+
+export type AddOwnersEvent = {
+  __typename?: "AddOwnersEvent";
+  owners_added: Array<Scalars["Address"]>;
+};
+
+export type AdminStore = {
+  __typename?: "AdminStore";
+  create_events: EventHandle;
+  nonce: Scalars["U64"];
+  vesting_contracts: Array<Scalars["Address"]>;
+};
+
+export type AdminWithdrawEvent = {
+  __typename?: "AdminWithdrawEvent";
+  admin: Scalars["Address"];
+  amount: Scalars["U64"];
+  vesting_contract_address: Scalars["Address"];
+};
+
+export type AggrOrMultiSignature = {
+  __typename?: "AggrOrMultiSignature";
+  bytes: Array<Scalars["U8"]>;
+};
+
+export type AggrPublicKeysWithPoP = {
+  __typename?: "AggrPublicKeysWithPoP";
+  bytes: Array<Scalars["U8"]>;
+};
+
+export type AggregatableCoin = {
+  __typename?: "AggregatableCoin";
+  value: Aggregator;
+};
+
+export type Aggregator = {
+  __typename?: "Aggregator";
   handle: Scalars["Address"];
   key: Scalars["Address"];
   limit: Scalars["U128"];
 };
 
-export type _0x1__aggregator_factory__AggregatorFactory = {
-  __typename?: "_0x1__aggregator_factory__AggregatorFactory";
-  phantom_table: _0x1__table__Table;
+export type AggregatorFactory = {
+  __typename?: "AggregatorFactory";
+  phantom_table: Table;
 };
 
-export type _0x1__any__Any = {
-  __typename?: "_0x1__any__Any";
-  data: Array<Scalars["U8"]>;
-  type_name: Scalars["String"];
+export type AllowedDep = {
+  __typename?: "AllowedDep";
+  account: Scalars["Address"];
+  module_name: Scalars["String"];
 };
 
-export type _0x1__aptos_account__DirectCoinTransferConfigUpdatedEvent = {
-  __typename?: "_0x1__aptos_account__DirectCoinTransferConfigUpdatedEvent";
-  new_allow_direct_transfers: Scalars["Boolean"];
+export type AllowedValidators = {
+  __typename?: "AllowedValidators";
+  accounts: Array<Scalars["Address"]>;
 };
 
-export type _0x1__aptos_account__DirectTransferConfig = {
-  __typename?: "_0x1__aptos_account__DirectTransferConfig";
-  allow_arbitrary_coin_transfers: Scalars["Boolean"];
-  update_coin_transfer_events: _0x1__event__EventHandle;
+export type ApprovedExecutionHashes = {
+  __typename?: "ApprovedExecutionHashes";
+  hashes: _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap;
 };
 
-export type _0x1__aptos_coin__AptosCoin = {
-  __typename?: "_0x1__aptos_coin__AptosCoin";
+export type AptosCoin = {
+  __typename?: "AptosCoin";
   dummy_field: Scalars["Boolean"];
 };
 
-export type _0x1__aptos_coin__DelegatedMintCapability = {
-  __typename?: "_0x1__aptos_coin__DelegatedMintCapability";
-  to: Scalars["Address"];
+export type AptosCollection = {
+  __typename?: "AptosCollection";
+  mutable_description: Scalars["Boolean"];
+  mutable_token_description: Scalars["Boolean"];
+  mutable_token_name: Scalars["Boolean"];
+  mutable_token_properties: Scalars["Boolean"];
+  mutable_token_uri: Scalars["Boolean"];
+  mutable_uri: Scalars["Boolean"];
+  mutator_ref: Option;
+  royalty_mutator_ref: Option;
+  tokens_burnable_by_creator: Scalars["Boolean"];
+  tokens_freezable_by_creator: Scalars["Boolean"];
 };
 
-export type _0x1__aptos_coin__Delegations = {
-  __typename?: "_0x1__aptos_coin__Delegations";
-  inner: Array<_0x1__aptos_coin__DelegatedMintCapability>;
+export type AptosToken = {
+  __typename?: "AptosToken";
+  burn_ref: Option;
+  mutator_ref: Option;
+  property_mutator_ref: _0x0000000000000000000000000000000000000000000000000000000000000004__property_map__MutatorRef;
+  transfer_ref: Option;
 };
 
-export type _0x1__aptos_coin__MintCapStore = {
-  __typename?: "_0x1__aptos_coin__MintCapStore";
-  mint_cap: _0x1__coin__MintCapability;
-};
-
-export type _0x1__aptos_governance__ApprovedExecutionHashes = {
-  __typename?: "_0x1__aptos_governance__ApprovedExecutionHashes";
-  hashes: _0x1__simple_map__SimpleMap;
-};
-
-export type _0x1__aptos_governance__CreateProposalEvent = {
-  __typename?: "_0x1__aptos_governance__CreateProposalEvent";
-  execution_hash: Array<Scalars["U8"]>;
-  proposal_id: Scalars["U64"];
-  proposal_metadata: _0x1__simple_map__SimpleMap;
-  proposer: Scalars["Address"];
-  stake_pool: Scalars["Address"];
-};
-
-export type _0x1__aptos_governance__GovernanceConfig = {
-  __typename?: "_0x1__aptos_governance__GovernanceConfig";
-  min_voting_threshold: Scalars["U128"];
-  required_proposer_stake: Scalars["U64"];
-  voting_duration_secs: Scalars["U64"];
-};
-
-export type _0x1__aptos_governance__GovernanceEvents = {
-  __typename?: "_0x1__aptos_governance__GovernanceEvents";
-  create_proposal_events: _0x1__event__EventHandle;
-  update_config_events: _0x1__event__EventHandle;
-  vote_events: _0x1__event__EventHandle;
-};
-
-export type _0x1__aptos_governance__GovernanceResponsbility = {
-  __typename?: "_0x1__aptos_governance__GovernanceResponsbility";
-  signer_caps: _0x1__simple_map__SimpleMap;
-};
-
-export type _0x1__aptos_governance__RecordKey = {
-  __typename?: "_0x1__aptos_governance__RecordKey";
-  proposal_id: Scalars["U64"];
-  stake_pool: Scalars["Address"];
-};
-
-export type _0x1__aptos_governance__UpdateConfigEvent = {
-  __typename?: "_0x1__aptos_governance__UpdateConfigEvent";
-  min_voting_threshold: Scalars["U128"];
-  required_proposer_stake: Scalars["U64"];
-  voting_duration_secs: Scalars["U64"];
-};
-
-export type _0x1__aptos_governance__VoteEvent = {
-  __typename?: "_0x1__aptos_governance__VoteEvent";
-  num_votes: Scalars["U64"];
-  proposal_id: Scalars["U64"];
-  should_pass: Scalars["Boolean"];
-  stake_pool: Scalars["Address"];
-  voter: Scalars["Address"];
-};
-
-export type _0x1__aptos_governance__VotingRecords = {
-  __typename?: "_0x1__aptos_governance__VotingRecords";
-  votes: _0x1__table__Table;
-};
-
-export type _0x1__aptos_governance__VotingRecordsV2 = {
-  __typename?: "_0x1__aptos_governance__VotingRecordsV2";
-  votes: _0x1__smart_table__SmartTable;
-};
-
-export type _0x1__big_vector__BigVector = {
-  __typename?: "_0x1__big_vector__BigVector";
+export type BigVector = {
+  __typename?: "BigVector";
   bucket_size: Scalars["U64"];
-  buckets: _0x1__table_with_length__TableWithLength;
+  buckets: TableWithLength;
   end_index: Scalars["U64"];
 };
 
-export type _0x1__bit_vector__BitVector = {
-  __typename?: "_0x1__bit_vector__BitVector";
+export type BitVector = {
+  __typename?: "BitVector";
   bit_field: Array<Scalars["Boolean"]>;
   length: Scalars["U64"];
 };
 
-export type _0x1__block__BlockResource = {
-  __typename?: "_0x1__block__BlockResource";
+export type BlockResource = {
+  __typename?: "BlockResource";
   epoch_interval: Scalars["U64"];
   height: Scalars["U64"];
-  new_block_events: _0x1__event__EventHandle;
-  update_epoch_interval_events: _0x1__event__EventHandle;
+  new_block_events: EventHandle;
+  update_epoch_interval_events: EventHandle;
 };
 
-export type _0x1__block__NewBlockEvent = {
-  __typename?: "_0x1__block__NewBlockEvent";
+export type Box = {
+  __typename?: "Box";
+  val: Scalars["Any"];
+};
+
+export type BurnCapability = {
+  __typename?: "BurnCapability";
+  dummy_field: Scalars["Boolean"];
+};
+
+export type BurnEvent = {
+  __typename?: "BurnEvent";
+  index: Scalars["U64"];
+  token: Scalars["Address"];
+};
+
+export type Canvas = {
+  __typename?: "Canvas";
+  admins: SimpleSet;
+  allowlisted_artists: SimpleSet;
+  blocklisted_artists: SimpleSet;
+  config: CanvasConfig;
+  created_at_s: Scalars["U64"];
+  extend_ref: ExtendRef;
+  last_contribution_s: SmartTable;
+  mutator_ref: _0x0000000000000000000000000000000000000000000000000000000000000004__token__MutatorRef;
+  pixels: SmartTable;
+};
+
+export type CanvasConfig = {
+  __typename?: "CanvasConfig";
+  can_draw_for_s: Scalars["U64"];
+  cost: Scalars["U64"];
+  default_color: Color;
+  funds_recipient: Option;
+  height: Scalars["U64"];
+  owner_is_super_admin: Scalars["Boolean"];
+  palette: Array<Color>;
+  per_account_timeout_s: Scalars["U64"];
+  width: Scalars["U64"];
+};
+
+export type Cap = {
+  __typename?: "Cap";
+  root: Scalars["Address"];
+};
+
+export type CapDelegateState = {
+  __typename?: "CapDelegateState";
+  root: Scalars["Address"];
+};
+
+export type CapState = {
+  __typename?: "CapState";
+  delegates: Array<Scalars["Address"]>;
+};
+
+export type Capabilities = {
+  __typename?: "Capabilities";
+  burn_cap: BurnCapability;
+  freeze_cap: FreezeCapability;
+  mint_cap: MintCapability;
+};
+
+export type CapabilityOffer = {
+  __typename?: "CapabilityOffer";
+  for: Option;
+};
+
+export type ChainId = {
+  __typename?: "ChainId";
+  id: Scalars["U8"];
+};
+
+export type Ciphertext = {
+  __typename?: "Ciphertext";
+  left: RistrettoPoint;
+  right: RistrettoPoint;
+};
+
+export type Coin = {
+  __typename?: "Coin";
+  value: Scalars["U64"];
+};
+
+export type CoinInfo = {
+  __typename?: "CoinInfo";
+  decimals: Scalars["U8"];
+  name: Scalars["String"];
+  supply: Option;
+  symbol: Scalars["String"];
+};
+
+export type CoinRegisterEvent = {
+  __typename?: "CoinRegisterEvent";
+  type_info: TypeInfo;
+};
+
+export type CoinStore = {
+  __typename?: "CoinStore";
+  coin: Coin;
+  deposit_events: EventHandle;
+  frozen: Scalars["Boolean"];
+  withdraw_events: EventHandle;
+};
+
+export type CollectedFeesPerBlock = {
+  __typename?: "CollectedFeesPerBlock";
+  amount: AggregatableCoin;
+  burn_percentage: Scalars["U8"];
+  proposer: Option;
+};
+
+export type Collection = {
+  __typename?: "Collection";
+  creator: Scalars["Address"];
+  description: Scalars["String"];
+  mutation_events: EventHandle;
+  name: Scalars["String"];
+  uri: Scalars["String"];
+};
+
+export type CollectionRefs = {
+  __typename?: "CollectionRefs";
+  mutator_ref: _0x0000000000000000000000000000000000000000000000000000000000000004__collection__MutatorRef;
+  transfer_ref: _0x0000000000000000000000000000000000000000000000000000000000000001__object__TransferRef;
+};
+
+export type Color = {
+  __typename?: "Color";
+  b: Scalars["U8"];
+  g: Scalars["U8"];
+  r: Scalars["U8"];
+};
+
+export type Commitment = {
+  __typename?: "Commitment";
+  point: RistrettoPoint;
+};
+
+export type CompressedCiphertext = {
+  __typename?: "CompressedCiphertext";
+  left: CompressedRistretto;
+  right: CompressedRistretto;
+};
+
+export type CompressedPubkey = {
+  __typename?: "CompressedPubkey";
+  point: CompressedRistretto;
+};
+
+export type CompressedRistretto = {
+  __typename?: "CompressedRistretto";
+  data: Array<Scalars["U8"]>;
+};
+
+export type Configuration = {
+  __typename?: "Configuration";
+  epoch: Scalars["U64"];
+  events: EventHandle;
+  last_reconfiguration_time: Scalars["U64"];
+};
+
+export type Cons = {
+  __typename?: "Cons";
+  car: Scalars["Any"];
+  cdr: Scalars["Any"];
+};
+
+export type ConsensusConfig = {
+  __typename?: "ConsensusConfig";
+  config: Array<Scalars["U8"]>;
+};
+
+export type ConstructorRef = {
+  __typename?: "ConstructorRef";
+  can_delete: Scalars["Boolean"];
+  self: Scalars["Address"];
+};
+
+export type Container = {
+  __typename?: "Container";
+  store: _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap;
+};
+
+export type CreateStakingContractEvent = {
+  __typename?: "CreateStakingContractEvent";
+  commission_percentage: Scalars["U64"];
+  operator: Scalars["Address"];
+  pool_address: Scalars["Address"];
+  principal: Scalars["U64"];
+  voter: Scalars["Address"];
+};
+
+export type CreateTransactionEvent = {
+  __typename?: "CreateTransactionEvent";
+  creator: Scalars["Address"];
+  sequence_number: Scalars["U64"];
+  transaction: MultisigTransaction;
+};
+
+export type CreateVestingContractEvent = {
+  __typename?: "CreateVestingContractEvent";
+  commission_percentage: Scalars["U64"];
+  grant_amount: Scalars["U64"];
+  operator: Scalars["Address"];
+  staking_pool_address: Scalars["Address"];
+  vesting_contract_address: Scalars["Address"];
+  voter: Scalars["Address"];
+  withdrawal_address: Scalars["Address"];
+};
+
+export type CurrentTimeMicroseconds = {
+  __typename?: "CurrentTimeMicroseconds";
+  microseconds: Scalars["U64"];
+};
+
+export type DelegateVotingPowerEvent = {
+  __typename?: "DelegateVotingPowerEvent";
+  delegator: Scalars["Address"];
+  pool_address: Scalars["Address"];
+  voter: Scalars["Address"];
+};
+
+export type DelegatedMintCapability = {
+  __typename?: "DelegatedMintCapability";
+  to: Scalars["Address"];
+};
+
+export type DelegatedVotes = {
+  __typename?: "DelegatedVotes";
+  active_shares: Scalars["U128"];
+  active_shares_next_lockup: Scalars["U128"];
+  last_locked_until_secs: Scalars["U64"];
+  pending_inactive_shares: Scalars["U128"];
+};
+
+export type DelegationPool = {
+  __typename?: "DelegationPool";
+  active_shares: _0x0000000000000000000000000000000000000000000000000000000000000001__pool_u64_unbound__Pool;
+  add_stake_events: EventHandle;
+  distribute_commission_events: EventHandle;
+  inactive_shares: Table;
+  observed_lockup_cycle: ObservedLockupCycle;
+  operator_commission_percentage: Scalars["U64"];
+  pending_withdrawals: Table;
+  reactivate_stake_events: EventHandle;
+  stake_pool_signer_cap: SignerCapability;
+  total_coins_inactive: Scalars["U64"];
+  unlock_stake_events: EventHandle;
+  withdraw_stake_events: EventHandle;
+};
+
+export type DelegationPoolOwnership = {
+  __typename?: "DelegationPoolOwnership";
+  pool_address: Scalars["Address"];
+};
+
+export type Delegations = {
+  __typename?: "Delegations";
+  inner: Array<DelegatedMintCapability>;
+};
+
+export type DeleteRef = {
+  __typename?: "DeleteRef";
+  self: Scalars["Address"];
+};
+
+export type DeriveRef = {
+  __typename?: "DeriveRef";
+  self: Scalars["Address"];
+};
+
+export type DeriveRefPod = {
+  __typename?: "DeriveRefPod";
+  metadata_derive_ref: DeriveRef;
+};
+
+export type DirectCoinTransferConfigUpdatedEvent = {
+  __typename?: "DirectCoinTransferConfigUpdatedEvent";
+  new_allow_direct_transfers: Scalars["Boolean"];
+};
+
+export type DirectTransferConfig = {
+  __typename?: "DirectTransferConfig";
+  allow_arbitrary_coin_transfers: Scalars["Boolean"];
+  update_coin_transfer_events: EventHandle;
+};
+
+export type DisableReconfiguration = {
+  __typename?: "DisableReconfiguration";
+  dummy_field: Scalars["Boolean"];
+};
+
+export type DistributeCommissionEvent = {
+  __typename?: "DistributeCommissionEvent";
+  commission_active: Scalars["U64"];
+  commission_pending_inactive: Scalars["U64"];
+  operator: Scalars["Address"];
+  pool_address: Scalars["Address"];
+};
+
+export type DistributeRewardsEvent = {
+  __typename?: "DistributeRewardsEvent";
+  pool_address: Scalars["Address"];
+  rewards_amount: Scalars["U64"];
+};
+
+export type ECDSARawPublicKey = {
+  __typename?: "ECDSARawPublicKey";
+  bytes: Array<Scalars["U8"]>;
+};
+
+export type ECDSASignature = {
+  __typename?: "ECDSASignature";
+  bytes: Array<Scalars["U8"]>;
+};
+
+export type EmployeeAccountMap = {
+  __typename?: "EmployeeAccountMap";
+  accounts: Array<Scalars["Address"]>;
+  beneficiary_resetter: Scalars["Address"];
+  validator: ValidatorConfigurationWithCommission;
+  vesting_schedule_denominator: Scalars["U64"];
+  vesting_schedule_numerator: Array<Scalars["U64"]>;
+};
+
+export type Entry = {
+  __typename?: "Entry";
+  hash: Scalars["U64"];
+  key: Scalars["Any"];
+  value: Scalars["Any"];
+};
+
+export type EventHandle = {
+  __typename?: "EventHandle";
+  counter: Scalars["U64"];
+  guid: GUID;
+};
+
+export type ExecuteRejectedTransactionEvent = {
+  __typename?: "ExecuteRejectedTransactionEvent";
+  executor: Scalars["Address"];
+  num_rejections: Scalars["U64"];
+  sequence_number: Scalars["U64"];
+};
+
+export type ExecutionConfig = {
+  __typename?: "ExecutionConfig";
+  config: Array<Scalars["U8"]>;
+};
+
+export type ExecutionError = {
+  __typename?: "ExecutionError";
+  abort_location: Scalars["String"];
+  error_code: Scalars["U64"];
+  error_type: Scalars["String"];
+};
+
+export type ExtendRef = {
+  __typename?: "ExtendRef";
+  self: Scalars["Address"];
+};
+
+export type FakeCons = {
+  __typename?: "FakeCons";
+  car: Scalars["Any"];
+  cdr: Scalars["Any"];
+};
+
+export type Features = {
+  __typename?: "Features";
+  features: Array<Scalars["U8"]>;
+};
+
+export type FixedPoint32 = {
+  __typename?: "FixedPoint32";
+  value: Scalars["U64"];
+};
+
+export type FixedPoint64 = {
+  __typename?: "FixedPoint64";
+  value: Scalars["U128"];
+};
+
+export type FixedSupply = {
+  __typename?: "FixedSupply";
+  burn_events: EventHandle;
+  current_supply: Scalars["U64"];
+  max_supply: Scalars["U64"];
+  mint_events: EventHandle;
+  total_minted: Scalars["U64"];
+};
+
+export type FormatFq12LscLsb = {
+  __typename?: "FormatFq12LscLsb";
+  dummy_field: Scalars["Boolean"];
+};
+
+export type FormatFrLsb = {
+  __typename?: "FormatFrLsb";
+  dummy_field: Scalars["Boolean"];
+};
+
+export type FormatFrMsb = {
+  __typename?: "FormatFrMsb";
+  dummy_field: Scalars["Boolean"];
+};
+
+export type FormatG1Compr = {
+  __typename?: "FormatG1Compr";
+  dummy_field: Scalars["Boolean"];
+};
+
+export type FormatG1Uncompr = {
+  __typename?: "FormatG1Uncompr";
+  dummy_field: Scalars["Boolean"];
+};
+
+export type FormatG2Compr = {
+  __typename?: "FormatG2Compr";
+  dummy_field: Scalars["Boolean"];
+};
+
+export type FormatG2Uncompr = {
+  __typename?: "FormatG2Uncompr";
+  dummy_field: Scalars["Boolean"];
+};
+
+export type FormatGt = {
+  __typename?: "FormatGt";
+  dummy_field: Scalars["Boolean"];
+};
+
+export type Fq12 = {
+  __typename?: "Fq12";
+  dummy_field: Scalars["Boolean"];
+};
+
+export type Fr = {
+  __typename?: "Fr";
+  dummy_field: Scalars["Boolean"];
+};
+
+export type FreezeCapability = {
+  __typename?: "FreezeCapability";
+  dummy_field: Scalars["Boolean"];
+};
+
+export type FrozenEvent = {
+  __typename?: "FrozenEvent";
+  frozen: Scalars["Boolean"];
+};
+
+export type FungibleAsset = {
+  __typename?: "FungibleAsset";
+  amount: Scalars["U64"];
+  metadata: Object;
+};
+
+export type FungibleAssetEvents = {
+  __typename?: "FungibleAssetEvents";
+  deposit_events: EventHandle;
+  frozen_events: EventHandle;
+  withdraw_events: EventHandle;
+};
+
+export type FungibleStore = {
+  __typename?: "FungibleStore";
+  balance: Scalars["U64"];
+  frozen: Scalars["Boolean"];
+  metadata: Object;
+};
+
+export type G1 = {
+  __typename?: "G1";
+  dummy_field: Scalars["Boolean"];
+};
+
+export type G2 = {
+  __typename?: "G2";
+  dummy_field: Scalars["Boolean"];
+};
+
+export type GUID = {
+  __typename?: "GUID";
+  id: _0x0000000000000000000000000000000000000000000000000000000000000001__guid__ID;
+};
+
+export type GasCurve = {
+  __typename?: "GasCurve";
+  max_gas: Scalars["U64"];
+  min_gas: Scalars["U64"];
+  points: Array<Point>;
+};
+
+export type GasEntry = {
+  __typename?: "GasEntry";
+  key: Scalars["String"];
+  val: Scalars["U64"];
+};
+
+export type GasParameter = {
+  __typename?: "GasParameter";
+  usage: Usage;
+};
+
+export type GasSchedule = {
+  __typename?: "GasSchedule";
+  entries: Array<GasEntry>;
+};
+
+export type GasScheduleV2 = {
+  __typename?: "GasScheduleV2";
+  entries: Array<GasEntry>;
+  feature_version: Scalars["U64"];
+};
+
+export type GenesisEndMarker = {
+  __typename?: "GenesisEndMarker";
+  dummy_field: Scalars["Boolean"];
+};
+
+export type GovernanceConfig = {
+  __typename?: "GovernanceConfig";
+  min_voting_threshold: Scalars["U128"];
+  required_proposer_stake: Scalars["U64"];
+  voting_duration_secs: Scalars["U64"];
+};
+
+export type GovernanceEvents = {
+  __typename?: "GovernanceEvents";
+  create_proposal_events: EventHandle;
+  update_config_events: EventHandle;
+  vote_events: EventHandle;
+};
+
+export type GovernanceProposal = {
+  __typename?: "GovernanceProposal";
+  dummy_field: Scalars["Boolean"];
+};
+
+export type GovernanceRecords = {
+  __typename?: "GovernanceRecords";
+  create_proposal_events: EventHandle;
+  delegate_voting_power_events: EventHandle;
+  delegated_votes: SmartTable;
+  vote_delegation: SmartTable;
+  vote_events: EventHandle;
+  votes: SmartTable;
+  votes_per_proposal: SmartTable;
+};
+
+export type GovernanceResponsbility = {
+  __typename?: "GovernanceResponsbility";
+  signer_caps: _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap;
+};
+
+export type Gt = {
+  __typename?: "Gt";
+  dummy_field: Scalars["Boolean"];
+};
+
+export type HashG1XmdSha256SswuRo = {
+  __typename?: "HashG1XmdSha256SswuRo";
+  dummy_field: Scalars["Boolean"];
+};
+
+export type HashG2XmdSha256SswuRo = {
+  __typename?: "HashG2XmdSha256SswuRo";
+  dummy_field: Scalars["Boolean"];
+};
+
+export type IncreaseLockupEvent = {
+  __typename?: "IncreaseLockupEvent";
+  new_locked_until_secs: Scalars["U64"];
+  old_locked_until_secs: Scalars["U64"];
+  pool_address: Scalars["Address"];
+};
+
+export type IndividualValidatorPerformance = {
+  __typename?: "IndividualValidatorPerformance";
+  failed_proposals: Scalars["U64"];
+  successful_proposals: Scalars["U64"];
+};
+
+export type Integer = {
+  __typename?: "Integer";
+  limit: Scalars["U128"];
+  value: Scalars["U128"];
+};
+
+export type JoinValidatorSetEvent = {
+  __typename?: "JoinValidatorSetEvent";
+  pool_address: Scalars["Address"];
+};
+
+export type KeyRotationEvent = {
+  __typename?: "KeyRotationEvent";
+  new_authentication_key: Array<Scalars["U8"]>;
+  old_authentication_key: Array<Scalars["U8"]>;
+};
+
+export type LeaveValidatorSetEvent = {
+  __typename?: "LeaveValidatorSetEvent";
+  pool_address: Scalars["Address"];
+};
+
+export type LinearCap = {
+  __typename?: "LinearCap";
+  root: Scalars["Address"];
+};
+
+export type LinearTransferRef = {
+  __typename?: "LinearTransferRef";
+  owner: Scalars["Address"];
+  self: Scalars["Address"];
+};
+
+export type Metadata = {
+  __typename?: "Metadata";
+  decimals: Scalars["U8"];
+  icon_uri: Scalars["String"];
+  name: Scalars["String"];
+  project_uri: Scalars["String"];
+  symbol: Scalars["String"];
+};
+
+export type MetadataUpdatedEvent = {
+  __typename?: "MetadataUpdatedEvent";
+  new_metadata: _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap;
+  old_metadata: _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap;
+};
+
+export type MintCapStore = {
+  __typename?: "MintCapStore";
+  mint_cap: MintCapability;
+};
+
+export type MintCapability = {
+  __typename?: "MintCapability";
+  dummy_field: Scalars["Boolean"];
+};
+
+export type MintEvent = {
+  __typename?: "MintEvent";
+  index: Scalars["U64"];
+  token: Scalars["Address"];
+};
+
+export type MintRef = {
+  __typename?: "MintRef";
+  metadata: Object;
+};
+
+export type ModuleMetadata = {
+  __typename?: "ModuleMetadata";
+  extension: Option;
+  name: Scalars["String"];
+  source: Array<Scalars["U8"]>;
+  source_map: Array<Scalars["U8"]>;
+};
+
+export type MultisigAccount = {
+  __typename?: "MultisigAccount";
+  add_owners_events: EventHandle;
+  create_transaction_events: EventHandle;
+  execute_rejected_transaction_events: EventHandle;
+  execute_transaction_events: EventHandle;
+  last_executed_sequence_number: Scalars["U64"];
+  metadata: _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap;
+  metadata_updated_events: EventHandle;
+  next_sequence_number: Scalars["U64"];
+  num_signatures_required: Scalars["U64"];
+  owners: Array<Scalars["Address"]>;
+  remove_owners_events: EventHandle;
+  signer_cap: Option;
+  transaction_execution_failed_events: EventHandle;
+  transactions: Table;
+  update_signature_required_events: EventHandle;
+  vote_events: EventHandle;
+};
+
+export type MultisigAccountCreationMessage = {
+  __typename?: "MultisigAccountCreationMessage";
+  account_address: Scalars["Address"];
+  chain_id: Scalars["U8"];
+  num_signatures_required: Scalars["U64"];
+  owners: Array<Scalars["Address"]>;
+  sequence_number: Scalars["U64"];
+};
+
+export type MultisigAccountCreationWithAuthKeyRevocationMessage = {
+  __typename?: "MultisigAccountCreationWithAuthKeyRevocationMessage";
+  account_address: Scalars["Address"];
+  chain_id: Scalars["U8"];
+  num_signatures_required: Scalars["U64"];
+  owners: Array<Scalars["Address"]>;
+  sequence_number: Scalars["U64"];
+};
+
+export type MultisigTransaction = {
+  __typename?: "MultisigTransaction";
+  creation_time_secs: Scalars["U64"];
+  creator: Scalars["Address"];
+  payload: Option;
+  payload_hash: Option;
+  votes: _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap;
+};
+
+export type NIL = {
+  __typename?: "NIL";
+  dummy_field: Scalars["Boolean"];
+};
+
+export type NewBlockEvent = {
+  __typename?: "NewBlockEvent";
   epoch: Scalars["U64"];
   failed_proposer_indices: Array<Scalars["U64"]>;
   hash: Scalars["Address"];
@@ -255,530 +897,577 @@ export type _0x1__block__NewBlockEvent = {
   time_microseconds: Scalars["U64"];
 };
 
-export type _0x1__block__UpdateEpochIntervalEvent = {
-  __typename?: "_0x1__block__UpdateEpochIntervalEvent";
-  new_epoch_interval: Scalars["U64"];
-  old_epoch_interval: Scalars["U64"];
+export type NewEpochEvent = {
+  __typename?: "NewEpochEvent";
+  epoch: Scalars["U64"];
 };
 
-export type _0x1__bls12381__AggrOrMultiSignature = {
-  __typename?: "_0x1__bls12381__AggrOrMultiSignature";
-  bytes: Array<Scalars["U8"]>;
+export type Object = {
+  __typename?: "Object";
+  inner: Scalars["Address"];
 };
 
-export type _0x1__bls12381__AggrPublicKeysWithPoP = {
-  __typename?: "_0x1__bls12381__AggrPublicKeysWithPoP";
-  bytes: Array<Scalars["U8"]>;
+export type ObjectCore = {
+  __typename?: "ObjectCore";
+  allow_ungated_transfer: Scalars["Boolean"];
+  guid_creation_num: Scalars["U64"];
+  owner: Scalars["Address"];
+  transfer_events: EventHandle;
 };
 
-export type _0x1__bls12381__ProofOfPossession = {
-  __typename?: "_0x1__bls12381__ProofOfPossession";
-  bytes: Array<Scalars["U8"]>;
-};
-
-export type _0x1__bls12381__PublicKey = {
-  __typename?: "_0x1__bls12381__PublicKey";
-  bytes: Array<Scalars["U8"]>;
-};
-
-export type _0x1__bls12381__PublicKeyWithPoP = {
-  __typename?: "_0x1__bls12381__PublicKeyWithPoP";
-  bytes: Array<Scalars["U8"]>;
-};
-
-export type _0x1__bls12381__Signature = {
-  __typename?: "_0x1__bls12381__Signature";
-  bytes: Array<Scalars["U8"]>;
-};
-
-export type _0x1__bls12381_algebra__FormatFq12LscLsb = {
-  __typename?: "_0x1__bls12381_algebra__FormatFq12LscLsb";
+export type ObjectGroup = {
+  __typename?: "ObjectGroup";
   dummy_field: Scalars["Boolean"];
 };
 
-export type _0x1__bls12381_algebra__FormatFrLsb = {
-  __typename?: "_0x1__bls12381_algebra__FormatFrLsb";
-  dummy_field: Scalars["Boolean"];
+export type ObservedLockupCycle = {
+  __typename?: "ObservedLockupCycle";
+  index: Scalars["U64"];
 };
 
-export type _0x1__bls12381_algebra__FormatFrMsb = {
-  __typename?: "_0x1__bls12381_algebra__FormatFrMsb";
-  dummy_field: Scalars["Boolean"];
+export type Option = {
+  __typename?: "Option";
+  vec: Array<Scalars["Any"]>;
 };
 
-export type _0x1__bls12381_algebra__FormatG1Compr = {
-  __typename?: "_0x1__bls12381_algebra__FormatG1Compr";
-  dummy_field: Scalars["Boolean"];
+export type OptionalAggregator = {
+  __typename?: "OptionalAggregator";
+  aggregator: Option;
+  integer: Option;
 };
 
-export type _0x1__bls12381_algebra__FormatG1Uncompr = {
-  __typename?: "_0x1__bls12381_algebra__FormatG1Uncompr";
-  dummy_field: Scalars["Boolean"];
+export type OriginatingAddress = {
+  __typename?: "OriginatingAddress";
+  address_map: Table;
 };
 
-export type _0x1__bls12381_algebra__FormatG2Compr = {
-  __typename?: "_0x1__bls12381_algebra__FormatG2Compr";
-  dummy_field: Scalars["Boolean"];
+export type OwnerCapability = {
+  __typename?: "OwnerCapability";
+  pool_address: Scalars["Address"];
 };
 
-export type _0x1__bls12381_algebra__FormatG2Uncompr = {
-  __typename?: "_0x1__bls12381_algebra__FormatG2Uncompr";
-  dummy_field: Scalars["Boolean"];
-};
-
-export type _0x1__bls12381_algebra__FormatGt = {
-  __typename?: "_0x1__bls12381_algebra__FormatGt";
-  dummy_field: Scalars["Boolean"];
-};
-
-export type _0x1__bls12381_algebra__Fq12 = {
-  __typename?: "_0x1__bls12381_algebra__Fq12";
-  dummy_field: Scalars["Boolean"];
-};
-
-export type _0x1__bls12381_algebra__Fr = {
-  __typename?: "_0x1__bls12381_algebra__Fr";
-  dummy_field: Scalars["Boolean"];
-};
-
-export type _0x1__bls12381_algebra__G1 = {
-  __typename?: "_0x1__bls12381_algebra__G1";
-  dummy_field: Scalars["Boolean"];
-};
-
-export type _0x1__bls12381_algebra__G2 = {
-  __typename?: "_0x1__bls12381_algebra__G2";
-  dummy_field: Scalars["Boolean"];
-};
-
-export type _0x1__bls12381_algebra__Gt = {
-  __typename?: "_0x1__bls12381_algebra__Gt";
-  dummy_field: Scalars["Boolean"];
-};
-
-export type _0x1__bls12381_algebra__HashG1XmdSha256SswuRo = {
-  __typename?: "_0x1__bls12381_algebra__HashG1XmdSha256SswuRo";
-  dummy_field: Scalars["Boolean"];
-};
-
-export type _0x1__bls12381_algebra__HashG2XmdSha256SswuRo = {
-  __typename?: "_0x1__bls12381_algebra__HashG2XmdSha256SswuRo";
-  dummy_field: Scalars["Boolean"];
-};
-
-export type _0x1__capability__Cap = {
-  __typename?: "_0x1__capability__Cap";
-  root: Scalars["Address"];
-};
-
-export type _0x1__capability__CapDelegateState = {
-  __typename?: "_0x1__capability__CapDelegateState";
-  root: Scalars["Address"];
-};
-
-export type _0x1__capability__CapState = {
-  __typename?: "_0x1__capability__CapState";
-  delegates: Array<Scalars["Address"]>;
-};
-
-export type _0x1__capability__LinearCap = {
-  __typename?: "_0x1__capability__LinearCap";
-  root: Scalars["Address"];
-};
-
-export type _0x1__chain_id__ChainId = {
-  __typename?: "_0x1__chain_id__ChainId";
-  id: Scalars["U8"];
-};
-
-export type _0x1__chain_status__GenesisEndMarker = {
-  __typename?: "_0x1__chain_status__GenesisEndMarker";
-  dummy_field: Scalars["Boolean"];
-};
-
-export type _0x1__code__AllowedDep = {
-  __typename?: "_0x1__code__AllowedDep";
-  account: Scalars["Address"];
-  module_name: Scalars["String"];
-};
-
-export type _0x1__code__ModuleMetadata = {
-  __typename?: "_0x1__code__ModuleMetadata";
-  extension: _0x1__option__Option;
-  name: Scalars["String"];
-  source: Array<Scalars["U8"]>;
-  source_map: Array<Scalars["U8"]>;
-};
-
-export type _0x1__code__PackageDep = {
-  __typename?: "_0x1__code__PackageDep";
+export type PackageDep = {
+  __typename?: "PackageDep";
   account: Scalars["Address"];
   package_name: Scalars["String"];
 };
 
-export type _0x1__code__PackageMetadata = {
-  __typename?: "_0x1__code__PackageMetadata";
-  deps: Array<_0x1__code__PackageDep>;
-  extension: _0x1__option__Option;
+export type PackageMetadata = {
+  __typename?: "PackageMetadata";
+  deps: Array<PackageDep>;
+  extension: Option;
   manifest: Array<Scalars["U8"]>;
-  modules: Array<_0x1__code__ModuleMetadata>;
+  modules: Array<ModuleMetadata>;
   name: Scalars["String"];
   source_digest: Scalars["String"];
   upgrade_number: Scalars["U64"];
-  upgrade_policy: _0x1__code__UpgradePolicy;
+  upgrade_policy: UpgradePolicy;
 };
 
-export type _0x1__code__PackageRegistry = {
-  __typename?: "_0x1__code__PackageRegistry";
-  packages: Array<_0x1__code__PackageMetadata>;
+export type PackageRegistry = {
+  __typename?: "PackageRegistry";
+  packages: Array<PackageMetadata>;
 };
 
-export type _0x1__code__UpgradePolicy = {
-  __typename?: "_0x1__code__UpgradePolicy";
-  policy: Scalars["U8"];
+export type Point = {
+  __typename?: "Point";
+  x: Scalars["U64"];
+  y: Scalars["U64"];
 };
 
-export type _0x1__coin__AggregatableCoin = {
-  __typename?: "_0x1__coin__AggregatableCoin";
-  value: _0x1__aggregator__Aggregator;
+export type ProofOfPossession = {
+  __typename?: "ProofOfPossession";
+  bytes: Array<Scalars["U8"]>;
 };
 
-export type _0x1__coin__BurnCapability = {
-  __typename?: "_0x1__coin__BurnCapability";
-  dummy_field: Scalars["Boolean"];
+export type PropertyMap = {
+  __typename?: "PropertyMap";
+  inner: _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap;
 };
 
-export type _0x1__coin__Coin = {
-  __typename?: "_0x1__coin__Coin";
-  value: Scalars["U64"];
+export type PropertyValue = {
+  __typename?: "PropertyValue";
+  type: Scalars["U8"];
+  value: Array<Scalars["U8"]>;
 };
 
-export type _0x1__coin__CoinInfo = {
-  __typename?: "_0x1__coin__CoinInfo";
-  decimals: Scalars["U8"];
-  name: Scalars["String"];
-  supply: _0x1__option__Option;
-  symbol: Scalars["String"];
+export type Proposal = {
+  __typename?: "Proposal";
+  creation_time_secs: Scalars["U64"];
+  early_resolution_vote_threshold: Option;
+  execution_content: Option;
+  execution_hash: Array<Scalars["U8"]>;
+  expiration_secs: Scalars["U64"];
+  is_resolved: Scalars["Boolean"];
+  metadata: _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap;
+  min_vote_threshold: Scalars["U128"];
+  no_votes: Scalars["U128"];
+  proposer: Scalars["Address"];
+  resolution_time_secs: Scalars["U64"];
+  yes_votes: Scalars["U128"];
 };
 
-export type _0x1__coin__CoinStore = {
-  __typename?: "_0x1__coin__CoinStore";
-  coin: _0x1__coin__Coin;
-  deposit_events: _0x1__event__EventHandle;
-  frozen: Scalars["Boolean"];
-  withdraw_events: _0x1__event__EventHandle;
+export type PublicKey = {
+  __typename?: "PublicKey";
+  bytes: Array<Scalars["U8"]>;
 };
 
-export type _0x1__coin__DepositEvent = {
-  __typename?: "_0x1__coin__DepositEvent";
-  amount: Scalars["U64"];
+export type PublicKeyWithPoP = {
+  __typename?: "PublicKeyWithPoP";
+  bytes: Array<Scalars["U8"]>;
 };
 
-export type _0x1__coin__FreezeCapability = {
-  __typename?: "_0x1__coin__FreezeCapability";
-  dummy_field: Scalars["Boolean"];
+export type RangeProof = {
+  __typename?: "RangeProof";
+  bytes: Array<Scalars["U8"]>;
 };
 
-export type _0x1__coin__MintCapability = {
-  __typename?: "_0x1__coin__MintCapability";
-  dummy_field: Scalars["Boolean"];
-};
-
-export type _0x1__coin__SupplyConfig = {
-  __typename?: "_0x1__coin__SupplyConfig";
-  allow_upgrades: Scalars["Boolean"];
-};
-
-export type _0x1__coin__WithdrawEvent = {
-  __typename?: "_0x1__coin__WithdrawEvent";
-  amount: Scalars["U64"];
-};
-
-export type _0x1__comparator__Result = {
-  __typename?: "_0x1__comparator__Result";
-  inner: Scalars["U8"];
-};
-
-export type _0x1__consensus_config__ConsensusConfig = {
-  __typename?: "_0x1__consensus_config__ConsensusConfig";
-  config: Array<Scalars["U8"]>;
-};
-
-export type _0x1__copyable_any__Any = {
-  __typename?: "_0x1__copyable_any__Any";
-  data: Array<Scalars["U8"]>;
-  type_name: Scalars["String"];
-};
-
-export type _0x1__crypto_algebra__Element = {
-  __typename?: "_0x1__crypto_algebra__Element";
-  handle: Scalars["U64"];
-};
-
-export type _0x1__delegation_pool__AddStakeEvent = {
-  __typename?: "_0x1__delegation_pool__AddStakeEvent";
-  add_stake_fee: Scalars["U64"];
-  amount_added: Scalars["U64"];
-  delegator_address: Scalars["Address"];
-  pool_address: Scalars["Address"];
-};
-
-export type _0x1__delegation_pool__CreateProposalEvent = {
-  __typename?: "_0x1__delegation_pool__CreateProposalEvent";
-  delegation_pool: Scalars["Address"];
+export type RecordKey = {
+  __typename?: "RecordKey";
   proposal_id: Scalars["U64"];
-  voter: Scalars["Address"];
+  stake_pool: Scalars["Address"];
 };
 
-export type _0x1__delegation_pool__DelegateVotingPowerEvent = {
-  __typename?: "_0x1__delegation_pool__DelegateVotingPowerEvent";
-  delegator: Scalars["Address"];
-  pool_address: Scalars["Address"];
-  voter: Scalars["Address"];
+export type RegisterForumEvent = {
+  __typename?: "RegisterForumEvent";
+  hosting_account: Scalars["Address"];
+  proposal_type_info: TypeInfo;
 };
 
-export type _0x1__delegation_pool__DelegatedVotes = {
-  __typename?: "_0x1__delegation_pool__DelegatedVotes";
-  active_shares: Scalars["U128"];
-  active_shares_next_lockup: Scalars["U128"];
-  last_locked_until_secs: Scalars["U64"];
-  pending_inactive_shares: Scalars["U128"];
-};
-
-export type _0x1__delegation_pool__DelegationPool = {
-  __typename?: "_0x1__delegation_pool__DelegationPool";
-  active_shares: _0x1__pool_u64_unbound__Pool;
-  add_stake_events: _0x1__event__EventHandle;
-  distribute_commission_events: _0x1__event__EventHandle;
-  inactive_shares: _0x1__table__Table;
-  observed_lockup_cycle: _0x1__delegation_pool__ObservedLockupCycle;
-  operator_commission_percentage: Scalars["U64"];
-  pending_withdrawals: _0x1__table__Table;
-  reactivate_stake_events: _0x1__event__EventHandle;
-  stake_pool_signer_cap: _0x1__account__SignerCapability;
-  total_coins_inactive: Scalars["U64"];
-  unlock_stake_events: _0x1__event__EventHandle;
-  withdraw_stake_events: _0x1__event__EventHandle;
-};
-
-export type _0x1__delegation_pool__DelegationPoolOwnership = {
-  __typename?: "_0x1__delegation_pool__DelegationPoolOwnership";
+export type RegisterValidatorCandidateEvent = {
+  __typename?: "RegisterValidatorCandidateEvent";
   pool_address: Scalars["Address"];
 };
 
-export type _0x1__delegation_pool__DistributeCommissionEvent = {
-  __typename?: "_0x1__delegation_pool__DistributeCommissionEvent";
-  commission_active: Scalars["U64"];
-  commission_pending_inactive: Scalars["U64"];
+export type RemoveOwnersEvent = {
+  __typename?: "RemoveOwnersEvent";
+  owners_removed: Array<Scalars["Address"]>;
+};
+
+export type RequestCommissionEvent = {
+  __typename?: "RequestCommissionEvent";
+  accumulated_rewards: Scalars["U64"];
+  commission_amount: Scalars["U64"];
   operator: Scalars["Address"];
   pool_address: Scalars["Address"];
 };
 
-export type _0x1__delegation_pool__GovernanceRecords = {
-  __typename?: "_0x1__delegation_pool__GovernanceRecords";
-  create_proposal_events: _0x1__event__EventHandle;
-  delegate_voting_power_events: _0x1__event__EventHandle;
-  delegated_votes: _0x1__smart_table__SmartTable;
-  vote_delegation: _0x1__smart_table__SmartTable;
-  vote_events: _0x1__event__EventHandle;
-  votes: _0x1__smart_table__SmartTable;
-  votes_per_proposal: _0x1__smart_table__SmartTable;
-};
-
-export type _0x1__delegation_pool__ObservedLockupCycle = {
-  __typename?: "_0x1__delegation_pool__ObservedLockupCycle";
-  index: Scalars["U64"];
-};
-
-export type _0x1__delegation_pool__ReactivateStakeEvent = {
-  __typename?: "_0x1__delegation_pool__ReactivateStakeEvent";
-  amount_reactivated: Scalars["U64"];
-  delegator_address: Scalars["Address"];
-  pool_address: Scalars["Address"];
-};
-
-export type _0x1__delegation_pool__UnlockStakeEvent = {
-  __typename?: "_0x1__delegation_pool__UnlockStakeEvent";
-  amount_unlocked: Scalars["U64"];
-  delegator_address: Scalars["Address"];
-  pool_address: Scalars["Address"];
-};
-
-export type _0x1__delegation_pool__VoteDelegation = {
-  __typename?: "_0x1__delegation_pool__VoteDelegation";
-  last_locked_until_secs: Scalars["U64"];
-  pending_voter: Scalars["Address"];
-  voter: Scalars["Address"];
-};
-
-export type _0x1__delegation_pool__VoteEvent = {
-  __typename?: "_0x1__delegation_pool__VoteEvent";
-  delegation_pool: Scalars["Address"];
-  num_votes: Scalars["U64"];
+export type ResolveProposal = {
+  __typename?: "ResolveProposal";
+  no_votes: Scalars["U128"];
   proposal_id: Scalars["U64"];
-  should_pass: Scalars["Boolean"];
-  voter: Scalars["Address"];
+  resolved_early: Scalars["Boolean"];
+  yes_votes: Scalars["U128"];
 };
 
-export type _0x1__delegation_pool__VotingRecordKey = {
-  __typename?: "_0x1__delegation_pool__VotingRecordKey";
-  proposal_id: Scalars["U64"];
-  voter: Scalars["Address"];
+export type Result = {
+  __typename?: "Result";
+  inner: Scalars["U8"];
 };
 
-export type _0x1__delegation_pool__WithdrawStakeEvent = {
-  __typename?: "_0x1__delegation_pool__WithdrawStakeEvent";
-  amount_withdrawn: Scalars["U64"];
-  delegator_address: Scalars["Address"];
+export type RistrettoPoint = {
+  __typename?: "RistrettoPoint";
+  handle: Scalars["U64"];
+};
+
+export type RotateConsensusKeyEvent = {
+  __typename?: "RotateConsensusKeyEvent";
+  new_consensus_pubkey: Array<Scalars["U8"]>;
+  old_consensus_pubkey: Array<Scalars["U8"]>;
   pool_address: Scalars["Address"];
 };
 
-export type _0x1__ed25519__Signature = {
-  __typename?: "_0x1__ed25519__Signature";
-  bytes: Array<Scalars["U8"]>;
+export type RotationCapability = {
+  __typename?: "RotationCapability";
+  account: Scalars["Address"];
 };
 
-export type _0x1__ed25519__SignedMessage = {
-  __typename?: "_0x1__ed25519__SignedMessage";
+export type RotationCapabilityOfferProofChallenge = {
+  __typename?: "RotationCapabilityOfferProofChallenge";
+  recipient_address: Scalars["Address"];
+  sequence_number: Scalars["U64"];
+};
+
+export type RotationCapabilityOfferProofChallengeV2 = {
+  __typename?: "RotationCapabilityOfferProofChallengeV2";
+  chain_id: Scalars["U8"];
+  recipient_address: Scalars["Address"];
+  sequence_number: Scalars["U64"];
+  source_address: Scalars["Address"];
+};
+
+export type RotationProofChallenge = {
+  __typename?: "RotationProofChallenge";
+  current_auth_key: Scalars["Address"];
+  new_public_key: Array<Scalars["U8"]>;
+  originator: Scalars["Address"];
+  sequence_number: Scalars["U64"];
+};
+
+export type Royalty = {
+  __typename?: "Royalty";
+  denominator: Scalars["U64"];
+  numerator: Scalars["U64"];
+  payee_address: Scalars["Address"];
+};
+
+export type Scalar = {
+  __typename?: "Scalar";
+  data: Array<Scalars["U8"]>;
+};
+
+export type SetBeneficiaryEvent = {
+  __typename?: "SetBeneficiaryEvent";
+  admin: Scalars["Address"];
+  new_beneficiary: Scalars["Address"];
+  old_beneficiary: Scalars["Address"];
+  shareholder: Scalars["Address"];
+  vesting_contract_address: Scalars["Address"];
+};
+
+export type SetOperatorEvent = {
+  __typename?: "SetOperatorEvent";
+  new_operator: Scalars["Address"];
+  old_operator: Scalars["Address"];
+  pool_address: Scalars["Address"];
+};
+
+export type SetVersionCapability = {
+  __typename?: "SetVersionCapability";
+  dummy_field: Scalars["Boolean"];
+};
+
+export type SignedMessage = {
+  __typename?: "SignedMessage";
   inner: Scalars["Any"];
-  type_info: _0x1__type_info__TypeInfo;
+  type_info: TypeInfo;
 };
 
-export type _0x1__ed25519__UnvalidatedPublicKey = {
-  __typename?: "_0x1__ed25519__UnvalidatedPublicKey";
-  bytes: Array<Scalars["U8"]>;
+export type SignerCapability = {
+  __typename?: "SignerCapability";
+  account: Scalars["Address"];
 };
 
-export type _0x1__ed25519__ValidatedPublicKey = {
-  __typename?: "_0x1__ed25519__ValidatedPublicKey";
-  bytes: Array<Scalars["U8"]>;
+export type SignerCapabilityOfferProofChallenge = {
+  __typename?: "SignerCapabilityOfferProofChallenge";
+  recipient_address: Scalars["Address"];
+  sequence_number: Scalars["U64"];
 };
 
-export type _0x1__event__EventHandle = {
-  __typename?: "_0x1__event__EventHandle";
-  counter: Scalars["U64"];
-  guid: _0x1__guid__GUID;
+export type SignerCapabilityOfferProofChallengeV2 = {
+  __typename?: "SignerCapabilityOfferProofChallengeV2";
+  recipient_address: Scalars["Address"];
+  sequence_number: Scalars["U64"];
+  source_address: Scalars["Address"];
 };
 
-export type _0x1__execution_config__ExecutionConfig = {
-  __typename?: "_0x1__execution_config__ExecutionConfig";
-  config: Array<Scalars["U8"]>;
+export type SimpleSet = {
+  __typename?: "SimpleSet";
+  data: Array<Scalars["Any"]>;
 };
 
-export type _0x1__features__Features = {
-  __typename?: "_0x1__features__Features";
-  features: Array<Scalars["U8"]>;
+export type SmartTable = {
+  __typename?: "SmartTable";
+  buckets: TableWithLength;
+  level: Scalars["U8"];
+  num_buckets: Scalars["U64"];
+  size: Scalars["U64"];
+  split_load_threshold: Scalars["U8"];
+  target_bucket_size: Scalars["U64"];
 };
 
-export type _0x1__fixed_point32__FixedPoint32 = {
-  __typename?: "_0x1__fixed_point32__FixedPoint32";
-  value: Scalars["U64"];
+export type SmartVector = {
+  __typename?: "SmartVector";
+  big_vec: Option;
+  bucket_size: Option;
+  inline_capacity: Option;
+  inline_vec: Array<Scalars["Any"]>;
 };
 
-export type _0x1__fixed_point64__FixedPoint64 = {
-  __typename?: "_0x1__fixed_point64__FixedPoint64";
-  value: Scalars["U128"];
+export type StakePool = {
+  __typename?: "StakePool";
+  active: Coin;
+  add_stake_events: EventHandle;
+  delegated_voter: Scalars["Address"];
+  distribute_rewards_events: EventHandle;
+  inactive: Coin;
+  increase_lockup_events: EventHandle;
+  initialize_validator_events: EventHandle;
+  join_validator_set_events: EventHandle;
+  leave_validator_set_events: EventHandle;
+  locked_until_secs: Scalars["U64"];
+  operator_address: Scalars["Address"];
+  pending_active: Coin;
+  pending_inactive: Coin;
+  reactivate_stake_events: EventHandle;
+  rotate_consensus_key_events: EventHandle;
+  set_operator_events: EventHandle;
+  unlock_stake_events: EventHandle;
+  update_network_and_fullnode_addresses_events: EventHandle;
+  withdraw_stake_events: EventHandle;
 };
 
-export type _0x1__fungible_asset__BurnRef = {
-  __typename?: "_0x1__fungible_asset__BurnRef";
-  metadata: _0x1__object__Object;
+export type StakingConfig = {
+  __typename?: "StakingConfig";
+  allow_validator_set_change: Scalars["Boolean"];
+  maximum_stake: Scalars["U64"];
+  minimum_stake: Scalars["U64"];
+  recurring_lockup_duration_secs: Scalars["U64"];
+  rewards_rate: Scalars["U64"];
+  rewards_rate_denominator: Scalars["U64"];
+  voting_power_increase_limit: Scalars["U64"];
 };
 
-export type _0x1__fungible_asset__DepositEvent = {
-  __typename?: "_0x1__fungible_asset__DepositEvent";
-  amount: Scalars["U64"];
+export type StakingContract = {
+  __typename?: "StakingContract";
+  commission_percentage: Scalars["U64"];
+  distribution_pool: _0x0000000000000000000000000000000000000000000000000000000000000001__pool_u64__Pool;
+  owner_cap: OwnerCapability;
+  pool_address: Scalars["Address"];
+  principal: Scalars["U64"];
+  signer_cap: SignerCapability;
 };
 
-export type _0x1__fungible_asset__FrozenEvent = {
-  __typename?: "_0x1__fungible_asset__FrozenEvent";
-  frozen: Scalars["Boolean"];
+export type StakingGroupContainer = {
+  __typename?: "StakingGroupContainer";
+  dummy_field: Scalars["Boolean"];
 };
 
-export type _0x1__fungible_asset__FungibleAsset = {
-  __typename?: "_0x1__fungible_asset__FungibleAsset";
-  amount: Scalars["U64"];
-  metadata: _0x1__object__Object;
+export type StakingGroupUpdateCommissionEvent = {
+  __typename?: "StakingGroupUpdateCommissionEvent";
+  update_commission_events: EventHandle;
 };
 
-export type _0x1__fungible_asset__FungibleAssetEvents = {
-  __typename?: "_0x1__fungible_asset__FungibleAssetEvents";
-  deposit_events: _0x1__event__EventHandle;
-  frozen_events: _0x1__event__EventHandle;
-  withdraw_events: _0x1__event__EventHandle;
+export type StakingInfo = {
+  __typename?: "StakingInfo";
+  commission_percentage: Scalars["U64"];
+  operator: Scalars["Address"];
+  pool_address: Scalars["Address"];
+  voter: Scalars["Address"];
 };
 
-export type _0x1__fungible_asset__FungibleStore = {
-  __typename?: "_0x1__fungible_asset__FungibleStore";
-  balance: Scalars["U64"];
-  frozen: Scalars["Boolean"];
-  metadata: _0x1__object__Object;
+export type StakingRewardsConfig = {
+  __typename?: "StakingRewardsConfig";
+  last_rewards_rate_period_start_in_secs: Scalars["U64"];
+  min_rewards_rate: FixedPoint64;
+  rewards_rate: FixedPoint64;
+  rewards_rate_decrease_rate: FixedPoint64;
+  rewards_rate_period_in_secs: Scalars["U64"];
 };
 
-export type _0x1__fungible_asset__Metadata = {
-  __typename?: "_0x1__fungible_asset__Metadata";
-  decimals: Scalars["U8"];
-  icon_uri: Scalars["String"];
-  name: Scalars["String"];
-  project_uri: Scalars["String"];
-  symbol: Scalars["String"];
+export type StateStorageUsage = {
+  __typename?: "StateStorageUsage";
+  epoch: Scalars["U64"];
+  usage: Usage;
 };
 
-export type _0x1__fungible_asset__MintRef = {
-  __typename?: "_0x1__fungible_asset__MintRef";
-  metadata: _0x1__object__Object;
+export type StorageGas = {
+  __typename?: "StorageGas";
+  per_byte_create: Scalars["U64"];
+  per_byte_read: Scalars["U64"];
+  per_byte_write: Scalars["U64"];
+  per_item_create: Scalars["U64"];
+  per_item_read: Scalars["U64"];
+  per_item_write: Scalars["U64"];
 };
 
-export type _0x1__fungible_asset__Supply = {
-  __typename?: "_0x1__fungible_asset__Supply";
+export type StorageGasConfig = {
+  __typename?: "StorageGasConfig";
+  byte_config: UsageGasConfig;
+  item_config: UsageGasConfig;
+};
+
+export type Store = {
+  __typename?: "Store";
+  add_distribution_events: EventHandle;
+  add_stake_events: EventHandle;
+  create_staking_contract_events: EventHandle;
+  distribute_events: EventHandle;
+  request_commission_events: EventHandle;
+  reset_lockup_events: EventHandle;
+  staking_contracts: _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap;
+  switch_operator_events: EventHandle;
+  unlock_stake_events: EventHandle;
+  update_voter_events: EventHandle;
+};
+
+export type Supply = {
+  __typename?: "Supply";
   current: Scalars["U128"];
-  maximum: _0x1__option__Option;
+  maximum: Option;
 };
 
-export type _0x1__fungible_asset__TransferRef = {
-  __typename?: "_0x1__fungible_asset__TransferRef";
-  metadata: _0x1__object__Object;
+export type SupplyConfig = {
+  __typename?: "SupplyConfig";
+  allow_upgrades: Scalars["Boolean"];
 };
 
-export type _0x1__fungible_asset__WithdrawEvent = {
-  __typename?: "_0x1__fungible_asset__WithdrawEvent";
-  amount: Scalars["U64"];
+export type SwitchOperatorEvent = {
+  __typename?: "SwitchOperatorEvent";
+  new_operator: Scalars["Address"];
+  old_operator: Scalars["Address"];
+  pool_address: Scalars["Address"];
 };
 
-export type _0x1__gas_schedule__GasEntry = {
-  __typename?: "_0x1__gas_schedule__GasEntry";
-  key: Scalars["String"];
-  val: Scalars["U64"];
+export type Table = {
+  __typename?: "Table";
+  handle: Scalars["Address"];
 };
 
-export type _0x1__gas_schedule__GasSchedule = {
-  __typename?: "_0x1__gas_schedule__GasSchedule";
-  entries: Array<_0x1__gas_schedule__GasEntry>;
+export type TableWithLength = {
+  __typename?: "TableWithLength";
+  inner: Table;
+  length: Scalars["U64"];
 };
 
-export type _0x1__gas_schedule__GasScheduleV2 = {
-  __typename?: "_0x1__gas_schedule__GasScheduleV2";
-  entries: Array<_0x1__gas_schedule__GasEntry>;
-  feature_version: Scalars["U64"];
+export type TerminateEvent = {
+  __typename?: "TerminateEvent";
+  admin: Scalars["Address"];
+  vesting_contract_address: Scalars["Address"];
 };
 
-export type _0x1__genesis__AccountMap = {
-  __typename?: "_0x1__genesis__AccountMap";
+export type Token = {
+  __typename?: "Token";
+  collection: Object;
+  description: Scalars["String"];
+  index: Scalars["U64"];
+  mutation_events: EventHandle;
+  name: Scalars["String"];
+  uri: Scalars["String"];
+};
+
+export type TransactionExecutionFailedEvent = {
+  __typename?: "TransactionExecutionFailedEvent";
+  execution_error: ExecutionError;
+  executor: Scalars["Address"];
+  num_approvals: Scalars["U64"];
+  sequence_number: Scalars["U64"];
+  transaction_payload: Array<Scalars["U8"]>;
+};
+
+export type TransactionExecutionSucceededEvent = {
+  __typename?: "TransactionExecutionSucceededEvent";
+  executor: Scalars["Address"];
+  num_approvals: Scalars["U64"];
+  sequence_number: Scalars["U64"];
+  transaction_payload: Array<Scalars["U8"]>;
+};
+
+export type TransactionValidation = {
+  __typename?: "TransactionValidation";
+  module_addr: Scalars["Address"];
+  module_name: Array<Scalars["U8"]>;
+  module_prologue_name: Array<Scalars["U8"]>;
+  multi_agent_prologue_name: Array<Scalars["U8"]>;
+  script_prologue_name: Array<Scalars["U8"]>;
+  user_epilogue_name: Array<Scalars["U8"]>;
+};
+
+export type TransferEvent = {
+  __typename?: "TransferEvent";
+  from: Scalars["Address"];
+  object: Scalars["Address"];
+  to: Scalars["Address"];
+};
+
+export type TypeInfo = {
+  __typename?: "TypeInfo";
   account_address: Scalars["Address"];
-  balance: Scalars["U64"];
+  module_name: Array<Scalars["U8"]>;
+  struct_name: Array<Scalars["U8"]>;
 };
 
-export type _0x1__genesis__EmployeeAccountMap = {
-  __typename?: "_0x1__genesis__EmployeeAccountMap";
-  accounts: Array<Scalars["Address"]>;
-  beneficiary_resetter: Scalars["Address"];
-  validator: _0x1__genesis__ValidatorConfigurationWithCommission;
-  vesting_schedule_denominator: Scalars["U64"];
-  vesting_schedule_numerator: Array<Scalars["U64"]>;
+export type UnlimitedSupply = {
+  __typename?: "UnlimitedSupply";
+  burn_events: EventHandle;
+  current_supply: Scalars["U64"];
+  mint_events: EventHandle;
+  total_minted: Scalars["U64"];
 };
 
-export type _0x1__genesis__ValidatorConfiguration = {
-  __typename?: "_0x1__genesis__ValidatorConfiguration";
+export type UnlockRewardsEvent = {
+  __typename?: "UnlockRewardsEvent";
+  admin: Scalars["Address"];
+  amount: Scalars["U64"];
+  staking_pool_address: Scalars["Address"];
+  vesting_contract_address: Scalars["Address"];
+};
+
+export type UpdateCommissionEvent = {
+  __typename?: "UpdateCommissionEvent";
+  new_commission_percentage: Scalars["U64"];
+  old_commission_percentage: Scalars["U64"];
+  operator: Scalars["Address"];
+  staker: Scalars["Address"];
+};
+
+export type UpdateConfigEvent = {
+  __typename?: "UpdateConfigEvent";
+  min_voting_threshold: Scalars["U128"];
+  required_proposer_stake: Scalars["U64"];
+  voting_duration_secs: Scalars["U64"];
+};
+
+export type UpdateEpochIntervalEvent = {
+  __typename?: "UpdateEpochIntervalEvent";
+  new_epoch_interval: Scalars["U64"];
+  old_epoch_interval: Scalars["U64"];
+};
+
+export type UpdateNetworkAndFullnodeAddressesEvent = {
+  __typename?: "UpdateNetworkAndFullnodeAddressesEvent";
+  new_fullnode_addresses: Array<Scalars["U8"]>;
+  new_network_addresses: Array<Scalars["U8"]>;
+  old_fullnode_addresses: Array<Scalars["U8"]>;
+  old_network_addresses: Array<Scalars["U8"]>;
+  pool_address: Scalars["Address"];
+};
+
+export type UpdateOperatorEvent = {
+  __typename?: "UpdateOperatorEvent";
+  admin: Scalars["Address"];
+  commission_percentage: Scalars["U64"];
+  new_operator: Scalars["Address"];
+  old_operator: Scalars["Address"];
+  staking_pool_address: Scalars["Address"];
+  vesting_contract_address: Scalars["Address"];
+};
+
+export type UpdateSignaturesRequiredEvent = {
+  __typename?: "UpdateSignaturesRequiredEvent";
+  new_num_signatures_required: Scalars["U64"];
+  old_num_signatures_required: Scalars["U64"];
+};
+
+export type UpgradePolicy = {
+  __typename?: "UpgradePolicy";
+  policy: Scalars["U8"];
+};
+
+export type Usage = {
+  __typename?: "Usage";
+  bytes: Scalars["U64"];
+  items: Scalars["U64"];
+};
+
+export type UsageGasConfig = {
+  __typename?: "UsageGasConfig";
+  create_curve: GasCurve;
+  read_curve: GasCurve;
+  target_usage: Scalars["U64"];
+  write_curve: GasCurve;
+};
+
+export type ValidatorConfig = {
+  __typename?: "ValidatorConfig";
+  consensus_pubkey: Array<Scalars["U8"]>;
+  fullnode_addresses: Array<Scalars["U8"]>;
+  network_addresses: Array<Scalars["U8"]>;
+  validator_index: Scalars["U64"];
+};
+
+export type ValidatorConfiguration = {
+  __typename?: "ValidatorConfiguration";
   consensus_pubkey: Array<Scalars["U8"]>;
   full_node_network_addresses: Array<Scalars["U8"]>;
   network_addresses: Array<Scalars["U8"]>;
@@ -789,890 +1478,47 @@ export type _0x1__genesis__ValidatorConfiguration = {
   voter_address: Scalars["Address"];
 };
 
-export type _0x1__genesis__ValidatorConfigurationWithCommission = {
-  __typename?: "_0x1__genesis__ValidatorConfigurationWithCommission";
+export type ValidatorConfigurationWithCommission = {
+  __typename?: "ValidatorConfigurationWithCommission";
   commission_percentage: Scalars["U64"];
   join_during_genesis: Scalars["Boolean"];
-  validator_config: _0x1__genesis__ValidatorConfiguration;
+  validator_config: ValidatorConfiguration;
 };
 
-export type _0x1__governance_proposal__GovernanceProposal = {
-  __typename?: "_0x1__governance_proposal__GovernanceProposal";
-  dummy_field: Scalars["Boolean"];
+export type ValidatorFees = {
+  __typename?: "ValidatorFees";
+  fees_table: Table;
 };
 
-export type _0x1__guid__GUID = {
-  __typename?: "_0x1__guid__GUID";
-  id: _0x1__guid__ID;
-};
-
-export type _0x1__guid__ID = {
-  __typename?: "_0x1__guid__ID";
+export type ValidatorInfo = {
+  __typename?: "ValidatorInfo";
   addr: Scalars["Address"];
-  creation_num: Scalars["U64"];
-};
-
-export type _0x1__managed_coin__Capabilities = {
-  __typename?: "_0x1__managed_coin__Capabilities";
-  burn_cap: _0x1__coin__BurnCapability;
-  freeze_cap: _0x1__coin__FreezeCapability;
-  mint_cap: _0x1__coin__MintCapability;
-};
-
-export type _0x1__multi_ed25519__Signature = {
-  __typename?: "_0x1__multi_ed25519__Signature";
-  bytes: Array<Scalars["U8"]>;
-};
-
-export type _0x1__multi_ed25519__UnvalidatedPublicKey = {
-  __typename?: "_0x1__multi_ed25519__UnvalidatedPublicKey";
-  bytes: Array<Scalars["U8"]>;
-};
-
-export type _0x1__multi_ed25519__ValidatedPublicKey = {
-  __typename?: "_0x1__multi_ed25519__ValidatedPublicKey";
-  bytes: Array<Scalars["U8"]>;
-};
-
-export type _0x1__multisig_account__AddOwnersEvent = {
-  __typename?: "_0x1__multisig_account__AddOwnersEvent";
-  owners_added: Array<Scalars["Address"]>;
-};
-
-export type _0x1__multisig_account__CreateTransactionEvent = {
-  __typename?: "_0x1__multisig_account__CreateTransactionEvent";
-  creator: Scalars["Address"];
-  sequence_number: Scalars["U64"];
-  transaction: _0x1__multisig_account__MultisigTransaction;
-};
-
-export type _0x1__multisig_account__ExecuteRejectedTransactionEvent = {
-  __typename?: "_0x1__multisig_account__ExecuteRejectedTransactionEvent";
-  executor: Scalars["Address"];
-  num_rejections: Scalars["U64"];
-  sequence_number: Scalars["U64"];
-};
-
-export type _0x1__multisig_account__ExecutionError = {
-  __typename?: "_0x1__multisig_account__ExecutionError";
-  abort_location: Scalars["String"];
-  error_code: Scalars["U64"];
-  error_type: Scalars["String"];
-};
-
-export type _0x1__multisig_account__MetadataUpdatedEvent = {
-  __typename?: "_0x1__multisig_account__MetadataUpdatedEvent";
-  new_metadata: _0x1__simple_map__SimpleMap;
-  old_metadata: _0x1__simple_map__SimpleMap;
-};
-
-export type _0x1__multisig_account__MultisigAccount = {
-  __typename?: "_0x1__multisig_account__MultisigAccount";
-  add_owners_events: _0x1__event__EventHandle;
-  create_transaction_events: _0x1__event__EventHandle;
-  execute_rejected_transaction_events: _0x1__event__EventHandle;
-  execute_transaction_events: _0x1__event__EventHandle;
-  last_executed_sequence_number: Scalars["U64"];
-  metadata: _0x1__simple_map__SimpleMap;
-  metadata_updated_events: _0x1__event__EventHandle;
-  next_sequence_number: Scalars["U64"];
-  num_signatures_required: Scalars["U64"];
-  owners: Array<Scalars["Address"]>;
-  remove_owners_events: _0x1__event__EventHandle;
-  signer_cap: _0x1__option__Option;
-  transaction_execution_failed_events: _0x1__event__EventHandle;
-  transactions: _0x1__table__Table;
-  update_signature_required_events: _0x1__event__EventHandle;
-  vote_events: _0x1__event__EventHandle;
-};
-
-export type _0x1__multisig_account__MultisigAccountCreationMessage = {
-  __typename?: "_0x1__multisig_account__MultisigAccountCreationMessage";
-  account_address: Scalars["Address"];
-  chain_id: Scalars["U8"];
-  num_signatures_required: Scalars["U64"];
-  owners: Array<Scalars["Address"]>;
-  sequence_number: Scalars["U64"];
-};
-
-export type _0x1__multisig_account__MultisigAccountCreationWithAuthKeyRevocationMessage =
-  {
-    __typename?: "_0x1__multisig_account__MultisigAccountCreationWithAuthKeyRevocationMessage";
-    account_address: Scalars["Address"];
-    chain_id: Scalars["U8"];
-    num_signatures_required: Scalars["U64"];
-    owners: Array<Scalars["Address"]>;
-    sequence_number: Scalars["U64"];
-  };
-
-export type _0x1__multisig_account__MultisigTransaction = {
-  __typename?: "_0x1__multisig_account__MultisigTransaction";
-  creation_time_secs: Scalars["U64"];
-  creator: Scalars["Address"];
-  payload: _0x1__option__Option;
-  payload_hash: _0x1__option__Option;
-  votes: _0x1__simple_map__SimpleMap;
-};
-
-export type _0x1__multisig_account__RemoveOwnersEvent = {
-  __typename?: "_0x1__multisig_account__RemoveOwnersEvent";
-  owners_removed: Array<Scalars["Address"]>;
-};
-
-export type _0x1__multisig_account__TransactionExecutionFailedEvent = {
-  __typename?: "_0x1__multisig_account__TransactionExecutionFailedEvent";
-  execution_error: _0x1__multisig_account__ExecutionError;
-  executor: Scalars["Address"];
-  num_approvals: Scalars["U64"];
-  sequence_number: Scalars["U64"];
-  transaction_payload: Array<Scalars["U8"]>;
-};
-
-export type _0x1__multisig_account__TransactionExecutionSucceededEvent = {
-  __typename?: "_0x1__multisig_account__TransactionExecutionSucceededEvent";
-  executor: Scalars["Address"];
-  num_approvals: Scalars["U64"];
-  sequence_number: Scalars["U64"];
-  transaction_payload: Array<Scalars["U8"]>;
-};
-
-export type _0x1__multisig_account__UpdateSignaturesRequiredEvent = {
-  __typename?: "_0x1__multisig_account__UpdateSignaturesRequiredEvent";
-  new_num_signatures_required: Scalars["U64"];
-  old_num_signatures_required: Scalars["U64"];
-};
-
-export type _0x1__multisig_account__VoteEvent = {
-  __typename?: "_0x1__multisig_account__VoteEvent";
-  approved: Scalars["Boolean"];
-  owner: Scalars["Address"];
-  sequence_number: Scalars["U64"];
-};
-
-export type _0x1__object__ConstructorRef = {
-  __typename?: "_0x1__object__ConstructorRef";
-  can_delete: Scalars["Boolean"];
-  self: Scalars["Address"];
-};
-
-export type _0x1__object__DeleteRef = {
-  __typename?: "_0x1__object__DeleteRef";
-  self: Scalars["Address"];
-};
-
-export type _0x1__object__DeriveRef = {
-  __typename?: "_0x1__object__DeriveRef";
-  self: Scalars["Address"];
-};
-
-export type _0x1__object__ExtendRef = {
-  __typename?: "_0x1__object__ExtendRef";
-  self: Scalars["Address"];
-};
-
-export type _0x1__object__LinearTransferRef = {
-  __typename?: "_0x1__object__LinearTransferRef";
-  owner: Scalars["Address"];
-  self: Scalars["Address"];
-};
-
-export type _0x1__object__Object = {
-  __typename?: "_0x1__object__Object";
-  inner: Scalars["Address"];
-};
-
-export type _0x1__object__ObjectCore = {
-  __typename?: "_0x1__object__ObjectCore";
-  allow_ungated_transfer: Scalars["Boolean"];
-  guid_creation_num: Scalars["U64"];
-  owner: Scalars["Address"];
-  transfer_events: _0x1__event__EventHandle;
-};
-
-export type _0x1__object__ObjectGroup = {
-  __typename?: "_0x1__object__ObjectGroup";
-  dummy_field: Scalars["Boolean"];
-};
-
-export type _0x1__object__TransferEvent = {
-  __typename?: "_0x1__object__TransferEvent";
-  from: Scalars["Address"];
-  object: Scalars["Address"];
-  to: Scalars["Address"];
-};
-
-export type _0x1__object__TransferRef = {
-  __typename?: "_0x1__object__TransferRef";
-  self: Scalars["Address"];
-};
-
-export type _0x1__option__Option = {
-  __typename?: "_0x1__option__Option";
-  vec: Array<Scalars["Any"]>;
-};
-
-export type _0x1__optional_aggregator__Integer = {
-  __typename?: "_0x1__optional_aggregator__Integer";
-  limit: Scalars["U128"];
-  value: Scalars["U128"];
-};
-
-export type _0x1__optional_aggregator__OptionalAggregator = {
-  __typename?: "_0x1__optional_aggregator__OptionalAggregator";
-  aggregator: _0x1__option__Option;
-  integer: _0x1__option__Option;
-};
-
-export type _0x1__pool_u64__Pool = {
-  __typename?: "_0x1__pool_u64__Pool";
-  scaling_factor: Scalars["U64"];
-  shareholders: Array<Scalars["Address"]>;
-  shareholders_limit: Scalars["U64"];
-  shares: _0x1__simple_map__SimpleMap;
-  total_coins: Scalars["U64"];
-  total_shares: Scalars["U64"];
-};
-
-export type _0x1__pool_u64_unbound__Pool = {
-  __typename?: "_0x1__pool_u64_unbound__Pool";
-  scaling_factor: Scalars["U64"];
-  shares: _0x1__table_with_length__TableWithLength;
-  total_coins: Scalars["U64"];
-  total_shares: Scalars["U128"];
-};
-
-export type _0x1__primary_fungible_store__DeriveRefPod = {
-  __typename?: "_0x1__primary_fungible_store__DeriveRefPod";
-  metadata_derive_ref: _0x1__object__DeriveRef;
-};
-
-export type _0x1__reconfiguration__Configuration = {
-  __typename?: "_0x1__reconfiguration__Configuration";
-  epoch: Scalars["U64"];
-  events: _0x1__event__EventHandle;
-  last_reconfiguration_time: Scalars["U64"];
-};
-
-export type _0x1__reconfiguration__DisableReconfiguration = {
-  __typename?: "_0x1__reconfiguration__DisableReconfiguration";
-  dummy_field: Scalars["Boolean"];
-};
-
-export type _0x1__reconfiguration__NewEpochEvent = {
-  __typename?: "_0x1__reconfiguration__NewEpochEvent";
-  epoch: Scalars["U64"];
-};
-
-export type _0x1__resource_account__Container = {
-  __typename?: "_0x1__resource_account__Container";
-  store: _0x1__simple_map__SimpleMap;
-};
-
-export type _0x1__ristretto255__CompressedRistretto = {
-  __typename?: "_0x1__ristretto255__CompressedRistretto";
-  data: Array<Scalars["U8"]>;
-};
-
-export type _0x1__ristretto255__RistrettoPoint = {
-  __typename?: "_0x1__ristretto255__RistrettoPoint";
-  handle: Scalars["U64"];
-};
-
-export type _0x1__ristretto255__Scalar = {
-  __typename?: "_0x1__ristretto255__Scalar";
-  data: Array<Scalars["U8"]>;
-};
-
-export type _0x1__ristretto255_bulletproofs__RangeProof = {
-  __typename?: "_0x1__ristretto255_bulletproofs__RangeProof";
-  bytes: Array<Scalars["U8"]>;
-};
-
-export type _0x1__ristretto255_elgamal__Ciphertext = {
-  __typename?: "_0x1__ristretto255_elgamal__Ciphertext";
-  left: _0x1__ristretto255__RistrettoPoint;
-  right: _0x1__ristretto255__RistrettoPoint;
-};
-
-export type _0x1__ristretto255_elgamal__CompressedCiphertext = {
-  __typename?: "_0x1__ristretto255_elgamal__CompressedCiphertext";
-  left: _0x1__ristretto255__CompressedRistretto;
-  right: _0x1__ristretto255__CompressedRistretto;
-};
-
-export type _0x1__ristretto255_elgamal__CompressedPubkey = {
-  __typename?: "_0x1__ristretto255_elgamal__CompressedPubkey";
-  point: _0x1__ristretto255__CompressedRistretto;
-};
-
-export type _0x1__ristretto255_pedersen__Commitment = {
-  __typename?: "_0x1__ristretto255_pedersen__Commitment";
-  point: _0x1__ristretto255__RistrettoPoint;
-};
-
-export type _0x1__secp256k1__ECDSARawPublicKey = {
-  __typename?: "_0x1__secp256k1__ECDSARawPublicKey";
-  bytes: Array<Scalars["U8"]>;
-};
-
-export type _0x1__secp256k1__ECDSASignature = {
-  __typename?: "_0x1__secp256k1__ECDSASignature";
-  bytes: Array<Scalars["U8"]>;
-};
-
-export type _0x1__simple_map__Element = {
-  __typename?: "_0x1__simple_map__Element";
-  key: Scalars["Any"];
-  value: Scalars["Any"];
-};
-
-export type _0x1__simple_map__SimpleMap = {
-  __typename?: "_0x1__simple_map__SimpleMap";
-  data: Array<_0x1__simple_map__Element>;
-};
-
-export type _0x1__smart_table__Entry = {
-  __typename?: "_0x1__smart_table__Entry";
-  hash: Scalars["U64"];
-  key: Scalars["Any"];
-  value: Scalars["Any"];
-};
-
-export type _0x1__smart_table__SmartTable = {
-  __typename?: "_0x1__smart_table__SmartTable";
-  buckets: _0x1__table_with_length__TableWithLength;
-  level: Scalars["U8"];
-  num_buckets: Scalars["U64"];
-  size: Scalars["U64"];
-  split_load_threshold: Scalars["U8"];
-  target_bucket_size: Scalars["U64"];
-};
-
-export type _0x1__smart_vector__SmartVector = {
-  __typename?: "_0x1__smart_vector__SmartVector";
-  big_vec: _0x1__option__Option;
-  bucket_size: _0x1__option__Option;
-  inline_capacity: _0x1__option__Option;
-  inline_vec: Array<Scalars["Any"]>;
-};
-
-export type _0x1__stake__AddStakeEvent = {
-  __typename?: "_0x1__stake__AddStakeEvent";
-  amount_added: Scalars["U64"];
-  pool_address: Scalars["Address"];
-};
-
-export type _0x1__stake__AllowedValidators = {
-  __typename?: "_0x1__stake__AllowedValidators";
-  accounts: Array<Scalars["Address"]>;
-};
-
-export type _0x1__stake__AptosCoinCapabilities = {
-  __typename?: "_0x1__stake__AptosCoinCapabilities";
-  mint_cap: _0x1__coin__MintCapability;
-};
-
-export type _0x1__stake__DistributeRewardsEvent = {
-  __typename?: "_0x1__stake__DistributeRewardsEvent";
-  pool_address: Scalars["Address"];
-  rewards_amount: Scalars["U64"];
-};
-
-export type _0x1__stake__IncreaseLockupEvent = {
-  __typename?: "_0x1__stake__IncreaseLockupEvent";
-  new_locked_until_secs: Scalars["U64"];
-  old_locked_until_secs: Scalars["U64"];
-  pool_address: Scalars["Address"];
-};
-
-export type _0x1__stake__IndividualValidatorPerformance = {
-  __typename?: "_0x1__stake__IndividualValidatorPerformance";
-  failed_proposals: Scalars["U64"];
-  successful_proposals: Scalars["U64"];
-};
-
-export type _0x1__stake__JoinValidatorSetEvent = {
-  __typename?: "_0x1__stake__JoinValidatorSetEvent";
-  pool_address: Scalars["Address"];
-};
-
-export type _0x1__stake__LeaveValidatorSetEvent = {
-  __typename?: "_0x1__stake__LeaveValidatorSetEvent";
-  pool_address: Scalars["Address"];
-};
-
-export type _0x1__stake__OwnerCapability = {
-  __typename?: "_0x1__stake__OwnerCapability";
-  pool_address: Scalars["Address"];
-};
-
-export type _0x1__stake__ReactivateStakeEvent = {
-  __typename?: "_0x1__stake__ReactivateStakeEvent";
-  amount: Scalars["U64"];
-  pool_address: Scalars["Address"];
-};
-
-export type _0x1__stake__RegisterValidatorCandidateEvent = {
-  __typename?: "_0x1__stake__RegisterValidatorCandidateEvent";
-  pool_address: Scalars["Address"];
-};
-
-export type _0x1__stake__RotateConsensusKeyEvent = {
-  __typename?: "_0x1__stake__RotateConsensusKeyEvent";
-  new_consensus_pubkey: Array<Scalars["U8"]>;
-  old_consensus_pubkey: Array<Scalars["U8"]>;
-  pool_address: Scalars["Address"];
-};
-
-export type _0x1__stake__SetOperatorEvent = {
-  __typename?: "_0x1__stake__SetOperatorEvent";
-  new_operator: Scalars["Address"];
-  old_operator: Scalars["Address"];
-  pool_address: Scalars["Address"];
-};
-
-export type _0x1__stake__StakePool = {
-  __typename?: "_0x1__stake__StakePool";
-  active: _0x1__coin__Coin;
-  add_stake_events: _0x1__event__EventHandle;
-  delegated_voter: Scalars["Address"];
-  distribute_rewards_events: _0x1__event__EventHandle;
-  inactive: _0x1__coin__Coin;
-  increase_lockup_events: _0x1__event__EventHandle;
-  initialize_validator_events: _0x1__event__EventHandle;
-  join_validator_set_events: _0x1__event__EventHandle;
-  leave_validator_set_events: _0x1__event__EventHandle;
-  locked_until_secs: Scalars["U64"];
-  operator_address: Scalars["Address"];
-  pending_active: _0x1__coin__Coin;
-  pending_inactive: _0x1__coin__Coin;
-  reactivate_stake_events: _0x1__event__EventHandle;
-  rotate_consensus_key_events: _0x1__event__EventHandle;
-  set_operator_events: _0x1__event__EventHandle;
-  unlock_stake_events: _0x1__event__EventHandle;
-  update_network_and_fullnode_addresses_events: _0x1__event__EventHandle;
-  withdraw_stake_events: _0x1__event__EventHandle;
-};
-
-export type _0x1__stake__UnlockStakeEvent = {
-  __typename?: "_0x1__stake__UnlockStakeEvent";
-  amount_unlocked: Scalars["U64"];
-  pool_address: Scalars["Address"];
-};
-
-export type _0x1__stake__UpdateNetworkAndFullnodeAddressesEvent = {
-  __typename?: "_0x1__stake__UpdateNetworkAndFullnodeAddressesEvent";
-  new_fullnode_addresses: Array<Scalars["U8"]>;
-  new_network_addresses: Array<Scalars["U8"]>;
-  old_fullnode_addresses: Array<Scalars["U8"]>;
-  old_network_addresses: Array<Scalars["U8"]>;
-  pool_address: Scalars["Address"];
-};
-
-export type _0x1__stake__ValidatorConfig = {
-  __typename?: "_0x1__stake__ValidatorConfig";
-  consensus_pubkey: Array<Scalars["U8"]>;
-  fullnode_addresses: Array<Scalars["U8"]>;
-  network_addresses: Array<Scalars["U8"]>;
-  validator_index: Scalars["U64"];
-};
-
-export type _0x1__stake__ValidatorFees = {
-  __typename?: "_0x1__stake__ValidatorFees";
-  fees_table: _0x1__table__Table;
-};
-
-export type _0x1__stake__ValidatorInfo = {
-  __typename?: "_0x1__stake__ValidatorInfo";
-  addr: Scalars["Address"];
-  config: _0x1__stake__ValidatorConfig;
+  config: ValidatorConfig;
   voting_power: Scalars["U64"];
 };
 
-export type _0x1__stake__ValidatorPerformance = {
-  __typename?: "_0x1__stake__ValidatorPerformance";
-  validators: Array<_0x1__stake__IndividualValidatorPerformance>;
+export type ValidatorPerformance = {
+  __typename?: "ValidatorPerformance";
+  validators: Array<IndividualValidatorPerformance>;
 };
 
-export type _0x1__stake__ValidatorSet = {
-  __typename?: "_0x1__stake__ValidatorSet";
-  active_validators: Array<_0x1__stake__ValidatorInfo>;
+export type ValidatorSet = {
+  __typename?: "ValidatorSet";
+  active_validators: Array<ValidatorInfo>;
   consensus_scheme: Scalars["U8"];
-  pending_active: Array<_0x1__stake__ValidatorInfo>;
-  pending_inactive: Array<_0x1__stake__ValidatorInfo>;
+  pending_active: Array<ValidatorInfo>;
+  pending_inactive: Array<ValidatorInfo>;
   total_joining_power: Scalars["U128"];
   total_voting_power: Scalars["U128"];
 };
 
-export type _0x1__stake__WithdrawStakeEvent = {
-  __typename?: "_0x1__stake__WithdrawStakeEvent";
-  amount_withdrawn: Scalars["U64"];
-  pool_address: Scalars["Address"];
-};
-
-export type _0x1__staking_config__StakingConfig = {
-  __typename?: "_0x1__staking_config__StakingConfig";
-  allow_validator_set_change: Scalars["Boolean"];
-  maximum_stake: Scalars["U64"];
-  minimum_stake: Scalars["U64"];
-  recurring_lockup_duration_secs: Scalars["U64"];
-  rewards_rate: Scalars["U64"];
-  rewards_rate_denominator: Scalars["U64"];
-  voting_power_increase_limit: Scalars["U64"];
-};
-
-export type _0x1__staking_config__StakingRewardsConfig = {
-  __typename?: "_0x1__staking_config__StakingRewardsConfig";
-  last_rewards_rate_period_start_in_secs: Scalars["U64"];
-  min_rewards_rate: _0x1__fixed_point64__FixedPoint64;
-  rewards_rate: _0x1__fixed_point64__FixedPoint64;
-  rewards_rate_decrease_rate: _0x1__fixed_point64__FixedPoint64;
-  rewards_rate_period_in_secs: Scalars["U64"];
-};
-
-export type _0x1__staking_contract__AddDistributionEvent = {
-  __typename?: "_0x1__staking_contract__AddDistributionEvent";
-  amount: Scalars["U64"];
-  operator: Scalars["Address"];
-  pool_address: Scalars["Address"];
-};
-
-export type _0x1__staking_contract__AddStakeEvent = {
-  __typename?: "_0x1__staking_contract__AddStakeEvent";
-  amount: Scalars["U64"];
-  operator: Scalars["Address"];
-  pool_address: Scalars["Address"];
-};
-
-export type _0x1__staking_contract__CreateStakingContractEvent = {
-  __typename?: "_0x1__staking_contract__CreateStakingContractEvent";
-  commission_percentage: Scalars["U64"];
-  operator: Scalars["Address"];
-  pool_address: Scalars["Address"];
-  principal: Scalars["U64"];
-  voter: Scalars["Address"];
-};
-
-export type _0x1__staking_contract__DistributeEvent = {
-  __typename?: "_0x1__staking_contract__DistributeEvent";
-  amount: Scalars["U64"];
-  operator: Scalars["Address"];
-  pool_address: Scalars["Address"];
-  recipient: Scalars["Address"];
-};
-
-export type _0x1__staking_contract__RequestCommissionEvent = {
-  __typename?: "_0x1__staking_contract__RequestCommissionEvent";
-  accumulated_rewards: Scalars["U64"];
-  commission_amount: Scalars["U64"];
-  operator: Scalars["Address"];
-  pool_address: Scalars["Address"];
-};
-
-export type _0x1__staking_contract__ResetLockupEvent = {
-  __typename?: "_0x1__staking_contract__ResetLockupEvent";
-  operator: Scalars["Address"];
-  pool_address: Scalars["Address"];
-};
-
-export type _0x1__staking_contract__StakingContract = {
-  __typename?: "_0x1__staking_contract__StakingContract";
-  commission_percentage: Scalars["U64"];
-  distribution_pool: _0x1__pool_u64__Pool;
-  owner_cap: _0x1__stake__OwnerCapability;
-  pool_address: Scalars["Address"];
-  principal: Scalars["U64"];
-  signer_cap: _0x1__account__SignerCapability;
-};
-
-export type _0x1__staking_contract__StakingGroupContainer = {
-  __typename?: "_0x1__staking_contract__StakingGroupContainer";
-  dummy_field: Scalars["Boolean"];
-};
-
-export type _0x1__staking_contract__StakingGroupUpdateCommissionEvent = {
-  __typename?: "_0x1__staking_contract__StakingGroupUpdateCommissionEvent";
-  update_commission_events: _0x1__event__EventHandle;
-};
-
-export type _0x1__staking_contract__Store = {
-  __typename?: "_0x1__staking_contract__Store";
-  add_distribution_events: _0x1__event__EventHandle;
-  add_stake_events: _0x1__event__EventHandle;
-  create_staking_contract_events: _0x1__event__EventHandle;
-  distribute_events: _0x1__event__EventHandle;
-  request_commission_events: _0x1__event__EventHandle;
-  reset_lockup_events: _0x1__event__EventHandle;
-  staking_contracts: _0x1__simple_map__SimpleMap;
-  switch_operator_events: _0x1__event__EventHandle;
-  unlock_stake_events: _0x1__event__EventHandle;
-  update_voter_events: _0x1__event__EventHandle;
-};
-
-export type _0x1__staking_contract__SwitchOperatorEvent = {
-  __typename?: "_0x1__staking_contract__SwitchOperatorEvent";
-  new_operator: Scalars["Address"];
-  old_operator: Scalars["Address"];
-  pool_address: Scalars["Address"];
-};
-
-export type _0x1__staking_contract__UnlockStakeEvent = {
-  __typename?: "_0x1__staking_contract__UnlockStakeEvent";
-  amount: Scalars["U64"];
-  commission_paid: Scalars["U64"];
-  operator: Scalars["Address"];
-  pool_address: Scalars["Address"];
-};
-
-export type _0x1__staking_contract__UpdateCommissionEvent = {
-  __typename?: "_0x1__staking_contract__UpdateCommissionEvent";
-  new_commission_percentage: Scalars["U64"];
-  old_commission_percentage: Scalars["U64"];
-  operator: Scalars["Address"];
-  staker: Scalars["Address"];
-};
-
-export type _0x1__staking_contract__UpdateVoterEvent = {
-  __typename?: "_0x1__staking_contract__UpdateVoterEvent";
-  new_voter: Scalars["Address"];
-  old_voter: Scalars["Address"];
-  operator: Scalars["Address"];
-  pool_address: Scalars["Address"];
-};
-
-export type _0x1__state_storage__GasParameter = {
-  __typename?: "_0x1__state_storage__GasParameter";
-  usage: _0x1__state_storage__Usage;
-};
-
-export type _0x1__state_storage__StateStorageUsage = {
-  __typename?: "_0x1__state_storage__StateStorageUsage";
-  epoch: Scalars["U64"];
-  usage: _0x1__state_storage__Usage;
-};
-
-export type _0x1__state_storage__Usage = {
-  __typename?: "_0x1__state_storage__Usage";
-  bytes: Scalars["U64"];
-  items: Scalars["U64"];
-};
-
-export type _0x1__storage_gas__GasCurve = {
-  __typename?: "_0x1__storage_gas__GasCurve";
-  max_gas: Scalars["U64"];
-  min_gas: Scalars["U64"];
-  points: Array<_0x1__storage_gas__Point>;
-};
-
-export type _0x1__storage_gas__Point = {
-  __typename?: "_0x1__storage_gas__Point";
-  x: Scalars["U64"];
-  y: Scalars["U64"];
-};
-
-export type _0x1__storage_gas__StorageGas = {
-  __typename?: "_0x1__storage_gas__StorageGas";
-  per_byte_create: Scalars["U64"];
-  per_byte_read: Scalars["U64"];
-  per_byte_write: Scalars["U64"];
-  per_item_create: Scalars["U64"];
-  per_item_read: Scalars["U64"];
-  per_item_write: Scalars["U64"];
-};
-
-export type _0x1__storage_gas__StorageGasConfig = {
-  __typename?: "_0x1__storage_gas__StorageGasConfig";
-  byte_config: _0x1__storage_gas__UsageGasConfig;
-  item_config: _0x1__storage_gas__UsageGasConfig;
-};
-
-export type _0x1__storage_gas__UsageGasConfig = {
-  __typename?: "_0x1__storage_gas__UsageGasConfig";
-  create_curve: _0x1__storage_gas__GasCurve;
-  read_curve: _0x1__storage_gas__GasCurve;
-  target_usage: Scalars["U64"];
-  write_curve: _0x1__storage_gas__GasCurve;
-};
-
-export type _0x1__string__String = {
-  __typename?: "_0x1__string__String";
-  bytes: Array<Scalars["U8"]>;
-};
-
-export type _0x1__string_utils__Cons = {
-  __typename?: "_0x1__string_utils__Cons";
-  car: Scalars["Any"];
-  cdr: Scalars["Any"];
-};
-
-export type _0x1__string_utils__FakeCons = {
-  __typename?: "_0x1__string_utils__FakeCons";
-  car: Scalars["Any"];
-  cdr: Scalars["Any"];
-};
-
-export type _0x1__string_utils__NIL = {
-  __typename?: "_0x1__string_utils__NIL";
-  dummy_field: Scalars["Boolean"];
-};
-
-export type _0x1__table__Box = {
-  __typename?: "_0x1__table__Box";
-  val: Scalars["Any"];
-};
-
-export type _0x1__table__Table = {
-  __typename?: "_0x1__table__Table";
-  handle: Scalars["Address"];
-};
-
-export type _0x1__table_with_length__TableWithLength = {
-  __typename?: "_0x1__table_with_length__TableWithLength";
-  inner: _0x1__table__Table;
-  length: Scalars["U64"];
-};
-
-export type _0x1__timestamp__CurrentTimeMicroseconds = {
-  __typename?: "_0x1__timestamp__CurrentTimeMicroseconds";
-  microseconds: Scalars["U64"];
-};
-
-export type _0x1__transaction_context__AUID = {
-  __typename?: "_0x1__transaction_context__AUID";
-  unique_address: Scalars["Address"];
-};
-
-export type _0x1__transaction_fee__AptosCoinCapabilities = {
-  __typename?: "_0x1__transaction_fee__AptosCoinCapabilities";
-  burn_cap: _0x1__coin__BurnCapability;
-};
-
-export type _0x1__transaction_fee__CollectedFeesPerBlock = {
-  __typename?: "_0x1__transaction_fee__CollectedFeesPerBlock";
-  amount: _0x1__coin__AggregatableCoin;
-  burn_percentage: Scalars["U8"];
-  proposer: _0x1__option__Option;
-};
-
-export type _0x1__transaction_validation__TransactionValidation = {
-  __typename?: "_0x1__transaction_validation__TransactionValidation";
-  module_addr: Scalars["Address"];
-  module_name: Array<Scalars["U8"]>;
-  module_prologue_name: Array<Scalars["U8"]>;
-  multi_agent_prologue_name: Array<Scalars["U8"]>;
-  script_prologue_name: Array<Scalars["U8"]>;
-  user_epilogue_name: Array<Scalars["U8"]>;
-};
-
-export type _0x1__type_info__TypeInfo = {
-  __typename?: "_0x1__type_info__TypeInfo";
-  account_address: Scalars["Address"];
-  module_name: Array<Scalars["U8"]>;
-  struct_name: Array<Scalars["U8"]>;
-};
-
-export type _0x1__version__SetVersionCapability = {
-  __typename?: "_0x1__version__SetVersionCapability";
-  dummy_field: Scalars["Boolean"];
-};
-
-export type _0x1__version__Version = {
-  __typename?: "_0x1__version__Version";
+export type Version = {
+  __typename?: "Version";
   major: Scalars["U64"];
 };
 
-export type _0x1__vesting__AdminStore = {
-  __typename?: "_0x1__vesting__AdminStore";
-  create_events: _0x1__event__EventHandle;
-  nonce: Scalars["U64"];
-  vesting_contracts: Array<Scalars["Address"]>;
-};
-
-export type _0x1__vesting__AdminWithdrawEvent = {
-  __typename?: "_0x1__vesting__AdminWithdrawEvent";
-  admin: Scalars["Address"];
-  amount: Scalars["U64"];
-  vesting_contract_address: Scalars["Address"];
-};
-
-export type _0x1__vesting__CreateVestingContractEvent = {
-  __typename?: "_0x1__vesting__CreateVestingContractEvent";
-  commission_percentage: Scalars["U64"];
-  grant_amount: Scalars["U64"];
-  operator: Scalars["Address"];
-  staking_pool_address: Scalars["Address"];
-  vesting_contract_address: Scalars["Address"];
-  voter: Scalars["Address"];
-  withdrawal_address: Scalars["Address"];
-};
-
-export type _0x1__vesting__DistributeEvent = {
-  __typename?: "_0x1__vesting__DistributeEvent";
-  admin: Scalars["Address"];
-  amount: Scalars["U64"];
-  vesting_contract_address: Scalars["Address"];
-};
-
-export type _0x1__vesting__ResetLockupEvent = {
-  __typename?: "_0x1__vesting__ResetLockupEvent";
-  admin: Scalars["Address"];
-  new_lockup_expiration_secs: Scalars["U64"];
-  staking_pool_address: Scalars["Address"];
-  vesting_contract_address: Scalars["Address"];
-};
-
-export type _0x1__vesting__SetBeneficiaryEvent = {
-  __typename?: "_0x1__vesting__SetBeneficiaryEvent";
-  admin: Scalars["Address"];
-  new_beneficiary: Scalars["Address"];
-  old_beneficiary: Scalars["Address"];
-  shareholder: Scalars["Address"];
-  vesting_contract_address: Scalars["Address"];
-};
-
-export type _0x1__vesting__StakingInfo = {
-  __typename?: "_0x1__vesting__StakingInfo";
-  commission_percentage: Scalars["U64"];
-  operator: Scalars["Address"];
-  pool_address: Scalars["Address"];
-  voter: Scalars["Address"];
-};
-
-export type _0x1__vesting__TerminateEvent = {
-  __typename?: "_0x1__vesting__TerminateEvent";
-  admin: Scalars["Address"];
-  vesting_contract_address: Scalars["Address"];
-};
-
-export type _0x1__vesting__UnlockRewardsEvent = {
-  __typename?: "_0x1__vesting__UnlockRewardsEvent";
-  admin: Scalars["Address"];
-  amount: Scalars["U64"];
-  staking_pool_address: Scalars["Address"];
-  vesting_contract_address: Scalars["Address"];
-};
-
-export type _0x1__vesting__UpdateOperatorEvent = {
-  __typename?: "_0x1__vesting__UpdateOperatorEvent";
-  admin: Scalars["Address"];
-  commission_percentage: Scalars["U64"];
-  new_operator: Scalars["Address"];
-  old_operator: Scalars["Address"];
-  staking_pool_address: Scalars["Address"];
-  vesting_contract_address: Scalars["Address"];
-};
-
-export type _0x1__vesting__UpdateVoterEvent = {
-  __typename?: "_0x1__vesting__UpdateVoterEvent";
-  admin: Scalars["Address"];
-  new_voter: Scalars["Address"];
-  old_voter: Scalars["Address"];
-  staking_pool_address: Scalars["Address"];
-  vesting_contract_address: Scalars["Address"];
-};
-
-export type _0x1__vesting__VestEvent = {
-  __typename?: "_0x1__vesting__VestEvent";
+export type VestEvent = {
+  __typename?: "VestEvent";
   admin: Scalars["Address"];
   amount: Scalars["U64"];
   period_vested: Scalars["U64"];
@@ -1680,266 +1526,479 @@ export type _0x1__vesting__VestEvent = {
   vesting_contract_address: Scalars["Address"];
 };
 
-export type _0x1__vesting__VestingAccountManagement = {
-  __typename?: "_0x1__vesting__VestingAccountManagement";
-  roles: _0x1__simple_map__SimpleMap;
+export type VestingAccountManagement = {
+  __typename?: "VestingAccountManagement";
+  roles: _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap;
 };
 
-export type _0x1__vesting__VestingContract = {
-  __typename?: "_0x1__vesting__VestingContract";
+export type VestingContract = {
+  __typename?: "VestingContract";
   admin: Scalars["Address"];
-  admin_withdraw_events: _0x1__event__EventHandle;
-  beneficiaries: _0x1__simple_map__SimpleMap;
-  distribute_events: _0x1__event__EventHandle;
-  grant_pool: _0x1__pool_u64__Pool;
+  admin_withdraw_events: EventHandle;
+  beneficiaries: _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap;
+  distribute_events: EventHandle;
+  grant_pool: _0x0000000000000000000000000000000000000000000000000000000000000001__pool_u64__Pool;
   remaining_grant: Scalars["U64"];
-  reset_lockup_events: _0x1__event__EventHandle;
-  set_beneficiary_events: _0x1__event__EventHandle;
-  signer_cap: _0x1__account__SignerCapability;
-  staking: _0x1__vesting__StakingInfo;
+  reset_lockup_events: EventHandle;
+  set_beneficiary_events: EventHandle;
+  signer_cap: SignerCapability;
+  staking: StakingInfo;
   state: Scalars["U64"];
-  terminate_events: _0x1__event__EventHandle;
-  unlock_rewards_events: _0x1__event__EventHandle;
-  update_operator_events: _0x1__event__EventHandle;
-  update_voter_events: _0x1__event__EventHandle;
-  vest_events: _0x1__event__EventHandle;
-  vesting_schedule: _0x1__vesting__VestingSchedule;
+  terminate_events: EventHandle;
+  unlock_rewards_events: EventHandle;
+  update_operator_events: EventHandle;
+  update_voter_events: EventHandle;
+  vest_events: EventHandle;
+  vesting_schedule: VestingSchedule;
   withdrawal_address: Scalars["Address"];
 };
 
-export type _0x1__vesting__VestingSchedule = {
-  __typename?: "_0x1__vesting__VestingSchedule";
+export type VestingSchedule = {
+  __typename?: "VestingSchedule";
   last_vested_period: Scalars["U64"];
   period_duration: Scalars["U64"];
-  schedule: Array<_0x1__fixed_point32__FixedPoint32>;
+  schedule: Array<FixedPoint32>;
   start_timestamp_secs: Scalars["U64"];
 };
 
-export type _0x1__voting__CreateProposalEvent = {
-  __typename?: "_0x1__voting__CreateProposalEvent";
-  early_resolution_vote_threshold: _0x1__option__Option;
-  execution_hash: Array<Scalars["U8"]>;
-  expiration_secs: Scalars["U64"];
-  metadata: _0x1__simple_map__SimpleMap;
-  min_vote_threshold: Scalars["U128"];
-  proposal_id: Scalars["U64"];
+export type VoteDelegation = {
+  __typename?: "VoteDelegation";
+  last_locked_until_secs: Scalars["U64"];
+  pending_voter: Scalars["Address"];
+  voter: Scalars["Address"];
 };
 
-export type _0x1__voting__Proposal = {
-  __typename?: "_0x1__voting__Proposal";
-  creation_time_secs: Scalars["U64"];
-  early_resolution_vote_threshold: _0x1__option__Option;
-  execution_content: _0x1__option__Option;
-  execution_hash: Array<Scalars["U8"]>;
-  expiration_secs: Scalars["U64"];
-  is_resolved: Scalars["Boolean"];
-  metadata: _0x1__simple_map__SimpleMap;
-  min_vote_threshold: Scalars["U128"];
-  no_votes: Scalars["U128"];
-  proposer: Scalars["Address"];
-  resolution_time_secs: Scalars["U64"];
-  yes_votes: Scalars["U128"];
+export type VotingEvents = {
+  __typename?: "VotingEvents";
+  create_proposal_events: EventHandle;
+  register_forum_events: EventHandle;
+  resolve_proposal_events: EventHandle;
+  vote_events: EventHandle;
 };
 
-export type _0x1__voting__RegisterForumEvent = {
-  __typename?: "_0x1__voting__RegisterForumEvent";
-  hosting_account: Scalars["Address"];
-  proposal_type_info: _0x1__type_info__TypeInfo;
-};
-
-export type _0x1__voting__ResolveProposal = {
-  __typename?: "_0x1__voting__ResolveProposal";
-  no_votes: Scalars["U128"];
-  proposal_id: Scalars["U64"];
-  resolved_early: Scalars["Boolean"];
-  yes_votes: Scalars["U128"];
-};
-
-export type _0x1__voting__VoteEvent = {
-  __typename?: "_0x1__voting__VoteEvent";
-  num_votes: Scalars["U64"];
-  proposal_id: Scalars["U64"];
-};
-
-export type _0x1__voting__VotingEvents = {
-  __typename?: "_0x1__voting__VotingEvents";
-  create_proposal_events: _0x1__event__EventHandle;
-  register_forum_events: _0x1__event__EventHandle;
-  resolve_proposal_events: _0x1__event__EventHandle;
-  vote_events: _0x1__event__EventHandle;
-};
-
-export type _0x1__voting__VotingForum = {
-  __typename?: "_0x1__voting__VotingForum";
-  events: _0x1__voting__VotingEvents;
+export type VotingForum = {
+  __typename?: "VotingForum";
+  events: VotingEvents;
   next_proposal_id: Scalars["U64"];
-  proposals: _0x1__table__Table;
+  proposals: Table;
 };
 
-export type _0x3__canvas_collection__CollectionRefs = {
-  __typename?: "_0x3__canvas_collection__CollectionRefs";
-  mutator_ref: _0x4__collection__MutatorRef;
-  transfer_ref: _0x1__object__TransferRef;
+export type VotingRecordKey = {
+  __typename?: "VotingRecordKey";
+  proposal_id: Scalars["U64"];
+  voter: Scalars["Address"];
 };
 
-export type _0x3__canvas_token__Canvas = {
-  __typename?: "_0x3__canvas_token__Canvas";
-  admins: _0x626b96faa14f38242ec223e214101791920325665f4f7fc25f8865d6338b0053__simple_set__SimpleSet;
-  allowlisted_artists: _0x626b96faa14f38242ec223e214101791920325665f4f7fc25f8865d6338b0053__simple_set__SimpleSet;
-  blocklisted_artists: _0x626b96faa14f38242ec223e214101791920325665f4f7fc25f8865d6338b0053__simple_set__SimpleSet;
-  config: _0x3__canvas_token__CanvasConfig;
-  created_at_s: Scalars["U64"];
-  extend_ref: _0x1__object__ExtendRef;
-  last_contribution_s: _0x1__smart_table__SmartTable;
-  mutator_ref: _0x4__token__MutatorRef;
-  pixels: _0x1__smart_table__SmartTable;
+export type VotingRecords = {
+  __typename?: "VotingRecords";
+  votes: Table;
 };
 
-export type _0x3__canvas_token__CanvasConfig = {
-  __typename?: "_0x3__canvas_token__CanvasConfig";
-  can_draw_for_s: Scalars["U64"];
-  cost: Scalars["U64"];
-  default_color: _0x3__canvas_token__Color;
-  funds_recipient: _0x1__option__Option;
-  height: Scalars["U64"];
-  owner_is_super_admin: Scalars["Boolean"];
-  palette: Array<_0x3__canvas_token__Color>;
-  per_account_timeout_s: Scalars["U64"];
-  width: Scalars["U64"];
+export type VotingRecordsV2 = {
+  __typename?: "VotingRecordsV2";
+  votes: SmartTable;
 };
 
-export type _0x3__canvas_token__Color = {
-  __typename?: "_0x3__canvas_token__Color";
-  b: Scalars["U8"];
-  g: Scalars["U8"];
-  r: Scalars["U8"];
-};
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__any__Any =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__any__Any";
+    data: Array<Scalars["U8"]>;
+    type_name: Scalars["String"];
+  };
 
-export type _0x4__aptos_token__AptosCollection = {
-  __typename?: "_0x4__aptos_token__AptosCollection";
-  mutable_description: Scalars["Boolean"];
-  mutable_token_description: Scalars["Boolean"];
-  mutable_token_name: Scalars["Boolean"];
-  mutable_token_properties: Scalars["Boolean"];
-  mutable_token_uri: Scalars["Boolean"];
-  mutable_uri: Scalars["Boolean"];
-  mutator_ref: _0x1__option__Option;
-  royalty_mutator_ref: _0x1__option__Option;
-  tokens_burnable_by_creator: Scalars["Boolean"];
-  tokens_freezable_by_creator: Scalars["Boolean"];
-};
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__aptos_governance__CreateProposalEvent =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__aptos_governance__CreateProposalEvent";
+    execution_hash: Array<Scalars["U8"]>;
+    proposal_id: Scalars["U64"];
+    proposal_metadata: _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap;
+    proposer: Scalars["Address"];
+    stake_pool: Scalars["Address"];
+  };
 
-export type _0x4__aptos_token__AptosToken = {
-  __typename?: "_0x4__aptos_token__AptosToken";
-  burn_ref: _0x1__option__Option;
-  mutator_ref: _0x1__option__Option;
-  property_mutator_ref: _0x4__property_map__MutatorRef;
-  transfer_ref: _0x1__option__Option;
-};
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__aptos_governance__VoteEvent =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__aptos_governance__VoteEvent";
+    num_votes: Scalars["U64"];
+    proposal_id: Scalars["U64"];
+    should_pass: Scalars["Boolean"];
+    stake_pool: Scalars["Address"];
+    voter: Scalars["Address"];
+  };
 
-export type _0x4__collection__BurnEvent = {
-  __typename?: "_0x4__collection__BurnEvent";
-  index: Scalars["U64"];
-  token: Scalars["Address"];
-};
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__bls12381__Signature =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__bls12381__Signature";
+    bytes: Array<Scalars["U8"]>;
+  };
 
-export type _0x4__collection__Collection = {
-  __typename?: "_0x4__collection__Collection";
-  creator: Scalars["Address"];
-  description: Scalars["String"];
-  mutation_events: _0x1__event__EventHandle;
-  name: Scalars["String"];
-  uri: Scalars["String"];
-};
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__coin__DepositEvent =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__coin__DepositEvent";
+    amount: Scalars["U64"];
+  };
 
-export type _0x4__collection__FixedSupply = {
-  __typename?: "_0x4__collection__FixedSupply";
-  burn_events: _0x1__event__EventHandle;
-  current_supply: Scalars["U64"];
-  max_supply: Scalars["U64"];
-  mint_events: _0x1__event__EventHandle;
-  total_minted: Scalars["U64"];
-};
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__coin__WithdrawEvent =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__coin__WithdrawEvent";
+    amount: Scalars["U64"];
+  };
 
-export type _0x4__collection__MintEvent = {
-  __typename?: "_0x4__collection__MintEvent";
-  index: Scalars["U64"];
-  token: Scalars["Address"];
-};
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__copyable_any__Any =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__copyable_any__Any";
+    data: Array<Scalars["U8"]>;
+    type_name: Scalars["String"];
+  };
 
-export type _0x4__collection__MutationEvent = {
-  __typename?: "_0x4__collection__MutationEvent";
-  mutated_field_name: Scalars["String"];
-};
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__crypto_algebra__Element =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__crypto_algebra__Element";
+    handle: Scalars["U64"];
+  };
 
-export type _0x4__collection__MutatorRef = {
-  __typename?: "_0x4__collection__MutatorRef";
-  self: Scalars["Address"];
-};
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__delegation_pool__AddStakeEvent =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__delegation_pool__AddStakeEvent";
+    add_stake_fee: Scalars["U64"];
+    amount_added: Scalars["U64"];
+    delegator_address: Scalars["Address"];
+    pool_address: Scalars["Address"];
+  };
 
-export type _0x4__collection__UnlimitedSupply = {
-  __typename?: "_0x4__collection__UnlimitedSupply";
-  burn_events: _0x1__event__EventHandle;
-  current_supply: Scalars["U64"];
-  mint_events: _0x1__event__EventHandle;
-  total_minted: Scalars["U64"];
-};
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__delegation_pool__CreateProposalEvent =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__delegation_pool__CreateProposalEvent";
+    delegation_pool: Scalars["Address"];
+    proposal_id: Scalars["U64"];
+    voter: Scalars["Address"];
+  };
 
-export type _0x4__property_map__MutatorRef = {
-  __typename?: "_0x4__property_map__MutatorRef";
-  self: Scalars["Address"];
-};
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__delegation_pool__ReactivateStakeEvent =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__delegation_pool__ReactivateStakeEvent";
+    amount_reactivated: Scalars["U64"];
+    delegator_address: Scalars["Address"];
+    pool_address: Scalars["Address"];
+  };
 
-export type _0x4__property_map__PropertyMap = {
-  __typename?: "_0x4__property_map__PropertyMap";
-  inner: _0x1__simple_map__SimpleMap;
-};
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__delegation_pool__UnlockStakeEvent =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__delegation_pool__UnlockStakeEvent";
+    amount_unlocked: Scalars["U64"];
+    delegator_address: Scalars["Address"];
+    pool_address: Scalars["Address"];
+  };
 
-export type _0x4__property_map__PropertyValue = {
-  __typename?: "_0x4__property_map__PropertyValue";
-  type: Scalars["U8"];
-  value: Array<Scalars["U8"]>;
-};
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__delegation_pool__VoteEvent =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__delegation_pool__VoteEvent";
+    delegation_pool: Scalars["Address"];
+    num_votes: Scalars["U64"];
+    proposal_id: Scalars["U64"];
+    should_pass: Scalars["Boolean"];
+    voter: Scalars["Address"];
+  };
 
-export type _0x4__royalty__MutatorRef = {
-  __typename?: "_0x4__royalty__MutatorRef";
-  inner: _0x1__object__ExtendRef;
-};
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__delegation_pool__WithdrawStakeEvent =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__delegation_pool__WithdrawStakeEvent";
+    amount_withdrawn: Scalars["U64"];
+    delegator_address: Scalars["Address"];
+    pool_address: Scalars["Address"];
+  };
 
-export type _0x4__royalty__Royalty = {
-  __typename?: "_0x4__royalty__Royalty";
-  denominator: Scalars["U64"];
-  numerator: Scalars["U64"];
-  payee_address: Scalars["Address"];
-};
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__ed25519__Signature =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__ed25519__Signature";
+    bytes: Array<Scalars["U8"]>;
+  };
 
-export type _0x4__token__BurnRef = {
-  __typename?: "_0x4__token__BurnRef";
-  inner: _0x1__option__Option;
-  self: _0x1__option__Option;
-};
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__ed25519__UnvalidatedPublicKey =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__ed25519__UnvalidatedPublicKey";
+    bytes: Array<Scalars["U8"]>;
+  };
 
-export type _0x4__token__MutationEvent = {
-  __typename?: "_0x4__token__MutationEvent";
-  mutated_field_name: Scalars["String"];
-  new_value: Scalars["String"];
-  old_value: Scalars["String"];
-};
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__ed25519__ValidatedPublicKey =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__ed25519__ValidatedPublicKey";
+    bytes: Array<Scalars["U8"]>;
+  };
 
-export type _0x4__token__MutatorRef = {
-  __typename?: "_0x4__token__MutatorRef";
-  self: Scalars["Address"];
-};
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__fungible_asset__BurnRef =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__fungible_asset__BurnRef";
+    metadata: Object;
+  };
 
-export type _0x4__token__Token = {
-  __typename?: "_0x4__token__Token";
-  collection: _0x1__object__Object;
-  description: Scalars["String"];
-  index: Scalars["U64"];
-  mutation_events: _0x1__event__EventHandle;
-  name: Scalars["String"];
-  uri: Scalars["String"];
-};
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__fungible_asset__DepositEvent =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__fungible_asset__DepositEvent";
+    amount: Scalars["U64"];
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__fungible_asset__TransferRef =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__fungible_asset__TransferRef";
+    metadata: Object;
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__fungible_asset__WithdrawEvent =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__fungible_asset__WithdrawEvent";
+    amount: Scalars["U64"];
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__guid__ID =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__guid__ID";
+    addr: Scalars["Address"];
+    creation_num: Scalars["U64"];
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__multi_ed25519__Signature =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__multi_ed25519__Signature";
+    bytes: Array<Scalars["U8"]>;
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__multi_ed25519__UnvalidatedPublicKey =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__multi_ed25519__UnvalidatedPublicKey";
+    bytes: Array<Scalars["U8"]>;
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__multi_ed25519__ValidatedPublicKey =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__multi_ed25519__ValidatedPublicKey";
+    bytes: Array<Scalars["U8"]>;
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__multisig_account__VoteEvent =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__multisig_account__VoteEvent";
+    approved: Scalars["Boolean"];
+    owner: Scalars["Address"];
+    sequence_number: Scalars["U64"];
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__object__TransferRef =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__object__TransferRef";
+    self: Scalars["Address"];
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__pool_u64__Pool =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__pool_u64__Pool";
+    scaling_factor: Scalars["U64"];
+    shareholders: Array<Scalars["Address"]>;
+    shareholders_limit: Scalars["U64"];
+    shares: _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap;
+    total_coins: Scalars["U64"];
+    total_shares: Scalars["U64"];
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__pool_u64_unbound__Pool =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__pool_u64_unbound__Pool";
+    scaling_factor: Scalars["U64"];
+    shares: TableWithLength;
+    total_coins: Scalars["U64"];
+    total_shares: Scalars["U128"];
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__Element =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__Element";
+    key: Scalars["Any"];
+    value: Scalars["Any"];
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap";
+    data: Array<_0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__Element>;
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__stake__AddStakeEvent =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__stake__AddStakeEvent";
+    amount_added: Scalars["U64"];
+    pool_address: Scalars["Address"];
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__stake__AptosCoinCapabilities =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__stake__AptosCoinCapabilities";
+    mint_cap: MintCapability;
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__stake__ReactivateStakeEvent =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__stake__ReactivateStakeEvent";
+    amount: Scalars["U64"];
+    pool_address: Scalars["Address"];
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__stake__UnlockStakeEvent =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__stake__UnlockStakeEvent";
+    amount_unlocked: Scalars["U64"];
+    pool_address: Scalars["Address"];
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__stake__WithdrawStakeEvent =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__stake__WithdrawStakeEvent";
+    amount_withdrawn: Scalars["U64"];
+    pool_address: Scalars["Address"];
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__staking_contract__AddStakeEvent =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__staking_contract__AddStakeEvent";
+    amount: Scalars["U64"];
+    operator: Scalars["Address"];
+    pool_address: Scalars["Address"];
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__staking_contract__DistributeEvent =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__staking_contract__DistributeEvent";
+    amount: Scalars["U64"];
+    operator: Scalars["Address"];
+    pool_address: Scalars["Address"];
+    recipient: Scalars["Address"];
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__staking_contract__ResetLockupEvent =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__staking_contract__ResetLockupEvent";
+    operator: Scalars["Address"];
+    pool_address: Scalars["Address"];
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__staking_contract__UnlockStakeEvent =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__staking_contract__UnlockStakeEvent";
+    amount: Scalars["U64"];
+    commission_paid: Scalars["U64"];
+    operator: Scalars["Address"];
+    pool_address: Scalars["Address"];
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__staking_contract__UpdateVoterEvent =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__staking_contract__UpdateVoterEvent";
+    new_voter: Scalars["Address"];
+    old_voter: Scalars["Address"];
+    operator: Scalars["Address"];
+    pool_address: Scalars["Address"];
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__string__String =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__string__String";
+    bytes: Array<Scalars["U8"]>;
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__transaction_fee__AptosCoinCapabilities =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__transaction_fee__AptosCoinCapabilities";
+    burn_cap: BurnCapability;
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__vesting__DistributeEvent =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__vesting__DistributeEvent";
+    admin: Scalars["Address"];
+    amount: Scalars["U64"];
+    vesting_contract_address: Scalars["Address"];
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__vesting__ResetLockupEvent =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__vesting__ResetLockupEvent";
+    admin: Scalars["Address"];
+    new_lockup_expiration_secs: Scalars["U64"];
+    staking_pool_address: Scalars["Address"];
+    vesting_contract_address: Scalars["Address"];
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__vesting__UpdateVoterEvent =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__vesting__UpdateVoterEvent";
+    admin: Scalars["Address"];
+    new_voter: Scalars["Address"];
+    old_voter: Scalars["Address"];
+    staking_pool_address: Scalars["Address"];
+    vesting_contract_address: Scalars["Address"];
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__voting__CreateProposalEvent =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__voting__CreateProposalEvent";
+    early_resolution_vote_threshold: Option;
+    execution_hash: Array<Scalars["U8"]>;
+    expiration_secs: Scalars["U64"];
+    metadata: _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap;
+    min_vote_threshold: Scalars["U128"];
+    proposal_id: Scalars["U64"];
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000001__voting__VoteEvent =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000001__voting__VoteEvent";
+    num_votes: Scalars["U64"];
+    proposal_id: Scalars["U64"];
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000004__collection__MutationEvent =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000004__collection__MutationEvent";
+    mutated_field_name: Scalars["String"];
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000004__collection__MutatorRef =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000004__collection__MutatorRef";
+    self: Scalars["Address"];
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000004__property_map__MutatorRef =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000004__property_map__MutatorRef";
+    self: Scalars["Address"];
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000004__royalty__MutatorRef =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000004__royalty__MutatorRef";
+    inner: ExtendRef;
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000004__token__BurnRef =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000004__token__BurnRef";
+    inner: Option;
+    self: Option;
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000004__token__MutationEvent =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000004__token__MutationEvent";
+    mutated_field_name: Scalars["String"];
+    new_value: Scalars["String"];
+    old_value: Scalars["String"];
+  };
+
+export type _0x0000000000000000000000000000000000000000000000000000000000000004__token__MutatorRef =
+  {
+    __typename?: "_0x0000000000000000000000000000000000000000000000000000000000000004__token__MutatorRef";
+    self: Scalars["Address"];
+  };
 
 export type _0x626b96faa14f38242ec223e214101791920325665f4f7fc25f8865d6338b0053__simple_map__Element =
   {
@@ -1952,10 +2011,4 @@ export type _0x626b96faa14f38242ec223e214101791920325665f4f7fc25f8865d6338b0053_
   {
     __typename?: "_0x626b96faa14f38242ec223e214101791920325665f4f7fc25f8865d6338b0053__simple_map__SimpleMap";
     data: Array<_0x626b96faa14f38242ec223e214101791920325665f4f7fc25f8865d6338b0053__simple_map__Element>;
-  };
-
-export type _0x626b96faa14f38242ec223e214101791920325665f4f7fc25f8865d6338b0053__simple_set__SimpleSet =
-  {
-    __typename?: "_0x626b96faa14f38242ec223e214101791920325665f4f7fc25f8865d6338b0053__simple_set__SimpleSet";
-    data: Array<Scalars["Any"]>;
   };
