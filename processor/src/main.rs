@@ -3,12 +3,12 @@ mod canvas_storage;
 mod config;
 mod generated;
 mod processor;
-mod storage;
+mod db_storage;
 
 use crate::{
     config::{Args, Config},
     processor::CanvasProcessor,
-    storage::MemoryStorage,
+    db_storage::MemoryStorage,
 };
 use anyhow::{Context as AnyhowContext, Result};
 use api::Api;
