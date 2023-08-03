@@ -12,9 +12,14 @@ Publish dport std (run from within aptos-dport-std):
 curl -X POST "localhost:8081/mint?amount=1000000000&address=`yq .profiles.$NETWORK.account < .aptos/config.yaml`" && sleep 1 && aptos move publish --profile $NETWORK --assume-yes
 ```
 
-Create the local account on chain and publish this package:
+Create the local account on chain:
 ```
-aptos init --network local --private-key 0x9bd759c66531662ad734d501db59809d9a803b0827696f7330dbbe42a183e68e --profile $NETWORK --assume-yes && aptos move publish --named-addresses addr=`yq .profiles.$NETWORK.account < .aptos/config.yaml` --assume-yes --profile $NETWORK
+aptos init --network local --private-key 0x9bd759c66531662ad734d501db59809d9a803b0827696f7330dbbe42a183e68e --profile $NETWORK --assume-yes
+```
+
+Publish this package:
+```
+aptos move publish --named-addresses addr=`yq .profiles.$NETWORK.account < .aptos/config.yaml` --assume-yes --profile $NETWORK
 ```
 
 Create the collection:
