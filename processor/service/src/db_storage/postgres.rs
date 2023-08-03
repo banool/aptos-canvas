@@ -7,6 +7,7 @@ use sea_orm::{
     QueryTrait,
 };
 use serde::{Deserialize, Serialize};
+use tracing::info;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct PostgresStorageConfig {
@@ -29,6 +30,8 @@ impl PostgresStorage {
         Migrator::up(&connection, None)
             .await
             .context("Failed to apply migrations")?;
+
+        info!("Built postgresql storage");
 
         Ok(Self { connection })
     }
@@ -69,7 +72,7 @@ impl StorageTrait for PostgresStorage {
         Ok(last_processed_version::Entity::find_by_id(processor_name)
             .one(&self.connection)
             .await
-            .context("Failed to read ChainId")?
+            .context("Failed to read last processed version")?
             .map(|lpv| lpv.version as u64))
     }
 
