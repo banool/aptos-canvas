@@ -72,9 +72,7 @@ impl ProcessorTrait for CanvasProcessor {
             let write_pixel_intents = self
                 .process_draw(&transaction)
                 .context("Failed at process_draw")?;
-            if let Some(write_pixel_intents) = write_pixel_intents {
-                all_write_pixel_intents.push(write_pixel_intents);
-            }
+            all_write_pixel_intents.extend(write_pixel_intents);
             let create_canvas_intent = self
                 .process_create(&transaction)
                 .context("Failed at process_create")?;
@@ -118,7 +116,7 @@ impl ProcessorTrait for CanvasProcessor {
 }
 
 impl CanvasProcessor {
-    fn process_draw(&self, transaction: &Transaction) -> Result<Option<WritePixelIntent>> {
+    fn process_draw(&self, transaction: &Transaction) -> Result<Vec<WritePixelIntent>> {
         // Skip this transaction if this wasn't a draw transaction.
         let draw_function_id = EntryFunctionId {
             module: Some(MoveModuleId {
@@ -128,19 +126,19 @@ impl CanvasProcessor {
             name: "draw".to_string(),
         };
         if !entry_function_id_matches(transaction, &draw_function_id) {
-            return Ok(None);
+            return Ok(vec![]);
         }
 
         let txn_data = transaction.txn_data.as_ref().context("No txn_data")?;
         let user_transaction = match txn_data {
             TxnData::User(user_transaction) => user_transaction,
-            _ => return Ok(None),
+            _ => return Ok(vec![]),
         };
         let request = user_transaction.request.as_ref().context("No request")?;
         let payload = request.payload.as_ref().unwrap();
         let entry_function_payload = match payload.payload.as_ref().context("No payload")? {
             Payload::EntryFunctionPayload(payload) => payload,
-            _ => return Ok(None),
+            _ => return Ok(vec![]),
         };
 
         let clean_entry_function_payload =
@@ -166,21 +164,28 @@ impl CanvasProcessor {
                         continue;
                     }
                     let values: Vec<Value> = serde_json::from_str(&data.value).unwrap();
-                    let value: Entry = serde_json::from_value(values.into_iter().next().unwrap())
-                        .context("Failed to parse as Entry")?;
-                    info!("Data: {:?}", data);
-                    let index = value.key.as_str().unwrap().parse::<u64>().unwrap();
-                    let color: Color = serde_json::from_value(value.value).unwrap();
-                    return Ok(Some(WritePixelIntent {
-                        canvas_address,
-                        index,
-                        color,
-                    }));
+                    // There could be many values because a SmartTable internally is a
+                    // Table where the values are vectors. This means each WriteTableItem
+                    // will have the full new vector being written.
+                    let mut intents = vec![];
+                    for value in values {
+                        let value: Entry =
+                            serde_json::from_value(value).context("Failed to parse as Entry")?;
+                        info!("Data: {:?}", data);
+                        let index = value.key.as_str().unwrap().parse::<u64>().unwrap();
+                        let color: Color = serde_json::from_value(value.value).unwrap();
+                        intents.push(WritePixelIntent {
+                            canvas_address,
+                            index,
+                            color,
+                        });
+                    }
+                    return Ok(intents);
                 },
                 _ => continue,
             }
         }
-        Ok(None)
+        Ok(vec![])
     }
 
     fn process_create(&self, transaction: &Transaction) -> Result<Option<CreateCanvasIntent>> {
