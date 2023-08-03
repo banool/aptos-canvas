@@ -3,9 +3,9 @@ stream_subscriber_config:
   auth_token: "todo"
 dispatcher_config:
 common_storage_config:
-  initial_starting_version: 613359750
+  initial_starting_version: 613358990
 canvas_processor_config:
-  canvas_contract_address: ""
+  canvas_contract_address: "0x481d6509302e3379b9a8cf524da0000feee18f811d1da7e5addc7f64cdaaac60"
 canvas_storage_config:
   canvas_storage_directory: /var/canvases
 api_config:
