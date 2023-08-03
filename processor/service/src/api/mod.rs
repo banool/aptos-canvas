@@ -10,6 +10,7 @@ use poem::{
 };
 use serde::{Deserialize, Serialize};
 use std::{str::FromStr, sync::Arc};
+use tracing::info;
 
 #[handler]
 async fn get_image(
@@ -38,6 +39,11 @@ async fn get_image(
         .set_content_type("image/png"))
 }
 
+#[handler]
+async fn root() -> String {
+    "No problems baby!!".to_string()
+}
+
 pub struct Api {
     config: ApiConfig,
     canvas_storage: Arc<dyn CanvasStorageTrait>,
@@ -52,7 +58,9 @@ impl Api {
     }
 
     pub async fn start_api(&self) -> Result<()> {
+        info!("API server starting");
         let app = Route::new()
+            .at("/", get(root))
             .at("/media/:address", get(get_image))
             .data(self.canvas_storage.clone())
             .with(Tracing);
