@@ -93,6 +93,7 @@ impl ProcessorTrait for CanvasProcessor {
 
         // Create canvases.
         for create_canvas_intent in all_create_canvas_intents {
+            info!("Creating canvas {}", create_canvas_intent.canvas_address);
             self.canvas_storage
                 .create_canvas(create_canvas_intent)
                 .await
@@ -101,6 +102,10 @@ impl ProcessorTrait for CanvasProcessor {
 
         // Write pixels.
         for write_pixel_intent in all_write_pixel_intents {
+            info!(
+                "Writing pixel to canvas {} index {}",
+                write_pixel_intent.canvas_address, write_pixel_intent.index
+            );
             self.canvas_storage
                 .write_pixel(write_pixel_intent)
                 .await
