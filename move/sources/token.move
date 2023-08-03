@@ -249,10 +249,9 @@ module addr::canvas_token {
             1,
             string::length(&object_address_string),
         );
-        let uri = string::utf8(b"https://aptos-canvas-renderer.d-479.workers.dev/0x");
+        let uri = string::utf8(b"https://canvas-processor-testnet.dport.me/media/0x");
         string::append(&mut uri, object_address_string);
-        string::append(&mut uri, string::utf8(b"?chain_id="));
-        string::append(&mut uri, string_utils::to_string(&get_chain_id()));
+        string::append(&mut uri, string::utf8(b".png"));
 
         // Set the real URI.
         token::set_uri(&token::generate_mutator_ref(&constructor_ref), uri);
