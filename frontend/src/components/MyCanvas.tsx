@@ -53,17 +53,16 @@ export const MyCanvas = ({
     },
   );
 
-  const [pixels, setPixels] = useState<Color[]>([]);
+  const [currentlyDrawing, setCurrentlyDrawing] = useState(false);
+
+  // These pixels get drawn over the top of the canvas after we draw the base layer
+  // using the png. The key is the index.
+  const [pixelsOverride, setPixelsOverride] = useState<Map<number, Color>>(
+    new Map(),
+  );
 
   const canvasWidth = parseInt(canvasData.config.width);
   const canvasHeight = parseInt(canvasData.config.height);
-
-  // Make sure we update the pixels when the canvasData changes.
-  useEffect(() => {
-    pngToPixels(pngData ?? new Blob()).then((pixels) => {
-      setPixels(pixels);
-    });
-  }, [pngData]);
 
   const parentRef = useRef<HTMLDivElement>(null);
 
@@ -145,7 +144,7 @@ export const MyCanvas = ({
     [scale],
   );
 
-  useEffect(() => {
+  const drawOnCanvas = useCallback(async () => {
     const parent = parentRef.current;
     const canvas = canvasRef.current;
     const overlay = overlayRef.current;
@@ -185,7 +184,11 @@ export const MyCanvas = ({
     // Decide how much of a margin should appear between square.
     const margin = 1 - pixelSize;
 
-    pixels.forEach((color, index) => {
+    // Draw the png data.
+    await drawPng(canvas, context, pngData ?? new Blob(), scale, offsets);
+
+    // Draw the override pixels on top.
+    for (const [index, color] of pixelsOverride) {
       const x = (index % canvasWidth) + offsets.x;
       const y = Math.floor(index / canvasWidth) + offsets.y;
 
@@ -201,16 +204,37 @@ export const MyCanvas = ({
         pixelSize, // Reduce the pixel's width by the margin
         pixelSize, // Reduce the pixel's height by the margin
       );
-    });
+    }
 
     context.restore();
+  }, [
+    canvasWidth,
+    getOffsets,
+    handleWheel,
+    pan.x,
+    pan.y,
+    pixelsOverride,
+    pngData,
+    scale,
+  ]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+
+    if (!canvas) return;
+
+    // Can't await it here so we just make sure it is only running once at a time.
+    if (!currentlyDrawing) {
+      setCurrentlyDrawing(true);
+      drawOnCanvas().then(() => setCurrentlyDrawing(false));
+    }
 
     return () => {
       if (canvas) {
         canvas.removeEventListener("wheel", handleWheel);
       }
     };
-  }, [canvasData, parentRef, scale, pan, pixels, getOffsets, handleWheel]);
+  }, [drawOnCanvas, handleWheel]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const parent = parentRef.current;
@@ -240,10 +264,10 @@ export const MyCanvas = ({
       overlayContext.clearRect(
         (-pan.x + offsets.x) / scale,
         (-pan.y + offsets.y) / scale,
-        // We clear 1000x wide just for good measure, since I saw with this change that
+        // We clear 10000x wide just for good measure, since I saw with this change that
         // it'd still appear on the far right sometimes.
-        (parent.clientWidth / scale) * 1000,
-        (parent.clientHeight / scale) * 1000,
+        (parent.clientWidth / scale) * 10000,
+        (parent.clientHeight / scale) * 10000,
       );
 
       // Return if the cursor is outside the canvas.
@@ -332,8 +356,6 @@ export const MyCanvas = ({
   const onSubmitDraw = async () => {
     setPopoverCanBeClosed(false);
 
-    const originalColor = pixels[squareToDraw.y * canvasWidth + squareToDraw.x];
-
     try {
       const out = hexToRgb(colorToSubmit);
       if (out === null) {
@@ -368,7 +390,7 @@ export const MyCanvas = ({
       });
       setColorToSubmit(marginColor);
       // On failure, reset the color of the square.
-      resetSquare(squareToDraw.x, squareToDraw.y, originalColor);
+      resetSquare(squareToDraw.x, squareToDraw.y);
     } finally {
       setPopoverCanBeClosed(true);
       onClose();
@@ -383,22 +405,30 @@ export const MyCanvas = ({
   };
 
   const setSquare = (x: number, y: number, color: string) => {
-    const newPixels = [...pixels];
     const pixelIndex = squareToDraw.y * canvasWidth + squareToDraw.x;
     const destructured = hexToRgb(color);
     if (destructured === null) {
       return;
     }
     const { r, g, b } = destructured;
-    newPixels[pixelIndex] = { r, g, b };
-    setPixels(newPixels);
+    setPixelsOverride((pixelsOverride) => {
+      const newPixelsOverride = new Map(pixelsOverride);
+      newPixelsOverride.set(pixelIndex, { r, g, b });
+      return newPixelsOverride;
+    });
   };
 
-  const resetSquare = (x: number, y: number, originalColor: Color) => {
-    const newPixels = [...pixels];
-    const pixelIndex = y * canvasWidth + x;
-    newPixels[pixelIndex] = originalColor;
-    setPixels(newPixels);
+  const getPixelIndex = (x: number, y: number) => {
+    return y * canvasWidth + x;
+  };
+
+  const resetSquare = (x: number, y: number) => {
+    const pixelIndex = getPixelIndex(x, y);
+    setPixelsOverride((pixelsOverride) => {
+      const newPixelsOverride = new Map(pixelsOverride);
+      newPixelsOverride.delete(pixelIndex);
+      return newPixelsOverride;
+    });
   };
 
   // Rather than setting the position of the Popover explicitly, we set the position of
@@ -462,11 +492,7 @@ export const MyCanvas = ({
           onClose={() => {
             onClose();
             setPopoverPos({ left: 0, top: 0 });
-            resetSquare(
-              squareToDraw.x,
-              squareToDraw.y,
-              pixels[squareToDraw.y * canvasWidth + squareToDraw.x],
-            );
+            resetSquare(squareToDraw.x, squareToDraw.y);
           }}
           closeOnBlur={popoverCanBeClosed}
           closeOnEsc={popoverCanBeClosed}
@@ -529,26 +555,29 @@ function hexToRgb(hex: string) {
     : null;
 }
 
-// TODO: It'd be better to just write the PNG to the main canvas directly.
-function pngToPixels(pngData: Blob): Promise<Color[]> {
+// NOTE: When panning this
+function drawPng(
+  canvas: HTMLCanvasElement,
+  ctx: CanvasRenderingContext2D,
+  pngData: Blob,
+  scale: number, // Add scale as a parameter
+  offsets: { x: number; y: number } // Add offsets as a parameter
+): Promise<Color[]> {
   return new Promise((resolve, reject) => {
     const image = new Image();
     const url = URL.createObjectURL(pngData);
 
     image.onload = () => {
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
+      // Determine the destination dimensions and position
+      const destWidth = image.width;
+      const destHeight = image.height;
+      const destX = offsets.x; // You can customize this as needed
+      const destY = offsets.y; // You can customize this as needed
 
-      if (ctx === undefined) {
-        resolve([]);
-        return;
-      }
+      // Draw the image scaled and positioned as desired
+      ctx.drawImage(image, destX, destY, destWidth, destHeight);
 
-      canvas.width = image.width;
-      canvas.height = image.height;
-
-      ctx!.drawImage(image, 0, 0);
-      const imageData = ctx!.getImageData(0, 0, canvas.width, canvas.height);
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const pixels = [];
 
       for (let i = 0; i < imageData.data.length; i += 4) {

@@ -3,11 +3,7 @@ import { Box, Center, Flex, Text } from "@chakra-ui/react";
 import { getModuleId, useGlobalState } from "../../GlobalState";
 import { NetworkMismatchPage } from "../../components/NetworkMismatchPage";
 import { useGetAccountResources } from "../../api/hooks/useGetAccountResources";
-import {
-  ObjectCore,
-  Token,
-  Canvas,
-} from "../../canvas/generated/types";
+import { ObjectCore, Token, Canvas } from "../../canvas/generated/types";
 import { MyCanvas } from "../../components/MyCanvas";
 
 export const MyCanvasLoader = ({
@@ -75,7 +71,7 @@ export const MyCanvasLoader = ({
   }
 
   const canvasData: Canvas = canvasResource.data as any;
-  const objectCoreData: ObjectCore  = objectCoreResource!.data as any;
+  const objectCoreData: ObjectCore = objectCoreResource!.data as any;
   const tokenData: Token = tokenResource!.data as any;
 
   return (
