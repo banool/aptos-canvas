@@ -11,8 +11,23 @@ import bmp from "bmp-js";
 import * as fs from "fs";
 import { PromisePool } from "@supercharge/promise-pool";
 import fetch from "node-fetch";
+import { createCanvas, loadImage } from "canvas";
 
 export {};
+
+const MODULE_ADDRESS =
+  "0x481d6509302e3379b9a8cf524da0000feee18f811d1da7e5addc7f64cdaaac60";
+
+const CANVAS_TO_DRAW_ON =
+  "0xb693adc2b70c693019217e95b539a7a3fdd92a033dc491745c0d3ec464807fb1";
+
+type Pixel = {
+  x: number;
+  y: number;
+  r: number;
+  g: number;
+  b: number;
+};
 
 const {
   AccountAddress,
@@ -97,7 +112,7 @@ async function drawPoint(
 ) {
   const entryFunctionPayload = new TransactionPayloadEntryFunction(
     EntryFunction.natural(
-      "0x6286dfd5e2778ec069d5906cd774efdba93ab2bec71550fa69363482fbd814e7::canvas_token",
+      `${MODULE_ADDRESS}::canvas_token`,
       "draw",
       [],
       [
@@ -135,31 +150,22 @@ async function drawPoint(
 
   const transactionRes = await CLIENT.submitSignedBCSTransaction(bcsTxn);
   await CLIENT.waitForTransaction(transactionRes.hash, { checkSuccess: true });
-  console.log("put dot:", tokenAddress, [x, y], [r, g, b], transactionRes.hash);
+  // console.log("put dot:", tokenAddress, [x, y], [r, g, b], transactionRes.hash);
 }
 
 // Get the current pixels
-async function getPixels(tokenAddress: string) {
-  const res = await fetch(
-    `https://fullnode.testnet.aptoslabs.com/v1/accounts/${tokenAddress}/resources?limit=9999`,
-    {
-      headers: {
-        accept: "application/json, text/plain, */*",
-        Referer: "https://canvas.dport.me/",
-      },
-      body: null,
-      method: "GET",
-    }
+async function getPixels(tokenAddress: string): Promise<Pixel[]> {
+  const res = await loadImagePng(
+    `https://canvas-processor-testnet.dport.me/media/${tokenAddress}.png`
   );
-  const body: any = await res.json();
-  const dataItem = body.filter((r: any) =>
-    (r.type as string).includes("canvas_token::Canvas")
-  )[0];
-  const pixels: { r: number; g: number; b: number }[] = dataItem.data.pixels;
-  return pixels;
+  return res.toDraw;
 }
 
-function loadImage(imgPath: string) {
+function loadImageBmp(imgPath: string): {
+  toDraw: any[];
+  width: number;
+  height: number;
+} {
   const bmpBuffer = fs.readFileSync(imgPath);
   const bmpData = bmp.decode(bmpBuffer);
 
@@ -186,10 +192,43 @@ function loadImage(imgPath: string) {
     let b = bmpData.data[i + 1];
 
     // Push the RGB values and coordinates to the array
-    toDraw.push([x, y, r, g, b]);
+    toDraw.push({ x, y, r, g, b });
   }
 
   return { toDraw, width: bmpData.width, height: bmpData.height };
+}
+
+async function loadImagePng(
+  imgPath: string
+): Promise<{ toDraw: Pixel[]; width: number; height: number }> {
+  const image = await loadImage(imgPath);
+  const canvas = createCanvas(200, 200);
+  const ctx = canvas.getContext("2d");
+
+  if (ctx === undefined) {
+    throw "No canvas";
+  }
+
+  canvas.width = image.width;
+  canvas.height = image.height;
+
+  ctx!.drawImage(image, 0, 0);
+  const imageData = ctx!.getImageData(0, 0, canvas.width, canvas.height);
+  const pixels = [];
+
+  for (let i = 0; i < imageData.data.length; i += 4) {
+    const color = {
+      x: (i / 4) % canvas.width,
+      y: Math.floor(i / 4 / canvas.width),
+      r: imageData.data[i],
+      g: imageData.data[i + 1],
+      b: imageData.data[i + 2],
+    };
+
+    pixels.push(color);
+  }
+
+  return { toDraw: pixels, width: canvas.width, height: canvas.height };
 }
 
 function shuffleArray<T>(array: T[]) {
@@ -199,13 +238,14 @@ function shuffleArray<T>(array: T[]) {
   }
 }
 
+// TODO: Before running this code again, make this function work.
 async function excludeExistingPixels(
-  toDraw: any[],
+  toDraw: Pixel[],
   width: number,
   tokenAddress: string
 ) {
   const pixels = await getPixels(tokenAddress);
-  const filteredToDraw = toDraw.filter(([x, y, r, g, b]) => {
+  const filteredToDraw = toDraw.filter(({ x, y, r, g, b }) => {
     const index = y * width + x;
     const currentPixel = pixels[index];
     if (!currentPixel)
@@ -226,21 +266,20 @@ async function excludeExistingPixels(
 }
 
 async function main() {
-  const res = loadImage("img/hokusai.bmp");
+  // const res = loadImageBmp("img/hokusai.bmp");
+  const res = await loadImagePng("img/saturn.png");
 
   // Shuffle to make it fun
   shuffleArray(res.toDraw);
 
   // Make some accounts
-  const numAccounts = 35;
+  const numAccounts = 25;
   const accounts = await Promise.all(
     Array.from({ length: numAccounts }).map(() => createAndFundAccount())
   );
 
   const accountPool = new AccountPool(accounts);
-  const tokenAddress =
-    "0x267d2de5c2e65ebc33566128e99ab76f433b1d6f6cdfc62e71c6d2e93e132a7f";
-  const outputEvery = 100;
+  const tokenAddress = CANVAS_TO_DRAW_ON;
 
   const filteredToDraw = await excludeExistingPixels(
     res.toDraw,
@@ -248,11 +287,12 @@ async function main() {
     tokenAddress
   );
 
+  const outputEvery = 100;
   let drawn = 0;
   const { results, errors } = await PromisePool.for(filteredToDraw)
     .withConcurrency(numAccounts)
     .process(async (drawParams: any, index: number) => {
-      const [x, y, r, g, b] = drawParams;
+      const { x, y, r, g, b } = drawParams;
       await accountPool.withAccount(async (account) => {
         await drawPoint(account, tokenAddress, x, y, r, g, b);
       });
@@ -265,6 +305,11 @@ async function main() {
           ).toFixed(2)}%)`
         );
     });
+
+  console.log("Number of errors", errors.length);
+  if (errors.length > 0) {
+    console.log("First error in vector: ", errors[0]);
+  }
 }
 
 main();
