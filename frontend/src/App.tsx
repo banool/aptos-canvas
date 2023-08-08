@@ -23,7 +23,7 @@ import { PontemWallet } from "@pontem/wallet-adapter-plugin";
 // users hitting the connect wallet button.
 
 // It is okay for this to be publicly accessible.
-const identityConnectDappId = "5192ba1e-a7ca-4830-9bb5-f40d911be614";
+const identityConnectDappId = "61eebaa4-09e5-4089-a493-6724bc428868";
 
 const queryClient = new QueryClient();
 
