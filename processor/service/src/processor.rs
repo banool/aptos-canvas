@@ -102,8 +102,11 @@ impl ProcessorTrait for CanvasProcessor {
         // Write pixels.
         for write_pixel_intent in all_write_pixel_intents {
             info!(
-                "Writing pixel to canvas {} index {}",
-                write_pixel_intent.canvas_address, write_pixel_intent.index
+                "Writing pixel to canvas {} index {} (from txns {} to {})",
+                write_pixel_intent.canvas_address,
+                write_pixel_intent.index,
+                start_version,
+                end_version
             );
             self.canvas_storage
                 .write_pixel(write_pixel_intent)
