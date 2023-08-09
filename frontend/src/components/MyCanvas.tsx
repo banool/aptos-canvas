@@ -55,6 +55,12 @@ export const MyCanvas = ({
 
   const [pixels, setPixels] = useState<Color[]>([]);
 
+  // These pixels get drawn over the top of the canvas after we draw the base layer
+  // using the png. The key is the index.
+  const [pixelsOverride, setPixelsOverride] = useState<Map<number, Color>>(
+    new Map(),
+  );
+
   const canvasWidth = parseInt(canvasData.config.width);
   const canvasHeight = parseInt(canvasData.config.height);
 
@@ -203,6 +209,25 @@ export const MyCanvas = ({
       );
     });
 
+    // Draw the override pixels on top.
+    for (const [index, color] of pixelsOverride) {
+      const x = (index % canvasWidth) + offsets.x;
+      const y = Math.floor(index / canvasWidth) + offsets.y;
+
+      // Draw underneath the squares so a margin appears.
+      context.fillStyle = marginColor;
+      context.fillRect(x, y, pixelSize + margin, pixelSize + margin);
+
+      // Draw the squares.
+      context.fillStyle = `rgb(${color.r},${color.g},${color.b})`;
+      context.fillRect(
+        x + margin, // Shift the pixel to the right by the margin
+        y + margin, // Shift the pixel down by the margin
+        pixelSize, // Reduce the pixel's width by the margin
+        pixelSize, // Reduce the pixel's height by the margin
+      );
+    }
+
     context.restore();
 
     return () => {
@@ -210,7 +235,16 @@ export const MyCanvas = ({
         canvas.removeEventListener("wheel", handleWheel);
       }
     };
-  }, [canvasData, parentRef, scale, pan, pixels, getOffsets, handleWheel]);
+  }, [
+    canvasData,
+    parentRef,
+    scale,
+    pan,
+    pixels,
+    pixelsOverride,
+    getOffsets,
+    handleWheel,
+  ]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const parent = parentRef.current;
@@ -368,7 +402,7 @@ export const MyCanvas = ({
       });
       setColorToSubmit(marginColor);
       // On failure, reset the color of the square.
-      resetSquare(squareToDraw.x, squareToDraw.y, originalColor);
+      resetSquare(squareToDraw.x, squareToDraw.y);
     } finally {
       setPopoverCanBeClosed(true);
       onClose();
@@ -383,22 +417,30 @@ export const MyCanvas = ({
   };
 
   const setSquare = (x: number, y: number, color: string) => {
-    const newPixels = [...pixels];
     const pixelIndex = squareToDraw.y * canvasWidth + squareToDraw.x;
     const destructured = hexToRgb(color);
     if (destructured === null) {
       return;
     }
     const { r, g, b } = destructured;
-    newPixels[pixelIndex] = { r, g, b };
-    setPixels(newPixels);
+    setPixelsOverride((pixelsOverride) => {
+      const newPixelsOverride = new Map(pixelsOverride);
+      newPixelsOverride.set(pixelIndex, { r, g, b });
+      return newPixelsOverride;
+    });
   };
 
-  const resetSquare = (x: number, y: number, originalColor: Color) => {
-    const newPixels = [...pixels];
-    const pixelIndex = y * canvasWidth + x;
-    newPixels[pixelIndex] = originalColor;
-    setPixels(newPixels);
+  const getPixelIndex = (x: number, y: number) => {
+    return y * canvasWidth + x;
+  };
+
+  const resetSquare = (x: number, y: number) => {
+    const pixelIndex = getPixelIndex(x, y);
+    setPixelsOverride((pixelsOverride) => {
+      const newPixelsOverride = new Map(pixelsOverride);
+      newPixelsOverride.delete(pixelIndex);
+      return newPixelsOverride;
+    });
   };
 
   // Rather than setting the position of the Popover explicitly, we set the position of
@@ -462,11 +504,7 @@ export const MyCanvas = ({
           onClose={() => {
             onClose();
             setPopoverPos({ left: 0, top: 0 });
-            resetSquare(
-              squareToDraw.x,
-              squareToDraw.y,
-              pixels[squareToDraw.y * canvasWidth + squareToDraw.x],
-            );
+            resetSquare(squareToDraw.x, squareToDraw.y);
           }}
           closeOnBlur={popoverCanBeClosed}
           closeOnEsc={popoverCanBeClosed}

@@ -6,7 +6,7 @@ This directory contains a very basic deployment setup using Ansible, just deploy
 - A user called `dport` with sudo power exists with SSH key based access already set up
 - Python 3 installed at the location set in `hosts`
 - The server is running Debian 11.
-
+- The necessary domains have been pointed (A record) to the server's public IP.
 
 ## Variables
 We just put the non-secret vars in the playbook.
