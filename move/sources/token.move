@@ -249,7 +249,17 @@ module addr::canvas_token {
             1,
             string::length(&object_address_string),
         );
-        let uri = string::utf8(b"https://canvas-processor-testnet.dport.me/media/0x");
+        let chain_id = get_chain_id();
+        let network_str = if (chain_id == 1) {
+            b"mainnet"
+        } else if (chain_id == 2) {
+            b"testnet"
+        } else {
+            b"devnet"
+        };
+        let uri = string::utf8(b"https://canvas-processor-");
+        string::append(&mut uri, string::utf8(network_str));
+        string::append(&mut uri, string::utf8(b".dport.me/media/0x"));
         string::append(&mut uri, object_address_string);
         string::append(&mut uri, string::utf8(b".png"));
 

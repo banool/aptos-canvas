@@ -3,7 +3,7 @@ stream_subscriber_config:
   auth_token: "{{ auth_token }}"
 dispatcher_config:
 common_storage_config:
-  initial_starting_version: 613358990
+  initial_starting_version: {{ initial_starting_version }}
 canvas_processor_config:
   canvas_contract_address: "{{ canvas_contract_address }}"
 canvas_storage_config:
@@ -12,3 +12,4 @@ api_config:
   api_port: {{ api_port }}
 postgres_storage_config:
   connection_string: "postgres://canvas:pword@localhost:5432/canvas_{{ network }}"
+

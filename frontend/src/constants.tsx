@@ -12,7 +12,7 @@ export type NetworkName = keyof typeof networks;
 export const moduleLocations = {
   mainnet: {
     address:
-      "0xfbc45a84bd65b000d259ac91a8f314c93313e6d6787dbac71bdaf044f661a4f8",
+      "0xf3946c9408beecf8b37e441113c4ad3fd3752b9bed03a8a63764304edfdb3162",
     name: "canvas_token",
   },
   testnet: {
@@ -28,7 +28,9 @@ export const moduleLocations = {
 };
 
 export const featuredCanvases = {
-  mainnet: [],
+  mainnet: [
+    "0x590fe948b80099697089268b8d3136b6cecdc243fd39eb0272cda050024770ff",
+  ],
   testnet: [
     "0xb693adc2b70c693019217e95b539a7a3fdd92a033dc491745c0d3ec464807fb1",
   ],

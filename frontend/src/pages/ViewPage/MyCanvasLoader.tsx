@@ -3,11 +3,7 @@ import { Box, Center, Flex, Text } from "@chakra-ui/react";
 import { getModuleId, useGlobalState } from "../../GlobalState";
 import { NetworkMismatchPage } from "../../components/NetworkMismatchPage";
 import { useGetAccountResources } from "../../api/hooks/useGetAccountResources";
-import {
-  ObjectCore,
-  Token,
-  Canvas,
-} from "../../canvas/generated/types";
+import { ObjectCore, Token, Canvas } from "../../canvas/generated/types";
 import { MyCanvas } from "../../components/MyCanvas";
 
 export const MyCanvasLoader = ({
@@ -49,7 +45,9 @@ export const MyCanvasLoader = ({
   if (error != null) {
     return (
       <Center p={3} height="100%" flex="1" overflow="auto">
-        <Text>{`Error loading data for canvas at ${address}: ${error}`}</Text>
+        <Text>{`Error loading data for canvas at ${address}: ${JSON.stringify(
+          error,
+        )}`}</Text>
       </Center>
     );
   }
@@ -75,7 +73,7 @@ export const MyCanvasLoader = ({
   }
 
   const canvasData: Canvas = canvasResource.data as any;
-  const objectCoreData: ObjectCore  = objectCoreResource!.data as any;
+  const objectCoreData: ObjectCore = objectCoreResource!.data as any;
   const tokenData: Token = tokenResource!.data as any;
 
   return (

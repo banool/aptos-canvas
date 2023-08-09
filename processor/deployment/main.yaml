@@ -172,19 +172,33 @@
       canvas_contract_address: "0x481d6509302e3379b9a8cf524da0000feee18f811d1da7e5addc7f64cdaaac60"
       network: testnet
       api_port: 6677
+      initial_starting_version: 613358990
     ansible.builtin.template:
       src: templates/processor/config.yaml.j2
       dest: "/var/canvases/testnet/config.yaml"
       owner: "{{ ansible_user_id }}"
       group: root
       mode: '0777'
-  # todo, add mainnet config too
+  - name: Create processor config for mainnet
+    become: true
+    vars:
+      txn_stream_service_address: "34.30.218.153:50051"
+      canvas_contract_address: "0xf3946c9408beecf8b37e441113c4ad3fd3752b9bed03a8a63764304edfdb3162"
+      network: mainnet
+      api_port: 6678
+      initial_starting_version: 215986449
+    ansible.builtin.template:
+      src: templates/processor/config.yaml.j2
+      dest: "/var/canvases/mainnet/config.yaml"
+      owner: "{{ ansible_user_id }}"
+      group: root
+      mode: '0777'
 
 
 - hosts: webservers
   name: Install aptos canvas processor systemd config for testnet
   tags:
-    - canvas
+    - systemd
     - testnet
   tasks:
   - name: Create aptos canvas processor systemd spec file for testnet
@@ -210,11 +224,14 @@
 - hosts: webservers
   name: Install aptos canvas processor systemd config for mainnet
   tags:
-    - canvas
+    - systemd
     - mainnet
   tasks:
   - name: Create aptos canvas processor systemd spec file for mainnet
     become: true
+    vars:
+      network: mainnet
+      unix_user: "{{ ansible_user_id }}"
     ansible.builtin.template:
       src: templates/systemd/aptos-canvas-processor.service.j2
       dest: "/home/{{ ansible_user_id }}/.config/systemd/user/aptos-canvas-processor-mainnet.service"
