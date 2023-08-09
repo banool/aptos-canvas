@@ -1,0 +1,31 @@
+server {
+  server_name {{ " ".join(domains) }};
+
+  include security.conf;
+
+  {% block mainbody required %}{% endblock %}
+
+  location ~ /\.git {
+    deny all;
+  }
+
+  location ~ /\.ht {
+    deny all;
+  }
+
+  listen 443 ssl;
+  ssl_certificate /etc/nginx/danielcerts/fullchain.pem;
+  ssl_certificate_key /etc/nginx/danielcerts/key.pem;
+  # include /etc/nginx/danielcerts/options-ssl-nginx.conf;
+}
+server {
+  {% for domain in domains %}
+  if ($host = {{ domain }}) {
+    return 301 https://$host$request_uri;
+  }
+  {% endfor %}
+
+  server_name {{ " ".join(domains) }};
+  listen 80;
+  return 404;
+}
