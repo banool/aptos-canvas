@@ -17,13 +17,8 @@ import { FewchaWallet } from "fewcha-plugin-wallet-adapter";
 import { MartianWallet } from "@martianwallet/aptos-wallet-adapter";
 import { PontemWallet } from "@pontem/wallet-adapter-plugin";
 
-// TODO: See what the answer is here:
-// https://aptos-org.slack.com/archives/C051U2U70GK/p1690526679516379
-// It might turn out that the dapp flow is meant to be different than just
-// users hitting the connect wallet button.
-
 // It is okay for this to be publicly accessible.
-const identityConnectDappId = "5192ba1e-a7ca-4830-9bb5-f40d911be614";
+const identityConnectDappId = "61eebaa4-09e5-4089-a493-6724bc428868";
 
 const queryClient = new QueryClient();
 
