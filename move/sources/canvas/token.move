@@ -1,16 +1,10 @@
-// Copyright (c) Daniel Porteous
+// Copyright (c) Aptos Labs
 // SPDX-License-Identifier: Apache-2.0
 
 //! See the README for more information about how this module works.
 //!
 //! In this module we intentionally do not emit events. The only real reason to emit
 //! events is for the sake of indexing, but we can just process the writesets for that.
-
-// todo idk whether to use vector or smart vector
-
-// note, the plan for now is to have the collection be unlimited and allow anyone to
-// mint, with the idea being that canvases should have value themselves rather than
-// value through scarcity. perhaps a phase 2 release could be limited? who knows.
 
 // this module could really benefit from allowing arbitrary drop structs as arguments
 // to entry functions, e.g. CanvasConfig, Coords, Color, etc.

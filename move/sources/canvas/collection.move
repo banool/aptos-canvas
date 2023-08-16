@@ -1,4 +1,4 @@
-// Copyright (c) Daniel Porteous
+// Copyright (c) Aptos Labs
 // SPDX-License-Identifier: Apache-2.0
 
 //! See the README for more information about how this module works.
@@ -45,13 +45,13 @@ module addr::canvas_collection {
     /// want to create more collections down the line, so this way it will be more
     /// uniform. This is the only time we use PERMITTED_COLLECTION_CREATOR,; once the
     /// collection is made, we use the collection owner instead.
-    public entry fun create(caller: &signer) {
+    fun init_module(publisher: &signer) {
         assert!(
-            signer::address_of(caller) == PERMITTED_COLLECTION_CREATOR,
+            signer::address_of(publisher) == PERMITTED_COLLECTION_CREATOR,
             error::invalid_argument(E_COLLECTION_CREATOR_FORBIDDEN),
         );
         let constructor_ref = collection::create_unlimited_collection(
-            caller,
+            publisher,
             string::utf8(b"unset"),
             get_collection_name(),
             option::none(),
