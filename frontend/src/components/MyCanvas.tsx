@@ -23,8 +23,11 @@ import { useParams } from "react-router-dom";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { HexColorPicker } from "react-colorful";
 import { draw } from "../api/transactions";
-import { useQuery } from "react-query";
-import { REFETCH_INTERVAL_MS } from "../api/helpers";
+import { useGetPixels } from "../api/hooks/useGetPixels";
+
+const PIXEL_SIZE = 0.98; // the width of each pixel in the canvas
+const MARGIN_COLOR = "white";
+const INITIAL_SCALE_OFFSET = 0.92;
 
 export const MyCanvas = ({
   canvasData,
@@ -37,41 +40,17 @@ export const MyCanvas = ({
   writeable: boolean;
   canvasVh?: number;
 }) => {
-  const pixelSize = 0.96;
-  const marginColor = "white";
-  const initialScaleOffset = 0.92;
-
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const overlayRef = useRef<HTMLCanvasElement | null>(null);
+  const parentRef = useRef<HTMLDivElement>(null);
 
-  const { data: pngData, error: pngError } = useQuery(
-    ["canvasPng", tokenData.uri],
-    () => fetch(tokenData.uri).then((res) => res.blob()),
-    {
-      refetchOnWindowFocus: false,
-      refetchInterval: REFETCH_INTERVAL_MS,
-    },
-  );
-
-  const [pixels, setPixels] = useState<Color[]>([]);
+  const pixels = useGetPixels(tokenData);
 
   // These pixels get drawn over the top of the canvas after we draw the base layer
   // using the png. The key is the index.
   const [pixelsOverride, setPixelsOverride] = useState<Map<number, Color>>(
     new Map(),
   );
-
-  const canvasWidth = parseInt(canvasData.config.width);
-  const canvasHeight = parseInt(canvasData.config.height);
-
-  // Make sure we update the pixels when the canvasData changes.
-  useEffect(() => {
-    pngToPixels(pngData ?? new Blob()).then((pixels) => {
-      setPixels(pixels);
-    });
-  }, [pngData]);
-
-  const parentRef = useRef<HTMLDivElement>(null);
 
   // Store scale and pan in state
   const [scale, setScale] = useState<number | undefined>(undefined);
@@ -107,7 +86,10 @@ export const MyCanvas = ({
 
   const { connected, signAndSubmitTransaction } = useWallet();
 
-  const [colorToSubmit, setColorToSubmit] = useState(marginColor);
+  const [colorToSubmit, setColorToSubmit] = useState(MARGIN_COLOR);
+
+  const canvasWidth = parseInt(canvasData.config.width);
+  const canvasHeight = parseInt(canvasData.config.height);
 
   const getOffsets = useCallback(() => {
     const parent = parentRef.current;
@@ -130,7 +112,7 @@ export const MyCanvas = ({
     const scaleY = parentHeight / canvasHeight;
 
     // Use the smaller scale factor to ensure the canvas fits within the parent without stretching
-    let s = Math.min(scaleX, scaleY) * initialScaleOffset;
+    let s = Math.min(scaleX, scaleY) * INITIAL_SCALE_OFFSET;
     setInitialScale(s);
     setScale(s);
   }, [canvasHeight, canvasWidth, parentRef]);
@@ -189,23 +171,23 @@ export const MyCanvas = ({
     overlayContext.scale(scale, scale);
 
     // Decide how much of a margin should appear between square.
-    const margin = 1 - pixelSize;
+    const margin = 1 - PIXEL_SIZE;
 
     pixels.forEach((color, index) => {
       const x = (index % canvasWidth) + offsets.x;
       const y = Math.floor(index / canvasWidth) + offsets.y;
 
       // Draw underneath the squares so a margin appears.
-      context.fillStyle = marginColor;
-      context.fillRect(x, y, pixelSize + margin, pixelSize + margin);
+      context.fillStyle = MARGIN_COLOR;
+      context.fillRect(x, y, PIXEL_SIZE + margin, PIXEL_SIZE + margin);
 
       // Draw the squares.
       context.fillStyle = `rgb(${color.r},${color.g},${color.b})`;
       context.fillRect(
         x + margin, // Shift the pixel to the right by the margin
         y + margin, // Shift the pixel down by the margin
-        pixelSize, // Reduce the pixel's width by the margin
-        pixelSize, // Reduce the pixel's height by the margin
+        PIXEL_SIZE, // Reduce the pixel's width by the margin
+        PIXEL_SIZE, // Reduce the pixel's height by the margin
       );
     });
 
@@ -215,16 +197,16 @@ export const MyCanvas = ({
       const y = Math.floor(index / canvasWidth) + offsets.y;
 
       // Draw underneath the squares so a margin appears.
-      context.fillStyle = marginColor;
-      context.fillRect(x, y, pixelSize + margin, pixelSize + margin);
+      context.fillStyle = MARGIN_COLOR;
+      context.fillRect(x, y, PIXEL_SIZE + margin, PIXEL_SIZE + margin);
 
       // Draw the squares.
       context.fillStyle = `rgb(${color.r},${color.g},${color.b})`;
       context.fillRect(
         x + margin, // Shift the pixel to the right by the margin
         y + margin, // Shift the pixel down by the margin
-        pixelSize, // Reduce the pixel's width by the margin
-        pixelSize, // Reduce the pixel's height by the margin
+        PIXEL_SIZE, // Reduce the pixel's width by the margin
+        PIXEL_SIZE, // Reduce the pixel's height by the margin
       );
     }
 
@@ -400,7 +382,7 @@ export const MyCanvas = ({
         duration: 7000,
         isClosable: true,
       });
-      setColorToSubmit(marginColor);
+      setColorToSubmit(MARGIN_COLOR);
       // On failure, reset the color of the square.
       resetSquare(squareToDraw.x, squareToDraw.y);
     } finally {
@@ -565,49 +547,4 @@ function hexToRgb(hex: string) {
         b: parseInt(result[3], 16),
       }
     : null;
-}
-
-// TODO: It'd be better to just write the PNG to the main canvas directly.
-function pngToPixels(pngData: Blob): Promise<Color[]> {
-  return new Promise((resolve, reject) => {
-    const image = new Image();
-    const url = URL.createObjectURL(pngData);
-
-    image.onload = () => {
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-
-      if (ctx === undefined) {
-        resolve([]);
-        return;
-      }
-
-      canvas.width = image.width;
-      canvas.height = image.height;
-
-      ctx!.drawImage(image, 0, 0);
-      const imageData = ctx!.getImageData(0, 0, canvas.width, canvas.height);
-      const pixels = [];
-
-      for (let i = 0; i < imageData.data.length; i += 4) {
-        const color = {
-          r: imageData.data[i],
-          g: imageData.data[i + 1],
-          b: imageData.data[i + 2],
-        };
-
-        pixels.push(color);
-      }
-
-      URL.revokeObjectURL(url);
-      resolve(pixels); // Resolve the Promise with the pixels array
-    };
-
-    image.onerror = (err) => {
-      // Reject the Promise if there's an error
-      reject(err);
-    };
-
-    image.src = url;
-  });
 }
