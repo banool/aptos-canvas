@@ -61,7 +61,7 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(PixelAttribution::Address)
                             .string()
-                            .not_null()
+                            .not_null(),
                     )
                     .col(
                         ColumnDef::new(PixelAttribution::DrawnAtSecs)

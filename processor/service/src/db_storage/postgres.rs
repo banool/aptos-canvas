@@ -16,7 +16,7 @@ pub struct PostgresStorageConfig {
 
 #[derive(Debug)]
 pub struct PostgresStorage {
-    connection: DatabaseConnection,
+    pub connection: DatabaseConnection,
 }
 
 impl PostgresStorage {

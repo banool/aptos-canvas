@@ -41,7 +41,7 @@ async fn main() -> Result<()> {
     // Build the storage, which is what lets us read and write to the DB. This is
     // generally necessary for all processors since they need somewhere to at least
     // keep track of the last version they processed.
-    let storage = Arc::new(
+    let db_storage = Arc::new(
         PostgresStorage::new(config.postgres_storage_config.clone())
             .await
             .context("Failed to initialize Postgres storage")?,
@@ -55,7 +55,7 @@ async fn main() -> Result<()> {
     ));
 
     // From the DB, read the last version we processed.
-    let starting_version_from_db = storage
+    let starting_version_from_db = db_storage
         .read_last_processed_version(processor.name())
         .await?;
 
@@ -82,7 +82,7 @@ async fn main() -> Result<()> {
     // to the processor.
     let mut dispatcher = Dispatcher {
         config: config.dispatcher_config.clone(),
-        storage: storage.clone(),
+        storage: db_storage.clone(),
         processor: processor.clone(),
         receiver: channel_handle.receiver,
         starting_version,
@@ -90,7 +90,11 @@ async fn main() -> Result<()> {
 
     // Build the API, which can serve the canvases as pngs and also serve any of the
     // restructured information the processor put in the DB.
-    let api = Api::new(config.api_config.clone(), canvas_storage.clone());
+    let api = Api::new(
+        config.api_config.clone(),
+        canvas_storage.clone(),
+        db_storage.clone(),
+    );
 
     let api_fut = api.start_api();
     let dispatcher_fut = dispatcher.dispatch();

@@ -1,26 +1,36 @@
 # Aptos Canvas: Processor
 
-To run the processor:
+Spin up a local development environment (node API + txn stream service):
 ```
-rm -rf /tmp/canvases && mkdir /tmp/canvases && cargo run -p service -- --config-path config.yaml
+cd aptos-core
+cd testsuite
+docker container prune -f
+DOCKER_DEFAULT_PLATFORM=linux/amd64 poetry run python indexer_grpc_local.py start
 ```
 
+Run the processor:
+```
+rm -rf /tmp/canvases && mkdir /tmp/canvases && cargo run -p service -- --config-path configs/local.yaml
+```
+
+## Installing
+
 ## Updating DB
-To change the DB, first go to `migrations/` and create a new migration.
+Install the necessary tools:
+```
+cargo install sea-orm-cli@^0.12
+```
+
+To change the DB, first go to `migrations/` and create a new migration (see the README there).
 
 To run migrations, assuming you have already created a `canvas` database:
 ```
 sea-orm-cli migrate -d migrations --database-url postgres://dport:@localhost/canvas
 ```
 
-To generate entities (which uses the data in the DB):
+Now, to generate entities with GraphQL hooked up, do this:
 ```
 sea-orm-cli generate entity --lib --seaography -o entities/src --database-url postgres://dport:@localhost:5432/canvas
 ```
 
-to generate the API from the DB. you have to have all the seaorm stuff already done and have tables in the db.
-
-Now, to generate the API, do this:
-```
-seaography-cli --framework poem --complexity-limit 3 --depth-limit 3 postgres://dport:@localhost:5432/canvas testing testing
-```
+If you added a new table, make sure to go register it with the API GraphQL schema at `service/src/api/schema.rs`.
