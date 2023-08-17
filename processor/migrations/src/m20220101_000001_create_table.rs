@@ -43,6 +43,33 @@ impl MigrationTrait for Migration {
                     )
                     .to_owned(),
             )
+            .await?;
+
+        // Create the pixel attribution table.
+        manager
+            .create_table(
+                Table::create()
+                    .table(PixelAttribution::Table)
+                    .if_not_exists()
+                    .col(
+                        ColumnDef::new(PixelAttribution::Index)
+                            .primary_key()
+                            .big_integer()
+                            .not_null()
+                            .unique_key(),
+                    )
+                    .col(
+                        ColumnDef::new(PixelAttribution::Address)
+                            .string()
+                            .not_null()
+                    )
+                    .col(
+                        ColumnDef::new(PixelAttribution::DrawnAtSecs)
+                            .big_integer()
+                            .not_null(),
+                    )
+                    .to_owned(),
+            )
             .await
     }
 
@@ -52,6 +79,9 @@ impl MigrationTrait for Migration {
             .await?;
         manager
             .drop_table(Table::drop().table(LastProcessedVersion::Table).to_owned())
+            .await?;
+        manager
+            .drop_table(Table::drop().table(PixelAttribution::Table).to_owned())
             .await
     }
 }
@@ -67,4 +97,12 @@ enum LastProcessedVersion {
     Table,
     ProcessorName,
     Version,
+}
+
+#[derive(DeriveIden)]
+enum PixelAttribution {
+    Table,
+    Index,
+    Address,
+    DrawnAtSecs,
 }
