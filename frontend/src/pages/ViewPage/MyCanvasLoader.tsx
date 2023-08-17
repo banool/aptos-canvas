@@ -4,7 +4,7 @@ import { getModuleId, useGlobalState } from "../../GlobalState";
 import { NetworkMismatchPage } from "../../components/NetworkMismatchPage";
 import { useGetAccountResources } from "../../api/hooks/useGetAccountResources";
 import { ObjectCore, Token, Canvas } from "../../canvas/generated/types";
-import { MyCanvas } from "../../components/MyCanvas";
+import { MyCanvas } from "../../components/canvas/MyCanvas";
 
 export const MyCanvasLoader = ({
   address,
