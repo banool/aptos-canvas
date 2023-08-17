@@ -79,7 +79,7 @@ type AllowedValidators {
 scalar Any
 
 type ApprovedExecutionHashes {
-	hashes: _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap!
+	hashes: _0x1__simple_map__SimpleMap!
 }
 
 type AptosCoin {
@@ -103,7 +103,7 @@ type AptosToken {
 	burn_ref: Option!
 	transfer_ref: Option!
 	mutator_ref: Option!
-	property_mutator_ref: _0x0000000000000000000000000000000000000000000000000000000000000004__property_map__MutatorRef!
+	property_mutator_ref: _0x4__property_map__MutatorRef!
 }
 
 type BigVector {
@@ -147,7 +147,7 @@ type Canvas {
 	admins: SimpleSet!
 	created_at_s: U64!
 	extend_ref: ExtendRef!
-	mutator_ref: _0x0000000000000000000000000000000000000000000000000000000000000004__token__MutatorRef!
+	mutator_ref: _0x4__token__MutatorRef!
 }
 
 type CanvasConfig {
@@ -157,8 +157,10 @@ type CanvasConfig {
 	can_draw_for_s: U64!
 	palette: [Color!]!
 	cost: U64!
-	funds_recipient: Option!
+	cost_multiplier: U64!
+	cost_multiplier_decay_s: U64!
 	default_color: Color!
+	can_draw_multiple_pixels_at_once: Boolean!
 	owner_is_super_admin: Boolean!
 }
 
@@ -230,8 +232,8 @@ type Collection {
 }
 
 type CollectionRefs {
-	transfer_ref: _0x0000000000000000000000000000000000000000000000000000000000000001__object__TransferRef!
-	mutator_ref: _0x0000000000000000000000000000000000000000000000000000000000000004__collection__MutatorRef!
+	transfer_ref: _0x1__object__TransferRef!
+	mutator_ref: _0x4__collection__MutatorRef!
 }
 
 type Color {
@@ -278,7 +280,7 @@ type ConstructorRef {
 }
 
 type Container {
-	store: _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap!
+	store: _0x1__simple_map__SimpleMap!
 }
 
 type CreateStakingContractEvent {
@@ -327,7 +329,7 @@ type DelegatedVotes {
 }
 
 type DelegationPool {
-	active_shares: _0x0000000000000000000000000000000000000000000000000000000000000001__pool_u64_unbound__Pool!
+	active_shares: _0x1__pool_u64_unbound__Pool!
 	observed_lockup_cycle: ObservedLockupCycle!
 	inactive_shares: Table!
 	pending_withdrawals: Table!
@@ -518,6 +520,11 @@ type FungibleAssetEvents {
 	frozen_events: EventHandle!
 }
 
+type FungibleAssetRefs {
+	mint_ref: MintRef!
+	burn_ref: _0x1__fungible_asset__BurnRef!
+}
+
 type FungibleStore {
 	metadata: Object!
 	balance: U64!
@@ -533,7 +540,7 @@ type G2 {
 }
 
 type GUID {
-	id: _0x0000000000000000000000000000000000000000000000000000000000000001__guid__ID!
+	id: _0x1__guid__ID!
 }
 
 type GasCurve {
@@ -591,7 +598,7 @@ type GovernanceRecords {
 }
 
 type GovernanceResponsbility {
-	signer_caps: _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap!
+	signer_caps: _0x1__simple_map__SimpleMap!
 }
 
 type Gt {
@@ -655,8 +662,8 @@ type Metadata {
 }
 
 type MetadataUpdatedEvent {
-	old_metadata: _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap!
-	new_metadata: _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap!
+	old_metadata: _0x1__simple_map__SimpleMap!
+	new_metadata: _0x1__simple_map__SimpleMap!
 }
 
 type MintCapStore {
@@ -690,7 +697,7 @@ type MultisigAccount {
 	last_executed_sequence_number: U64!
 	next_sequence_number: U64!
 	signer_cap: Option!
-	metadata: _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap!
+	metadata: _0x1__simple_map__SimpleMap!
 	add_owners_events: EventHandle!
 	remove_owners_events: EventHandle!
 	update_signature_required_events: EventHandle!
@@ -721,7 +728,7 @@ type MultisigAccountCreationWithAuthKeyRevocationMessage {
 type MultisigTransaction {
 	payload: Option!
 	payload_hash: Option!
-	votes: _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap!
+	votes: _0x1__simple_map__SimpleMap!
 	creator: Address!
 	creation_time_secs: U64!
 }
@@ -801,6 +808,11 @@ type PackageRegistry {
 	packages: [PackageMetadata!]!
 }
 
+type Pixel {
+	color: Color!
+	drawn_at_s: U64!
+}
+
 type Point {
 	x: U64!
 	y: U64!
@@ -811,7 +823,7 @@ type ProofOfPossession {
 }
 
 type PropertyMap {
-	inner: _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap!
+	inner: _0x1__simple_map__SimpleMap!
 }
 
 type PropertyValue {
@@ -822,7 +834,7 @@ type PropertyValue {
 type Proposal {
 	proposer: Address!
 	execution_content: Option!
-	metadata: _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap!
+	metadata: _0x1__simple_map__SimpleMap!
 	creation_time_secs: U64!
 	execution_hash: [U8!]!
 	min_vote_threshold: U128!
@@ -1020,7 +1032,7 @@ type StakingContract {
 	pool_address: Address!
 	owner_cap: OwnerCapability!
 	commission_percentage: U64!
-	distribution_pool: _0x0000000000000000000000000000000000000000000000000000000000000001__pool_u64__Pool!
+	distribution_pool: _0x1__pool_u64__Pool!
 	signer_cap: SignerCapability!
 }
 
@@ -1067,7 +1079,7 @@ type StorageGasConfig {
 }
 
 type Store {
-	staking_contracts: _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap!
+	staking_contracts: _0x1__simple_map__SimpleMap!
 	create_staking_contract_events: EventHandle!
 	update_voter_events: EventHandle!
 	reset_lockup_events: EventHandle!
@@ -1296,14 +1308,14 @@ type VestEvent {
 }
 
 type VestingAccountManagement {
-	roles: _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap!
+	roles: _0x1__simple_map__SimpleMap!
 }
 
 type VestingContract {
 	state: U64!
 	admin: Address!
-	grant_pool: _0x0000000000000000000000000000000000000000000000000000000000000001__pool_u64__Pool!
-	beneficiaries: _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap!
+	grant_pool: _0x1__pool_u64__Pool!
+	beneficiaries: _0x1__simple_map__SimpleMap!
 	vesting_schedule: VestingSchedule!
 	withdrawal_address: Address!
 	staking: StakingInfo!
@@ -1359,20 +1371,20 @@ type VotingRecordsV2 {
 	votes: SmartTable!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__any__Any {
+type _0x1__any__Any {
 	type_name: String!
 	data: [U8!]!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__aptos_governance__CreateProposalEvent {
+type _0x1__aptos_governance__CreateProposalEvent {
 	proposer: Address!
 	stake_pool: Address!
 	proposal_id: U64!
 	execution_hash: [U8!]!
-	proposal_metadata: _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap!
+	proposal_metadata: _0x1__simple_map__SimpleMap!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__aptos_governance__VoteEvent {
+type _0x1__aptos_governance__VoteEvent {
 	proposal_id: U64!
 	voter: Address!
 	stake_pool: Address!
@@ -1380,53 +1392,53 @@ type _0x0000000000000000000000000000000000000000000000000000000000000001__aptos_
 	should_pass: Boolean!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__bls12381__Signature {
+type _0x1__bls12381__Signature {
 	bytes: [U8!]!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__coin__DepositEvent {
+type _0x1__coin__DepositEvent {
 	amount: U64!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__coin__WithdrawEvent {
+type _0x1__coin__WithdrawEvent {
 	amount: U64!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__copyable_any__Any {
+type _0x1__copyable_any__Any {
 	type_name: String!
 	data: [U8!]!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__crypto_algebra__Element {
+type _0x1__crypto_algebra__Element {
 	handle: U64!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__delegation_pool__AddStakeEvent {
+type _0x1__delegation_pool__AddStakeEvent {
 	pool_address: Address!
 	delegator_address: Address!
 	amount_added: U64!
 	add_stake_fee: U64!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__delegation_pool__CreateProposalEvent {
+type _0x1__delegation_pool__CreateProposalEvent {
 	proposal_id: U64!
 	voter: Address!
 	delegation_pool: Address!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__delegation_pool__ReactivateStakeEvent {
+type _0x1__delegation_pool__ReactivateStakeEvent {
 	pool_address: Address!
 	delegator_address: Address!
 	amount_reactivated: U64!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__delegation_pool__UnlockStakeEvent {
+type _0x1__delegation_pool__UnlockStakeEvent {
 	pool_address: Address!
 	delegator_address: Address!
 	amount_unlocked: U64!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__delegation_pool__VoteEvent {
+type _0x1__delegation_pool__VoteEvent {
 	voter: Address!
 	proposal_id: U64!
 	delegation_pool: Address!
@@ -1434,170 +1446,170 @@ type _0x0000000000000000000000000000000000000000000000000000000000000001__delega
 	should_pass: Boolean!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__delegation_pool__WithdrawStakeEvent {
+type _0x1__delegation_pool__WithdrawStakeEvent {
 	pool_address: Address!
 	delegator_address: Address!
 	amount_withdrawn: U64!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__ed25519__Signature {
+type _0x1__ed25519__Signature {
 	bytes: [U8!]!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__ed25519__UnvalidatedPublicKey {
+type _0x1__ed25519__UnvalidatedPublicKey {
 	bytes: [U8!]!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__ed25519__ValidatedPublicKey {
+type _0x1__ed25519__ValidatedPublicKey {
 	bytes: [U8!]!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__fungible_asset__BurnRef {
+type _0x1__fungible_asset__BurnRef {
 	metadata: Object!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__fungible_asset__DepositEvent {
+type _0x1__fungible_asset__DepositEvent {
 	amount: U64!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__fungible_asset__TransferRef {
+type _0x1__fungible_asset__TransferRef {
 	metadata: Object!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__fungible_asset__WithdrawEvent {
+type _0x1__fungible_asset__WithdrawEvent {
 	amount: U64!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__guid__ID {
+type _0x1__guid__ID {
 	creation_num: U64!
 	addr: Address!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__multi_ed25519__Signature {
+type _0x1__multi_ed25519__Signature {
 	bytes: [U8!]!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__multi_ed25519__UnvalidatedPublicKey {
+type _0x1__multi_ed25519__UnvalidatedPublicKey {
 	bytes: [U8!]!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__multi_ed25519__ValidatedPublicKey {
+type _0x1__multi_ed25519__ValidatedPublicKey {
 	bytes: [U8!]!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__multisig_account__VoteEvent {
+type _0x1__multisig_account__VoteEvent {
 	owner: Address!
 	sequence_number: U64!
 	approved: Boolean!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__object__TransferRef {
+type _0x1__object__TransferRef {
 	self: Address!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__pool_u64__Pool {
+type _0x1__pool_u64__Pool {
 	shareholders_limit: U64!
 	total_coins: U64!
 	total_shares: U64!
-	shares: _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap!
+	shares: _0x1__simple_map__SimpleMap!
 	shareholders: [Address!]!
 	scaling_factor: U64!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__pool_u64_unbound__Pool {
+type _0x1__pool_u64_unbound__Pool {
 	total_coins: U64!
 	total_shares: U128!
 	shares: TableWithLength!
 	scaling_factor: U64!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__Element {
+type _0x1__simple_map__Element {
 	key: Any!
 	value: Any!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap {
-	data: [_0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__Element!]!
+type _0x1__simple_map__SimpleMap {
+	data: [_0x1__simple_map__Element!]!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__stake__AddStakeEvent {
+type _0x1__stake__AddStakeEvent {
 	pool_address: Address!
 	amount_added: U64!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__stake__AptosCoinCapabilities {
+type _0x1__stake__AptosCoinCapabilities {
 	mint_cap: MintCapability!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__stake__ReactivateStakeEvent {
+type _0x1__stake__ReactivateStakeEvent {
 	pool_address: Address!
 	amount: U64!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__stake__UnlockStakeEvent {
+type _0x1__stake__UnlockStakeEvent {
 	pool_address: Address!
 	amount_unlocked: U64!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__stake__WithdrawStakeEvent {
+type _0x1__stake__WithdrawStakeEvent {
 	pool_address: Address!
 	amount_withdrawn: U64!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__staking_contract__AddStakeEvent {
+type _0x1__staking_contract__AddStakeEvent {
 	operator: Address!
 	pool_address: Address!
 	amount: U64!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__staking_contract__DistributeEvent {
+type _0x1__staking_contract__DistributeEvent {
 	operator: Address!
 	pool_address: Address!
 	recipient: Address!
 	amount: U64!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__staking_contract__ResetLockupEvent {
+type _0x1__staking_contract__ResetLockupEvent {
 	operator: Address!
 	pool_address: Address!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__staking_contract__UnlockStakeEvent {
+type _0x1__staking_contract__UnlockStakeEvent {
 	operator: Address!
 	pool_address: Address!
 	amount: U64!
 	commission_paid: U64!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__staking_contract__UpdateVoterEvent {
+type _0x1__staking_contract__UpdateVoterEvent {
 	operator: Address!
 	pool_address: Address!
 	old_voter: Address!
 	new_voter: Address!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__string__String {
+type _0x1__string__String {
 	bytes: [U8!]!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__transaction_fee__AptosCoinCapabilities {
+type _0x1__transaction_fee__AptosCoinCapabilities {
 	burn_cap: BurnCapability!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__vesting__DistributeEvent {
+type _0x1__vesting__DistributeEvent {
 	admin: Address!
 	vesting_contract_address: Address!
 	amount: U64!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__vesting__ResetLockupEvent {
+type _0x1__vesting__ResetLockupEvent {
 	admin: Address!
 	vesting_contract_address: Address!
 	staking_pool_address: Address!
 	new_lockup_expiration_secs: U64!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__vesting__UpdateVoterEvent {
+type _0x1__vesting__UpdateVoterEvent {
 	admin: Address!
 	vesting_contract_address: Address!
 	staking_pool_address: Address!
@@ -1605,48 +1617,48 @@ type _0x0000000000000000000000000000000000000000000000000000000000000001__vestin
 	new_voter: Address!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__voting__CreateProposalEvent {
+type _0x1__voting__CreateProposalEvent {
 	proposal_id: U64!
 	early_resolution_vote_threshold: Option!
 	execution_hash: [U8!]!
 	expiration_secs: U64!
-	metadata: _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap!
+	metadata: _0x1__simple_map__SimpleMap!
 	min_vote_threshold: U128!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000001__voting__VoteEvent {
+type _0x1__voting__VoteEvent {
 	proposal_id: U64!
 	num_votes: U64!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000004__collection__MutationEvent {
+type _0x4__collection__MutationEvent {
 	mutated_field_name: String!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000004__collection__MutatorRef {
+type _0x4__collection__MutatorRef {
 	self: Address!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000004__property_map__MutatorRef {
+type _0x4__property_map__MutatorRef {
 	self: Address!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000004__royalty__MutatorRef {
+type _0x4__royalty__MutatorRef {
 	inner: ExtendRef!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000004__token__BurnRef {
+type _0x4__token__BurnRef {
 	inner: Option!
 	self: Option!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000004__token__MutationEvent {
+type _0x4__token__MutationEvent {
 	mutated_field_name: String!
 	old_value: String!
 	new_value: String!
 }
 
-type _0x0000000000000000000000000000000000000000000000000000000000000004__token__MutatorRef {
+type _0x4__token__MutatorRef {
 	self: Address!
 }
 

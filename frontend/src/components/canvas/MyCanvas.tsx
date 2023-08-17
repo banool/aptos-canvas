@@ -247,6 +247,7 @@ export const MyCanvas = ({
     };
   }, [
     canvasData,
+    canvasWidth,
     parentRef,
     scale,
     pan,
