@@ -23,8 +23,8 @@ export function useGetAccountResources(
     Array<Types.MoveResource>,
     ResponseError
   >(
-    ["accountResources", { address }, state.network_value],
-    () => getAccountResources({ address }, state.network_value),
+    ["accountResources", { address }, state.network_info.node_api_url],
+    () => getAccountResources({ address }, state.network_info.node_api_url),
     {
       refetchOnWindowFocus: false,
       enabled: options.enabled,

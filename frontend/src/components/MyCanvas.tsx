@@ -22,7 +22,7 @@ import { getModuleId, useGlobalState } from "../GlobalState";
 import { useParams } from "react-router-dom";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { HexColorPicker } from "react-colorful";
-import { draw } from "../api/transactions";
+import { draw, drawOne } from "../api/transactions";
 import { useQuery } from "react-query";
 import { REFETCH_INTERVAL_MS } from "../api/helpers";
 
@@ -366,18 +366,16 @@ export const MyCanvas = ({
   const onSubmitDraw = async () => {
     setPopoverCanBeClosed(false);
 
-    const originalColor = pixels[squareToDraw.y * canvasWidth + squareToDraw.x];
-
     try {
       const out = hexToRgb(colorToSubmit);
       if (out === null) {
         throw `Failed to parse color: ${colorToSubmit}`;
       }
       const { r, g, b } = out;
-      await draw(
+      await drawOne(
         signAndSubmitTransaction,
         moduleId,
-        state.network_value,
+        state.network_info.node_api_url,
         address,
         squareToDraw.x,
         squareToDraw.y,

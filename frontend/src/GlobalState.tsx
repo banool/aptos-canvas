@@ -1,14 +1,12 @@
 import React from "react";
 import {
-  networks,
+  networkInfo,
   defaultNetworkName,
   NetworkName,
   features,
   defaultFeatureName,
   FeatureName,
-  moduleLocations,
-  indexerUrls,
-  featuredCanvases,
+  NetworkInfo,
 } from "./constants";
 
 const selected_network = safeGetSelectedNetworkName();
@@ -17,7 +15,7 @@ function safeGetSelectedNetworkName(): NetworkName {
   let selected_network = localStorage.getItem("selected_network");
   if (selected_network) {
     selected_network = selected_network.toLowerCase();
-    if (selected_network in networks) {
+    if (selected_network in networkInfo) {
       return selected_network as NetworkName;
     }
   }
@@ -39,13 +37,13 @@ function safeGetSelectedFeatureName(): FeatureName {
 
 export type GlobalState = {
   network_name: NetworkName;
-  network_value: string;
+  network_info: NetworkInfo;
   feature_name: FeatureName;
 };
 
 const defaultGlobalState: GlobalState = {
   network_name: selected_network,
-  network_value: networks[selected_network],
+  network_info: networkInfo[selected_network],
   feature_name: selected_feature,
 };
 
@@ -94,19 +92,5 @@ export const useGlobalState = (): [
 ];
 
 export const getModuleId = (state: GlobalState): string => {
-  const address = moduleLocations[state.network_name].address;
-  const name = moduleLocations[state.network_name].name;
-  return `${address}::${name}`;
-};
-
-export const getFeaturedCanvas = (state: GlobalState): string | null => {
-  var c = featuredCanvases[state.network_name];
-  if (c.length === 0) {
-    return null;
-  }
-  return c[Math.floor(Math.random() * c.length)];
-};
-
-export const getIndexerUrl = (state: GlobalState): string => {
-  return indexerUrls[state.network_name];
+  return `${state.network_info.module_address}::${state.network_info.module_name}`;
 };

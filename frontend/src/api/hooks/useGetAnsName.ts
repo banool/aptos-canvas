@@ -31,7 +31,7 @@ export function useGetAnsNames(
   const [state, _setState] = useGlobalState();
 
   return useQuery(
-    ["ansNames", { addresses }, state.network_value],
+    ["ansNames", { addresses }, state.network_info.node_api_url],
     async () => {
       return fetchNames(addresses, state.network_name);
     },

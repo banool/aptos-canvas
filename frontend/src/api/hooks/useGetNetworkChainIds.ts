@@ -1,4 +1,4 @@
-import { NetworkName, networks } from "../../constants";
+import { NetworkName, networkInfo } from "../../constants";
 import { useQuery } from "react-query";
 import { getLedgerInfoWithoutResponseError } from "..";
 import {
@@ -12,10 +12,12 @@ export function useGetChainId(networkName: NetworkName): string | null {
   let chainIdFromCache = getLocalStorageWithExpiry(`${networkName}ChainId`);
 
   const { data } = useQuery(
-    ["ledgerInfo", networks[networkName]],
+    ["ledgerInfo", networkInfo[networkName]],
     () => {
       try {
-        return getLedgerInfoWithoutResponseError(networks[networkName]);
+        return getLedgerInfoWithoutResponseError(
+          networkInfo[networkName].node_api_url,
+        );
       } catch (e) {
         console.log(`Error fetching chainId for ${networkName}: ${e}`);
         return null;

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Select, Box } from "@chakra-ui/react";
-import { defaultFeatureName, NetworkName, networks } from "../constants";
+import { defaultFeatureName, NetworkName, networkInfo } from "../constants";
 import { useGlobalState } from "../GlobalState";
 import { useSearchParams } from "react-router-dom";
 import { useGetChainId } from "../api/hooks/useGetNetworkChainIds";
@@ -31,10 +31,11 @@ export default function NetworkSelect() {
 
   function maybeSetNetwork(networkNameString: string | null) {
     if (!networkNameString || state.network_name === networkNameString) return;
-    if (!(networkNameString in networks)) return;
+    if (!(networkNameString in networkInfo)) return;
     const feature_name = state.feature_name;
     const network_name = networkNameString as NetworkName;
-    const network_value = networks[network_name];
+    const network_info = networkInfo[network_name];
+    const network_value = network_info.node_api_url;
     if (network_value) {
       // Only show the "feature" param in the url when it's not "prod",
       // we don't want the users to know the existence of the "feature" param
@@ -47,7 +48,7 @@ export default function NetworkSelect() {
           return { ...prev, network: network_name };
         });
       }
-      dispatch({ network_name, network_value, feature_name });
+      dispatch({ network_name, network_info, feature_name });
     }
   }
 
@@ -62,7 +63,7 @@ export default function NetworkSelect() {
   });
 
   let options = [];
-  for (const networkName in networks) {
+  for (const networkName in networkInfo) {
     const item = NetworkAndChainId({ networkName: networkName });
     if (item === null) {
       continue;

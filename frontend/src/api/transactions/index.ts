@@ -55,6 +55,26 @@ export async function draw(
   moduleId: string,
   fullnodeUrl: string,
   canvasAddress: string,
+  xs: number[],
+  ys: number[],
+  reds: number[],
+  greens: number[],
+  blues: number[],
+) {
+  const transaction = {
+    type: "entry_function_payload",
+    function: `${moduleId}::draw`,
+    type_arguments: [],
+    arguments: [canvasAddress, xs, ys, reds, greens, blues],
+  };
+  await submitTransaction(signAndSubmitTransaction, fullnodeUrl, transaction);
+}
+
+export async function drawOne(
+  signAndSubmitTransaction: (txn: any) => Promise<any>,
+  moduleId: string,
+  fullnodeUrl: string,
+  canvasAddress: string,
   x: number,
   y: number,
   red: number,
@@ -63,7 +83,7 @@ export async function draw(
 ) {
   const transaction = {
     type: "entry_function_payload",
-    function: `${moduleId}::draw`,
+    function: `${moduleId}::draw_one`,
     type_arguments: [],
     arguments: [canvasAddress, x, y, red, green, blue],
   };

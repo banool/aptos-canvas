@@ -32,7 +32,7 @@ export function useGetAnsAddresses(
 
   const names = namesFn();
   return useQuery(
-    ["ansAddresses", { names }, state.network_value],
+    ["ansAddresses", { names }, state.network_info.node_api_url],
     async () => {
       return fetchAddresses(names, state.network_name);
     },

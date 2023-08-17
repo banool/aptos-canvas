@@ -1,4 +1,11 @@
-import { AnsClient, AptosClient, Network, Provider, Types } from "aptos";
+import {
+  AnsClient,
+  AptosClient,
+  CoinClient,
+  Network,
+  Provider,
+  Types,
+} from "aptos";
 import { withResponseError } from "./client";
 import { NetworkName } from "../constants";
 
@@ -23,6 +30,25 @@ export function getAccountResources(
     client.getAccountResources(address, { ledgerVersion: ledgerVersionBig }),
   );
 }
+
+/*
+export function getCoinBalance(
+  requestParameters: { address: string; ledgerVersion?: number },
+  nodeUrl: string,
+): Promise<Types.MoveResource[]> {
+  const client = new AptosClient(nodeUrl);
+  const coinClient = new CoinClient(client);
+  const { address, ledgerVersion } = requestParameters;
+  let ledgerVersionBig;
+  if (ledgerVersion !== undefined) {
+    ledgerVersionBig = BigInt(ledgerVersion);
+  }
+  return withResponseError(
+    coinClient.checkBalance(address, { coinType: ledgerVersionBig }),
+    client.getAccountResources(address, { ledgerVersion: ledgerVersionBig }),
+  );
+}
+*/
 
 function getAnsClient(network: NetworkName): AnsClient {
   // https://stackoverflow.com/a/42623905/3846032

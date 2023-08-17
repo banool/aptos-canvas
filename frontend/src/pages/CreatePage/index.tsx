@@ -180,7 +180,7 @@ export const CreatePage = () => {
       await create(
         signAndSubmitTransaction,
         moduleId,
-        state.network_value,
+        state.network_info.node_api_url,
         values.description,
         values.name,
         values.width,

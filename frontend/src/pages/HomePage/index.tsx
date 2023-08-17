@@ -7,21 +7,18 @@ import {
   HStack,
   Heading,
   Input,
-  Text,
-  VStack,
 } from "@chakra-ui/react";
-import { getFeaturedCanvas, useGlobalState } from "../../GlobalState";
+import { useGlobalState } from "../../GlobalState";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { MyCanvasLoader } from "../ViewPage/MyCanvasLoader";
 import { isValidAccountAddress } from "../../utils";
-import { FiEye } from "react-icons/fi";
 import { HoverComponent } from "../../components/HoverComponent";
 
 export const HomePage = () => {
   const { network } = useWallet();
   const [state, _] = useGlobalState();
-  const featuredCanvas = getFeaturedCanvas(state);
+  const featuredCanvas = state.network_info.featured_canvases[0];
   const [navigateTo, setNavigateTo] = useState("");
 
   const addressIsValid = isValidAccountAddress(navigateTo);
