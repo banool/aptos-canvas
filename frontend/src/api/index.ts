@@ -31,24 +31,39 @@ export function getAccountResources(
   );
 }
 
-/*
 export function getCoinBalance(
-  requestParameters: { address: string; ledgerVersion?: number },
+  requestParameters: { address: string; coinType?: string },
   nodeUrl: string,
-): Promise<Types.MoveResource[]> {
+): Promise<bigint> {
   const client = new AptosClient(nodeUrl);
   const coinClient = new CoinClient(client);
-  const { address, ledgerVersion } = requestParameters;
-  let ledgerVersionBig;
-  if (ledgerVersion !== undefined) {
-    ledgerVersionBig = BigInt(ledgerVersion);
-  }
-  return withResponseError(
-    coinClient.checkBalance(address, { coinType: ledgerVersionBig }),
-    client.getAccountResources(address, { ledgerVersion: ledgerVersionBig }),
+  const { address, coinType } = requestParameters;
+  return withResponseError(coinClient.checkBalance(address, { coinType }));
+}
+
+export async function getAptBalance(
+  requestParameters: { address: string },
+  nodeUrl: string,
+): Promise<number> {
+  return Number(
+    await getCoinBalance({ address: requestParameters.address }, nodeUrl),
   );
 }
-*/
+
+export async function getPntBalance(
+  requestParameters: { address: string; pntMetadataAddress: string },
+  nodeUrl: string,
+): Promise<number> {
+  return Number(
+    await getCoinBalance(
+      {
+        address: requestParameters.address,
+        coinType: requestParameters.pntMetadataAddress,
+      },
+      nodeUrl,
+    ),
+  );
+}
 
 function getAnsClient(network: NetworkName): AnsClient {
   // https://stackoverflow.com/a/42623905/3846032
