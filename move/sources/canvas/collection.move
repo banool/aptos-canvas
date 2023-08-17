@@ -67,6 +67,11 @@ module addr::canvas_collection {
         move_to(&object_signer, collection_refs);
     }
 
+    #[test_only]
+    public fun init_module_for_test(publisher: &signer) {
+        init_module(publisher);
+    }
+
     /// Set the URI of the collection.
     public entry fun set_uri(caller: &signer, uri: String) acquires CollectionRefs {
         let collection = get_collection();

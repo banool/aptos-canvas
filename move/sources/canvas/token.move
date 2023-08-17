@@ -12,19 +12,18 @@
 module addr::canvas_token {
     use addr::canvas_collection::{get_collection, get_collection_name, is_owner as is_owner_of_collection};
     use std::error;
-    use std::option::{Self, Option};
+    use std::option;
     use std::signer;
     use std::string::{Self, String};
     use std::vector;
     use std::timestamp::now_seconds;
-    use aptos_framework::aptos_coin::AptosCoin;
     use aptos_framework::chain_id::{get as get_chain_id};
-    use aptos_framework::coin::Self;
     use aptos_std::object::{Self, ExtendRef, Object};
     use aptos_std::string_utils;
     use aptos_std::smart_table::{Self, SmartTable};
     use aptos_token_objects::token::{Self, MutatorRef};
     use dport_std::simple_set::{Self, SimpleSet};
+    use addr::paint_fungible_asset;
 
     /// `default_color` was not in the palette.
     const E_CREATION_INITIAL_COLOR_NOT_IN_PALETTE: u64 = 1;
@@ -58,6 +57,9 @@ module addr::canvas_token {
     /// The caller is not in the allowlist for contributing to the canvas.
     const E_CALLER_NOT_IN_ALLOWLIST: u64 = 8;
 
+    /// Vectors provided to draw were of different lengths.
+    const E_INVALID_VECTOR_LENGTHS: u64 = 9;
+
     /// Based on the allowlist and/or blocklist (or lack thereof), the caller is
     /// allowed to contribute to the canvas.
     const STATUS_ALLOWED: u8 = 1;
@@ -75,7 +77,7 @@ module addr::canvas_token {
         config: CanvasConfig,
 
         /// The pixels of the canvas.
-        pixels: SmartTable<u64, Color>,
+        pixels: SmartTable<u64, Pixel>,
 
         /// When each artist last contributed. Only tracked if
         /// per_account_timeout_s is non-zero.
@@ -123,22 +125,38 @@ module addr::canvas_token {
         /// Allowed colors. If empty, all colors are allowed.
         palette: vector<Color>,
 
-        /// How much it costs in OCTA to contribute.
+        /// How much it costs in PNT to draw a single pixel. This is the base cost, which
+        /// can be modified by some factor based on how recently the pixel was drawn.
         cost: u64,
 
-        /// If a cost is set, this is where the funds are sent. If not set, funds will
-        /// go to the owner of the token.
-        funds_recipient: Option<address>,
+        /// The most the cost of a pixel should be multipled by, e.g. if a pixel was
+        /// just drawn.
+        cost_multiplier: u64,
+
+        /// How long it takes for the cost multiplier to decay back to 1 after a pixel
+        /// was just drawn.
+        cost_multiplier_decay_s: u64,
 
         /// The default color of the pixels. If a paletter is set, this color must be a
         /// part of the palette.
         default_color: Color,
+
+        /// Whether it is possible to draw multiple pixels at once.
+        can_draw_multiple_pixels_at_once: bool,
 
         /// Whether the owner of the canvas has super admin privileges. Super admin
         /// powers are the same as normal admin powers but in addition you have the
         /// ability to add / remove additional admins. Set at creation time and can
         /// never be changed.
         owner_is_super_admin: bool,
+    }
+
+    struct Pixel has copy, drop, store {
+        /// The color of the pixel.
+        color: Color,
+
+        /// When the pixel was last drawn.
+        drawn_at_s: u64,
     }
 
     struct Color has copy, drop, store {
@@ -160,11 +178,12 @@ module addr::canvas_token {
         per_account_timeout_s: u64,
         can_draw_for_s: u64,
         cost: u64,
-        // todo this doesn't work with the CLI but should work with the TS SDK
-        // funds_recipient: Option<address>,
+        cost_multiplier: u64,
+        cost_multiplier_decay_s: u64,
         default_color_r: u8,
         default_color_g: u8,
         default_color_b: u8,
+        can_draw_multiple_pixels_at_once: bool,
         owner_is_super_admin: bool,
     ) {
         let config = CanvasConfig {
@@ -174,12 +193,14 @@ module addr::canvas_token {
             can_draw_for_s,
             palette: vector::empty(),
             cost,
-            funds_recipient: option::none(),
+            cost_multiplier,
+            cost_multiplier_decay_s,
             default_color: Color {
                 r: default_color_r,
                 g: default_color_g,
                 b: default_color_b,
             },
+            can_draw_multiple_pixels_at_once,
             owner_is_super_admin,
         };
         create_(caller, description, name, config);
@@ -263,8 +284,51 @@ module addr::canvas_token {
         obj
     }
 
-    /// Draw a pixel to the canvas. We consider the top left corner 0,0.
+    /// Draw many pixels to the canvas. We consider the top left corner 0,0.
     public entry fun draw(
+        caller: &signer,
+        canvas: Object<Canvas>,
+        // If it was possible to have a vector of structs that'd be great but for now
+        // we have to explode the items into separate vectors.
+        xs: vector<u64>,
+        ys: vector<u64>,
+        rs: vector<u8>,
+        gs: vector<u8>,
+        bs: vector<u8>,
+    ) acquires Canvas {
+        // Assert the vectors are all the same length.
+        assert!(
+            vector::length(&xs) == vector::length(&ys),
+            error::invalid_argument(E_INVALID_VECTOR_LENGTHS),
+        );
+        assert!(
+            vector::length(&xs) == vector::length(&rs),
+            error::invalid_argument(E_INVALID_VECTOR_LENGTHS),
+        );
+        assert!(
+            vector::length(&xs) == vector::length(&gs),
+            error::invalid_argument(E_INVALID_VECTOR_LENGTHS),
+        );
+        assert!(
+            vector::length(&xs) == vector::length(&bs),
+            error::invalid_argument(E_INVALID_VECTOR_LENGTHS),
+        );
+
+        let i = 0;
+        let len = vector::length(&xs);
+        while (i < len) {
+            let x = vector::pop_back(&mut xs);
+            let y = vector::pop_back(&mut ys);
+            let r = vector::pop_back(&mut rs);
+            let g = vector::pop_back(&mut gs);
+            let b = vector::pop_back(&mut bs);
+            draw_one(caller, canvas, x, y, r, g, b);
+            i = i + 1;
+        };
+    }
+
+    /// Draw a single pixel to the canvas. We consider the top left corner 0,0.
+    public entry fun draw_one(
         caller: &signer,
         canvas: Object<Canvas>,
         x: u64,
@@ -274,10 +338,11 @@ module addr::canvas_token {
         b: u8,
     ) acquires Canvas {
         let caller_addr = signer::address_of(caller);
-        let canvas_owner_addr = object::owner(canvas);
 
         // Make sure the caller is allowed to draw.
         assert_allowlisted_to_draw(canvas, caller_addr);
+
+        let cost = determine_cost(canvas, x, y);
 
         let canvas_ = borrow_global_mut<Canvas>(object::object_address(&canvas));
 
@@ -294,13 +359,9 @@ module addr::canvas_token {
         assert!(x < canvas_.config.width, error::invalid_argument(E_COORDINATE_OUT_OF_BOUNDS));
         assert!(y < canvas_.config.height, error::invalid_argument(E_COORDINATE_OUT_OF_BOUNDS));
 
-        // If there is a cost, transfer the funds.
-        if (canvas_.config.cost > 0) {
-            let recipient = option::borrow_with_default(
-                &canvas_.config.funds_recipient,
-                &canvas_owner_addr,
-            );
-            coin::transfer<AptosCoin>(caller, *recipient, canvas_.config.cost);
+        // If there is a cost, take the PNT and burn it.
+        if (cost > 0) {
+            paint_fungible_asset::burn(caller_addr, cost);
         };
 
         // If there is a per-account timeout, first confirm that the caller is allowed
@@ -321,8 +382,40 @@ module addr::canvas_token {
 
         // Write the pixel.
         let color = Color { r, g, b };
+        let pixel = Pixel { color, drawn_at_s: now_seconds() };
         let index = y * canvas_.config.width + x;
-        smart_table::upsert(&mut canvas_.pixels, index, color);
+        smart_table::upsert(&mut canvas_.pixels, index, pixel);
+    }
+
+    #[view]
+    /// Determine the cost to draw a single pixel.
+    public fun determine_cost(canvas: Object<Canvas>, x: u64, y: u64): u64 acquires Canvas {
+        let canvas_ = borrow_global<Canvas>(object::object_address(&canvas));
+
+        // Exit early if there is no cost.
+        if (canvas_.config.cost == 0) {
+            return 0
+        };
+
+        // Determine when the pixel was last drawn.
+        let index = y * canvas_.config.width + x;
+        let _drawn_at_s = if (smart_table::contains(&canvas_.pixels, index)) {
+            let pixel = smart_table::borrow(&canvas_.pixels, index);
+            pixel.drawn_at_s
+        } else {
+            canvas_.created_at_s
+        };
+
+        // A value from 0 to 1. Zero means the pixel was just drawn, 1 means it has
+        // fully passed the cost multiplier period.
+        // TODO: Figure out how to do this without floating point numbers.
+        // let proportion_refreshed = canvas_.config.cost_multiplier_decay_s / (now_seconds() - drawn_at_s);
+        let proportion_refreshed = 1;
+
+        // Get the final cost in PNT for drawing a single pixel.
+        let cost = canvas_.config.cost * (1 + (canvas_.config.cost_multiplier * (1 - proportion_refreshed)));
+
+        cost
     }
 
     fun assert_allowlisted_to_draw(canvas: Object<Canvas>, caller_addr: address) acquires Canvas {
@@ -388,18 +481,6 @@ module addr::canvas_token {
 
     fun assert_is_super_admin(canvas: Object<Canvas>, caller_addr: address) acquires Canvas {
         assert!(is_super_admin(canvas, caller_addr), error::invalid_state(E_CALLER_NOT_SUPER_ADMIN));
-    }
-
-    /// Set what account receives the funds. Does nothing if `cost` is zero.
-    public entry fun set_funds_recipient(
-        caller: &signer,
-        canvas: Object<Canvas>,
-        recipient: Option<address>,
-    ) acquires Canvas {
-        let caller_addr = signer::address_of(caller);
-        assert_is_super_admin(canvas, caller_addr);
-        let canvas_ = borrow_global_mut<Canvas>(object::object_address(&canvas));
-        canvas_.config.funds_recipient = recipient;
     }
 
     /// If `last_contribution_s` is non-zero the Canvas tracks when users contributed.
@@ -581,9 +662,7 @@ module addr::canvas_token {
     ///////////////////////////////////////////////////////////////////////////////////
 
     #[test_only]
-    use addr::canvas_collection::{create as create_canvas_collection};
-    #[test_only]
-    use std::string;
+    use addr::canvas_collection::{init_module_for_test as collection_init_module_for_test};
     #[test_only]
     use std::timestamp;
     #[test_only]
@@ -592,6 +671,8 @@ module addr::canvas_token {
     use aptos_framework::account::{Self};
     #[test_only]
     use aptos_framework::coin;
+    #[test_only]
+    use aptos_framework::chain_id;
 
     #[test_only]
     const ONE_APT: u64 = 100000000;
@@ -633,6 +714,7 @@ module addr::canvas_token {
     #[test_only]
     fun create_canvas(caller: &signer, friend1: &signer, friend2: &signer, aptos_framework: &signer): Object<Canvas> {
         set_global_time(aptos_framework, 100);
+        chain_id::initialize_for_test(aptos_framework, 3);
 
         create_test_account(aptos_framework, caller);
         create_test_account(aptos_framework, friend1);
@@ -645,11 +727,14 @@ module addr::canvas_token {
             can_draw_for_s: 0,
             palette: vector::empty(),
             cost: 0,
+            cost_multiplier: 0,
+            cost_multiplier_decay_s: 0,
             default_color: Color {
                 r: 0,
                 g: 0,
                 b: 0,
             },
+            can_draw_multiple_pixels_at_once: false,
             owner_is_super_admin: false,
         };
 
@@ -658,7 +743,7 @@ module addr::canvas_token {
 
     #[test(caller = @addr, friend1 = @0x456, friend2 = @0x789, aptos_framework = @aptos_framework)]
     fun test_create(caller: signer, friend1: signer, friend2: signer, aptos_framework: signer) {
-        create_canvas_collection(&caller);
-        create_canvas(&caller, &friend1, &friend2, &aptos_framework)
+        collection_init_module_for_test(&caller);
+        create_canvas(&caller, &friend1, &friend2, &aptos_framework);
     }
 }
