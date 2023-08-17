@@ -9,6 +9,7 @@ import { useGetPixels } from "../../api/hooks/useGetPixels";
 import { CanvasPopover } from "./CanvasPopover";
 import ZoomButtons from "./ZoomButtons";
 import { hexToRgb } from "./helpers";
+import DrawingCanvas from "./DrawingCanvas";
 
 const PIXEL_SIZE = 0.98; // the width of each pixel in the canvas
 const MARGIN_COLOR = "white";
@@ -27,12 +28,16 @@ export const MyCanvas = ({
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const overlayRef = useRef<HTMLCanvasElement | null>(null);
+  const drawingRef = useRef<HTMLCanvasElement | null>(null);
   const parentRef = useRef<HTMLDivElement>(null);
 
   const pixels = useGetPixels(tokenData);
 
-  // HERE HERE HERE
+  // States for drawing mode
   const [drawModeOn, setDrawModeOn] = useState(false);
+  const [squaresToDraw, setSquaresToDraw] = useState<
+    { x: number; y: number }[]
+  >([]);
 
   // These pixels get drawn over the top of the canvas after we draw the base layer
   // using the png. The key is the index.
@@ -129,18 +134,12 @@ export const MyCanvas = ({
     const parent = parentRef.current;
     const canvas = canvasRef.current;
     const overlay = overlayRef.current;
+    const drawing = drawingRef.current;
     const context = canvas?.getContext("2d");
     const overlayContext = overlay?.getContext("2d");
+    const drawingContext = drawing?.getContext("2d");
 
-    if (
-      !canvas ||
-      !context ||
-      !overlay ||
-      !overlayContext ||
-      !parent ||
-      scale === undefined
-    )
-      return;
+    if (!canvas || !context || !parent || scale === undefined) return;
 
     // https://stackoverflow.com/a/67258046/3846032
     canvas.addEventListener("wheel", handleWheel, { passive: false });
@@ -148,8 +147,16 @@ export const MyCanvas = ({
     // Increase the physical size of the canvas to fill the parent.
     canvas.width = parent.clientWidth;
     canvas.height = parent.clientHeight;
-    overlay.width = parent.clientWidth;
-    overlay.height = parent.clientHeight;
+
+    if (overlay && overlayContext) {
+      overlay.width = parent.clientWidth;
+      overlay.height = parent.clientHeight;
+    }
+
+    if (drawing && drawingContext) {
+      drawing.width = parent.clientWidth;
+      drawing.height = parent.clientHeight;
+    }
 
     // Calculate offsets for centering the art.
     const offsets = getOffsets()!;
@@ -158,9 +165,18 @@ export const MyCanvas = ({
     context.save();
     context.translate(pan.x, pan.y);
     context.scale(scale, scale);
-    overlayContext.save();
-    overlayContext.translate(pan.x, pan.y);
-    overlayContext.scale(scale, scale);
+
+    if (overlay && overlayContext) {
+      overlayContext.save();
+      overlayContext.translate(pan.x, pan.y);
+      overlayContext.scale(scale, scale);
+    }
+
+    if (drawing && drawingContext) {
+      drawingContext.save();
+      drawingContext.translate(pan.x, pan.y);
+      drawingContext.scale(scale, scale);
+    }
 
     // Decide how much of a margin should appear between square.
     const margin = 1 - PIXEL_SIZE;
@@ -202,6 +218,25 @@ export const MyCanvas = ({
       );
     }
 
+    // Draw the squares to draw on top.
+    squaresToDraw.forEach((square) => {
+      const x = square.x + offsets.x;
+      const y = square.y + offsets.y;
+
+      // Draw underneath the squares so a margin appears.
+      context.fillStyle = MARGIN_COLOR;
+      context.fillRect(x, y, PIXEL_SIZE + margin, PIXEL_SIZE + margin);
+
+      // Draw the squares.
+      context.fillStyle = `rgb(255,255,0)`;
+      context.fillRect(
+        x + margin, // Shift the pixel to the right by the margin
+        y + margin, // Shift the pixel down by the margin
+        PIXEL_SIZE, // Reduce the pixel's width by the margin
+        PIXEL_SIZE, // Reduce the pixel's height by the margin
+      );
+    });
+
     context.restore();
 
     return () => {
@@ -218,9 +253,11 @@ export const MyCanvas = ({
     pixelsOverride,
     getOffsets,
     handleWheel,
+    drawModeOn,
+    squaresToDraw,
   ]);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const handleMouseMoveOverlay = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const parent = parentRef.current;
     const overlay = overlayRef.current;
     const overlayContext = overlay?.getContext("2d");
@@ -284,13 +321,13 @@ export const MyCanvas = ({
     }
   };
 
-  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const handleMouseDownOverlay = (e: React.MouseEvent<HTMLCanvasElement>) => {
     setDragging(true);
     setLastMousePos({ x: e.clientX, y: e.clientY });
     setLastPan(pan);
   };
 
-  const handleMouseUp = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const handleMouseUpOverlay = (e: React.MouseEvent<HTMLCanvasElement>) => {
     setDragging(false);
     if (pan.x === lastPan.x && pan.y === lastPan.y) {
       // This means the user didn't drag the canvas, they just clicked it. We only want
@@ -428,10 +465,12 @@ export const MyCanvas = ({
 
   const endDrawMode = () => {
     setDrawModeOn(false);
+    setSquaresToDraw([]);
   };
 
   const displayCanvasWidth = canvasWidth * (scale ?? 0);
   const displayCanvasHeight = canvasHeight * (scale ?? 0);
+  const offsets = getOffsets()!;
 
   return (
     <Center>
@@ -448,26 +487,52 @@ export const MyCanvas = ({
           width={displayCanvasWidth}
           height={displayCanvasHeight}
         />
-        <canvas
-          ref={overlayRef}
-          style={{ position: "absolute", cursor: "pointer" }}
-          width={displayCanvasWidth}
-          height={displayCanvasHeight}
-          onMouseMove={writeable ? handleMouseMove : undefined}
-          onMouseDown={writeable ? handleMouseDown : undefined}
-          onMouseUp={writeable ? handleMouseUp : undefined}
-        />
-        <ZoomButtons
-          writeable={writeable}
-          zoomIn={zoomIn}
-          zoomOut={zoomOut}
-          resetTransform={resetTransform}
-        />
-        <Button colorScheme="cyan" title="" onClick={startDrawMode}>
-          Open
+        {!drawModeOn && (
+          <canvas
+            ref={overlayRef}
+            style={{ position: "absolute", cursor: "pointer" }}
+            width={displayCanvasWidth}
+            height={displayCanvasHeight}
+            onMouseMove={writeable ? handleMouseMoveOverlay : undefined}
+            onMouseDown={writeable ? handleMouseDownOverlay : undefined}
+            onMouseUp={writeable ? handleMouseUpOverlay : undefined}
+          />
+        )}
+        {drawModeOn && writeable && (
+          <DrawingCanvas
+            drawingRef={drawingRef}
+            squaresToDraw={squaresToDraw}
+            setSquaresToDraw={setSquaresToDraw}
+            displayCanvasWidth={displayCanvasWidth}
+            displayCanvasHeight={displayCanvasHeight}
+            offsets={offsets}
+            scale={scale}
+            pan={pan}
+          />
+        )}
+        {!drawModeOn && (
+          <ZoomButtons
+            writeable={writeable}
+            zoomIn={zoomIn}
+            zoomOut={zoomOut}
+            resetTransform={resetTransform}
+          />
+        )}
+        <Button
+          colorScheme="cyan"
+          style={{ margin: 4 }}
+          title=""
+          onClick={startDrawMode}
+        >
+          Start Draw Mode
         </Button>
-        <Button colorScheme="cyan" title="" onClick={endDrawMode}>
-          Close
+        <Button
+          colorScheme="cyan"
+          style={{ margin: 4 }}
+          title=""
+          onClick={endDrawMode}
+        >
+          End Draw Mode
         </Button>
         <CanvasPopover
           popoverCanBeClosed={popoverCanBeClosed}

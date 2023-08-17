@@ -16,7 +16,7 @@ export function useGetAccountResources(
   } = {},
 ): UseQueryResult<Types.MoveResource[], ResponseError> {
   const [state, _setState] = useGlobalState();
-  console.log("yoooooooo");
+  // console.log("yoooooooo");
   // console.log(JSON.stringify(state));
 
   const accountResourcesResult = useQuery<
