@@ -80,8 +80,7 @@ pub struct AllowedValidators {
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ApprovedExecutionHashes {
-    pub hashes:
-        _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap,
+    pub hashes: _0x1__simple_map__SimpleMap,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct AptosCoin {
@@ -101,7 +100,12 @@ pub struct AptosCollection {
     pub tokens_freezable_by_creator: bool,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct AptosToken { pub burn_ref : Option , pub transfer_ref : Option , pub mutator_ref : Option , pub property_mutator_ref : _0x0000000000000000000000000000000000000000000000000000000000000004__property_map__MutatorRef }
+pub struct AptosToken {
+    pub burn_ref: Option,
+    pub transfer_ref: Option,
+    pub mutator_ref: Option,
+    pub property_mutator_ref: _0x4__property_map__MutatorRef,
+}
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct BigVector {
     pub buckets: TableWithLength,
@@ -143,8 +147,7 @@ pub struct Canvas {
     pub admins: SimpleSet,
     pub created_at_s: U64,
     pub extend_ref: ExtendRef,
-    pub mutator_ref:
-        _0x0000000000000000000000000000000000000000000000000000000000000004__token__MutatorRef,
+    pub mutator_ref: _0x4__token__MutatorRef,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct CanvasConfig {
@@ -154,8 +157,10 @@ pub struct CanvasConfig {
     pub can_draw_for_s: U64,
     pub palette: Vec<Color>,
     pub cost: U64,
-    pub funds_recipient: Option,
+    pub cost_multiplier: U64,
+    pub cost_multiplier_decay_s: U64,
     pub default_color: Color,
+    pub can_draw_multiple_pixels_at_once: bool,
     pub owner_is_super_admin: bool,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -227,10 +232,8 @@ pub struct Collection {
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct CollectionRefs {
-    pub transfer_ref:
-        _0x0000000000000000000000000000000000000000000000000000000000000001__object__TransferRef,
-    pub mutator_ref:
-        _0x0000000000000000000000000000000000000000000000000000000000000004__collection__MutatorRef,
+    pub transfer_ref: _0x1__object__TransferRef,
+    pub mutator_ref: _0x4__collection__MutatorRef,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Color {
@@ -278,8 +281,7 @@ pub struct ConstructorRef {
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Container {
-    pub store:
-        _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap,
+    pub store: _0x1__simple_map__SimpleMap,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct CreateStakingContractEvent {
@@ -328,8 +330,7 @@ pub struct DelegatedVotes {
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct DelegationPool {
-    pub active_shares:
-        _0x0000000000000000000000000000000000000000000000000000000000000001__pool_u64_unbound__Pool,
+    pub active_shares: _0x1__pool_u64_unbound__Pool,
     pub observed_lockup_cycle: ObservedLockupCycle,
     pub inactive_shares: Table,
     pub pending_withdrawals: Table,
@@ -522,6 +523,11 @@ pub struct FungibleAssetEvents {
     pub frozen_events: EventHandle,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct FungibleAssetRefs {
+    pub mint_ref: MintRef,
+    pub burn_ref: _0x1__fungible_asset__BurnRef,
+}
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct FungibleStore {
     pub metadata: Object,
     pub balance: U64,
@@ -537,7 +543,7 @@ pub struct G2 {
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct GUID {
-    pub id: _0x0000000000000000000000000000000000000000000000000000000000000001__guid__ID,
+    pub id: _0x1__guid__ID,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct GasCurve {
@@ -595,8 +601,7 @@ pub struct GovernanceRecords {
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct GovernanceResponsbility {
-    pub signer_caps:
-        _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap,
+    pub signer_caps: _0x1__simple_map__SimpleMap,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Gt {
@@ -659,10 +664,8 @@ pub struct Metadata {
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct MetadataUpdatedEvent {
-    pub old_metadata:
-        _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap,
-    pub new_metadata:
-        _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap,
+    pub old_metadata: _0x1__simple_map__SimpleMap,
+    pub new_metadata: _0x1__simple_map__SimpleMap,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct MintCapStore {
@@ -696,8 +699,7 @@ pub struct MultisigAccount {
     pub last_executed_sequence_number: U64,
     pub next_sequence_number: U64,
     pub signer_cap: Option,
-    pub metadata:
-        _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap,
+    pub metadata: _0x1__simple_map__SimpleMap,
     pub add_owners_events: EventHandle,
     pub remove_owners_events: EventHandle,
     pub update_signature_required_events: EventHandle,
@@ -728,8 +730,7 @@ pub struct MultisigAccountCreationWithAuthKeyRevocationMessage {
 pub struct MultisigTransaction {
     pub payload: Option,
     pub payload_hash: Option,
-    pub votes:
-        _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap,
+    pub votes: _0x1__simple_map__SimpleMap,
     pub creator: Address,
     pub creation_time_secs: U64,
 }
@@ -809,6 +810,11 @@ pub struct PackageRegistry {
     pub packages: Vec<PackageMetadata>,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct Pixel {
+    pub color: Color,
+    pub drawn_at_s: U64,
+}
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Point {
     pub x: U64,
     pub y: U64,
@@ -819,8 +825,7 @@ pub struct ProofOfPossession {
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct PropertyMap {
-    pub inner:
-        _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap,
+    pub inner: _0x1__simple_map__SimpleMap,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct PropertyValue {
@@ -831,8 +836,7 @@ pub struct PropertyValue {
 pub struct Proposal {
     pub proposer: Address,
     pub execution_content: Option,
-    pub metadata:
-        _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap,
+    pub metadata: _0x1__simple_map__SimpleMap,
     pub creation_time_secs: U64,
     pub execution_hash: Vec<U8>,
     pub min_vote_threshold: U128,
@@ -1030,8 +1034,7 @@ pub struct StakingContract {
     pub pool_address: Address,
     pub owner_cap: OwnerCapability,
     pub commission_percentage: U64,
-    pub distribution_pool:
-        _0x0000000000000000000000000000000000000000000000000000000000000001__pool_u64__Pool,
+    pub distribution_pool: _0x1__pool_u64__Pool,
     pub signer_cap: SignerCapability,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -1078,8 +1081,7 @@ pub struct StorageGasConfig {
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Store {
-    pub staking_contracts:
-        _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap,
+    pub staking_contracts: _0x1__simple_map__SimpleMap,
     pub create_staking_contract_events: EventHandle,
     pub update_voter_events: EventHandle,
     pub reset_lockup_events: EventHandle,
@@ -1295,17 +1297,14 @@ pub struct VestEvent {
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct VestingAccountManagement {
-    pub roles:
-        _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap,
+    pub roles: _0x1__simple_map__SimpleMap,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct VestingContract {
     pub state: U64,
     pub admin: Address,
-    pub grant_pool:
-        _0x0000000000000000000000000000000000000000000000000000000000000001__pool_u64__Pool,
-    pub beneficiaries:
-        _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap,
+    pub grant_pool: _0x1__pool_u64__Pool,
+    pub beneficiaries: _0x1__simple_map__SimpleMap,
     pub vesting_schedule: VestingSchedule,
     pub withdrawal_address: Address,
     pub staking: StakingInfo,
@@ -1361,23 +1360,20 @@ pub struct VotingRecordsV2 {
     pub votes: SmartTable,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__any__Any {
+pub struct _0x1__any__Any {
     pub type_name: String,
     pub data: Vec<U8>,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__aptos_governance__CreateProposalEvent
-{
+pub struct _0x1__aptos_governance__CreateProposalEvent {
     pub proposer: Address,
     pub stake_pool: Address,
     pub proposal_id: U64,
     pub execution_hash: Vec<U8>,
-    pub proposal_metadata:
-        _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap,
+    pub proposal_metadata: _0x1__simple_map__SimpleMap,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__aptos_governance__VoteEvent
-{
+pub struct _0x1__aptos_governance__VoteEvent {
     pub proposal_id: U64,
     pub voter: Address,
     pub stake_pool: Address,
@@ -1385,61 +1381,53 @@ pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__
     pub should_pass: bool,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__bls12381__Signature
-{
+pub struct _0x1__bls12381__Signature {
     pub bytes: Vec<U8>,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__coin__DepositEvent {
+pub struct _0x1__coin__DepositEvent {
     pub amount: U64,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__coin__WithdrawEvent
-{
+pub struct _0x1__coin__WithdrawEvent {
     pub amount: U64,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__copyable_any__Any {
+pub struct _0x1__copyable_any__Any {
     pub type_name: String,
     pub data: Vec<U8>,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__crypto_algebra__Element
-{
+pub struct _0x1__crypto_algebra__Element {
     pub handle: U64,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__delegation_pool__AddStakeEvent
-{
+pub struct _0x1__delegation_pool__AddStakeEvent {
     pub pool_address: Address,
     pub delegator_address: Address,
     pub amount_added: U64,
     pub add_stake_fee: U64,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__delegation_pool__CreateProposalEvent
-{
+pub struct _0x1__delegation_pool__CreateProposalEvent {
     pub proposal_id: U64,
     pub voter: Address,
     pub delegation_pool: Address,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__delegation_pool__ReactivateStakeEvent
-{
+pub struct _0x1__delegation_pool__ReactivateStakeEvent {
     pub pool_address: Address,
     pub delegator_address: Address,
     pub amount_reactivated: U64,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__delegation_pool__UnlockStakeEvent
-{
+pub struct _0x1__delegation_pool__UnlockStakeEvent {
     pub pool_address: Address,
     pub delegator_address: Address,
     pub amount_unlocked: U64,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__delegation_pool__VoteEvent
-{
+pub struct _0x1__delegation_pool__VoteEvent {
     pub voter: Address,
     pub proposal_id: U64,
     pub delegation_pool: Address,
@@ -1447,203 +1435,171 @@ pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__
     pub should_pass: bool,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__delegation_pool__WithdrawStakeEvent
-{
+pub struct _0x1__delegation_pool__WithdrawStakeEvent {
     pub pool_address: Address,
     pub delegator_address: Address,
     pub amount_withdrawn: U64,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__ed25519__Signature {
+pub struct _0x1__ed25519__Signature {
     pub bytes: Vec<U8>,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__ed25519__UnvalidatedPublicKey
-{
+pub struct _0x1__ed25519__UnvalidatedPublicKey {
     pub bytes: Vec<U8>,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__ed25519__ValidatedPublicKey
-{
+pub struct _0x1__ed25519__ValidatedPublicKey {
     pub bytes: Vec<U8>,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__fungible_asset__BurnRef
-{
+pub struct _0x1__fungible_asset__BurnRef {
     pub metadata: Object,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__fungible_asset__DepositEvent
-{
+pub struct _0x1__fungible_asset__DepositEvent {
     pub amount: U64,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__fungible_asset__TransferRef
-{
+pub struct _0x1__fungible_asset__TransferRef {
     pub metadata: Object,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__fungible_asset__WithdrawEvent
-{
+pub struct _0x1__fungible_asset__WithdrawEvent {
     pub amount: U64,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__guid__ID {
+pub struct _0x1__guid__ID {
     pub creation_num: U64,
     pub addr: Address,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__multi_ed25519__Signature
-{
+pub struct _0x1__multi_ed25519__Signature {
     pub bytes: Vec<U8>,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__multi_ed25519__UnvalidatedPublicKey
-{
+pub struct _0x1__multi_ed25519__UnvalidatedPublicKey {
     pub bytes: Vec<U8>,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__multi_ed25519__ValidatedPublicKey
-{
+pub struct _0x1__multi_ed25519__ValidatedPublicKey {
     pub bytes: Vec<U8>,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__multisig_account__VoteEvent
-{
+pub struct _0x1__multisig_account__VoteEvent {
     pub owner: Address,
     pub sequence_number: U64,
     pub approved: bool,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__object__TransferRef
-{
+pub struct _0x1__object__TransferRef {
     #[serde(rename = "self")]
     pub self_: Address,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__pool_u64__Pool {
+pub struct _0x1__pool_u64__Pool {
     pub shareholders_limit: U64,
     pub total_coins: U64,
     pub total_shares: U64,
-    pub shares:
-        _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap,
+    pub shares: _0x1__simple_map__SimpleMap,
     pub shareholders: Vec<Address>,
     pub scaling_factor: U64,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__pool_u64_unbound__Pool
-{
+pub struct _0x1__pool_u64_unbound__Pool {
     pub total_coins: U64,
     pub total_shares: U128,
     pub shares: TableWithLength,
     pub scaling_factor: U64,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__Element
-{
+pub struct _0x1__simple_map__Element {
     pub key: Any,
     pub value: Any,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap
-{
-    pub data: Vec<
-        _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__Element,
-    >,
+pub struct _0x1__simple_map__SimpleMap {
+    pub data: Vec<_0x1__simple_map__Element>,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__stake__AddStakeEvent
-{
+pub struct _0x1__stake__AddStakeEvent {
     pub pool_address: Address,
     pub amount_added: U64,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__stake__AptosCoinCapabilities
-{
+pub struct _0x1__stake__AptosCoinCapabilities {
     pub mint_cap: MintCapability,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__stake__ReactivateStakeEvent
-{
+pub struct _0x1__stake__ReactivateStakeEvent {
     pub pool_address: Address,
     pub amount: U64,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__stake__UnlockStakeEvent
-{
+pub struct _0x1__stake__UnlockStakeEvent {
     pub pool_address: Address,
     pub amount_unlocked: U64,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__stake__WithdrawStakeEvent
-{
+pub struct _0x1__stake__WithdrawStakeEvent {
     pub pool_address: Address,
     pub amount_withdrawn: U64,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__staking_contract__AddStakeEvent
-{
+pub struct _0x1__staking_contract__AddStakeEvent {
     pub operator: Address,
     pub pool_address: Address,
     pub amount: U64,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__staking_contract__DistributeEvent
-{
+pub struct _0x1__staking_contract__DistributeEvent {
     pub operator: Address,
     pub pool_address: Address,
     pub recipient: Address,
     pub amount: U64,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__staking_contract__ResetLockupEvent
-{
+pub struct _0x1__staking_contract__ResetLockupEvent {
     pub operator: Address,
     pub pool_address: Address,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__staking_contract__UnlockStakeEvent
-{
+pub struct _0x1__staking_contract__UnlockStakeEvent {
     pub operator: Address,
     pub pool_address: Address,
     pub amount: U64,
     pub commission_paid: U64,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__staking_contract__UpdateVoterEvent
-{
+pub struct _0x1__staking_contract__UpdateVoterEvent {
     pub operator: Address,
     pub pool_address: Address,
     pub old_voter: Address,
     pub new_voter: Address,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__string__String {
+pub struct _0x1__string__String {
     pub bytes: Vec<U8>,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__transaction_fee__AptosCoinCapabilities
-{
+pub struct _0x1__transaction_fee__AptosCoinCapabilities {
     pub burn_cap: BurnCapability,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__vesting__DistributeEvent
-{
+pub struct _0x1__vesting__DistributeEvent {
     pub admin: Address,
     pub vesting_contract_address: Address,
     pub amount: U64,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__vesting__ResetLockupEvent
-{
+pub struct _0x1__vesting__ResetLockupEvent {
     pub admin: Address,
     pub vesting_contract_address: Address,
     pub staking_pool_address: Address,
     pub new_lockup_expiration_secs: U64,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__vesting__UpdateVoterEvent
-{
+pub struct _0x1__vesting__UpdateVoterEvent {
     pub admin: Address,
     pub vesting_contract_address: Address,
     pub staking_pool_address: Address,
@@ -1651,58 +1607,51 @@ pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__
     pub new_voter: Address,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__voting__CreateProposalEvent
-{
+pub struct _0x1__voting__CreateProposalEvent {
     pub proposal_id: U64,
     pub early_resolution_vote_threshold: Option,
     pub execution_hash: Vec<U8>,
     pub expiration_secs: U64,
-    pub metadata:
-        _0x0000000000000000000000000000000000000000000000000000000000000001__simple_map__SimpleMap,
+    pub metadata: _0x1__simple_map__SimpleMap,
     pub min_vote_threshold: U128,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000001__voting__VoteEvent {
+pub struct _0x1__voting__VoteEvent {
     pub proposal_id: U64,
     pub num_votes: U64,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000004__collection__MutationEvent
-{
+pub struct _0x4__collection__MutationEvent {
     pub mutated_field_name: String,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000004__collection__MutatorRef
-{
+pub struct _0x4__collection__MutatorRef {
     #[serde(rename = "self")]
     pub self_: Address,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000004__property_map__MutatorRef
-{
+pub struct _0x4__property_map__MutatorRef {
     #[serde(rename = "self")]
     pub self_: Address,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000004__royalty__MutatorRef
-{
+pub struct _0x4__royalty__MutatorRef {
     pub inner: ExtendRef,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000004__token__BurnRef {
+pub struct _0x4__token__BurnRef {
     pub inner: Option,
     #[serde(rename = "self")]
     pub self_: Option,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000004__token__MutationEvent
-{
+pub struct _0x4__token__MutationEvent {
     pub mutated_field_name: String,
     pub old_value: String,
     pub new_value: String,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct _0x0000000000000000000000000000000000000000000000000000000000000004__token__MutatorRef {
+pub struct _0x4__token__MutatorRef {
     #[serde(rename = "self")]
     pub self_: Address,
 }
