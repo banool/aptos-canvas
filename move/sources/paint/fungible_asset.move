@@ -19,6 +19,7 @@ module addr::paint_fungible_asset {
 
     friend addr::canvas_token;
 
+    /// Name used for the fungible asset, token, and collection.
     const NAME: vector<u8> = b"Paint";
 
     /// Only the fungible asset metadata caller can access the refs.
@@ -46,7 +47,11 @@ module addr::paint_fungible_asset {
             option::none(), /* supply */
             name,
             symbol,
-            0, /* decimals */
+            // We use two decimal places to give us enough "space" to handle the
+            // multiplication factor involved with the cost of drawing a pixel.
+            // On the UI we will just hide the decimal places. So really this means
+            // drawing a pixel doesn't really cost 1 PNT, it costs 100 PNT.
+            2,
             icon_uri,
             project_uri,
         );

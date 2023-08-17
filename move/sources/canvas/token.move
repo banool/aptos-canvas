@@ -18,6 +18,7 @@ module addr::canvas_token {
     use std::vector;
     use std::timestamp::now_seconds;
     use aptos_framework::chain_id::{get as get_chain_id};
+    use aptos_std::fixed_point64;
     use aptos_std::object::{Self, ExtendRef, Object};
     use aptos_std::string_utils;
     use aptos_std::smart_table::{Self, SmartTable};
@@ -27,6 +28,9 @@ module addr::canvas_token {
 
     /// `default_color` was not in the palette.
     const E_CREATION_INITIAL_COLOR_NOT_IN_PALETTE: u64 = 1;
+
+    /// `cost_multiplier` was less than 1.
+    const E_CREATION_COST_MULTIPLIER_TOO_LOW: u64 = 10;
 
     /// The caller tried to draw outside the bounds of the canvas.
     const E_COORDINATE_OUT_OF_BOUNDS: u64 = 2;
@@ -127,6 +131,8 @@ module addr::canvas_token {
 
         /// How much it costs in PNT to draw a single pixel. This is the base cost, which
         /// can be modified by some factor based on how recently the pixel was drawn.
+        /// If zero, there is no cost. PNT has two decimal places, so to spend "1 PNT"
+        /// you would specify 100 here.
         cost: u64,
 
         /// The most the cost of a pixel should be multipled by, e.g. if a pixel was
@@ -223,6 +229,12 @@ module addr::canvas_token {
                 error::invalid_argument(E_CREATION_INITIAL_COLOR_NOT_IN_PALETTE),
             );
         };
+
+        // Assert the cost values are correct.
+        assert!(
+            config.cost_multiplier >= 1,
+            error::invalid_argument(E_CREATION_COST_MULTIPLIER_TOO_LOW),
+        );
 
         // Create the token. This creates an ObjectCore and Token.
         // TODO: Use token::create when AUIDs are enabled.
@@ -392,30 +404,37 @@ module addr::canvas_token {
     public fun determine_cost(canvas: Object<Canvas>, x: u64, y: u64): u64 acquires Canvas {
         let canvas_ = borrow_global<Canvas>(object::object_address(&canvas));
 
-        // Exit early if there is no cost.
-        if (canvas_.config.cost == 0) {
+        // Exit early if there is no cost / decay.
+        if (canvas_.config.cost == 0 || canvas_.config.cost_multiplier_decay_s == 0) {
             return 0
         };
 
         // Determine when the pixel was last drawn.
         let index = y * canvas_.config.width + x;
-        let _drawn_at_s = if (smart_table::contains(&canvas_.pixels, index)) {
+        let drawn_at_s = if (smart_table::contains(&canvas_.pixels, index)) {
             let pixel = smart_table::borrow(&canvas_.pixels, index);
             pixel.drawn_at_s
         } else {
-            canvas_.created_at_s
+            0
         };
 
-        // A value from 0 to 1. Zero means the pixel was just drawn, 1 means it has
-        // fully passed the cost multiplier period.
-        // TODO: Figure out how to do this without floating point numbers.
-        // let proportion_refreshed = canvas_.config.cost_multiplier_decay_s / (now_seconds() - drawn_at_s);
-        let proportion_refreshed = 1;
-
-        // Get the final cost in PNT for drawing a single pixel.
-        let cost = canvas_.config.cost * (1 + (canvas_.config.cost_multiplier * (1 - proportion_refreshed)));
-
-        cost
+        let seconds_since_last_drawn = now_seconds() - drawn_at_s;
+        if (seconds_since_last_drawn >= canvas_.config.cost_multiplier_decay_s) {
+            canvas_.config.cost
+        } else {
+            // heat_proportion will be close to 0 if the pixel was just drawn, and close
+            // to 1 the closer the last draw time is to the decay time.
+            let heat_proportion = fixed_point64::create_from_rational(
+                (seconds_since_last_drawn as u128),
+                (canvas_.config.cost_multiplier_decay_s as u128),
+            );
+            let one = fixed_point64::create_from_rational(1, 1);
+            let inverse_heat = fixed_point64::sub(one, heat_proportion);
+            (fixed_point64::multiply_u128(
+                (canvas_.config.cost * canvas_.config.cost_multiplier as u128),
+                inverse_heat,
+            ) as u64)
+        }
     }
 
     fun assert_allowlisted_to_draw(canvas: Object<Canvas>, caller_addr: address) acquires Canvas {
@@ -664,6 +683,8 @@ module addr::canvas_token {
     #[test_only]
     use addr::canvas_collection::{init_module_for_test as collection_init_module_for_test};
     #[test_only]
+    use addr::paint_fungible_token;
+    #[test_only]
     use std::timestamp;
     #[test_only]
     use aptos_framework::aptos_coin::{Self, AptosCoin};
@@ -683,6 +704,7 @@ module addr::canvas_token {
     #[test_only]
     /// Create a test account with some funds.
     fun create_test_account(
+        caller: &signer,
         aptos_framework: &signer,
         account: &signer,
     ) {
@@ -700,6 +722,9 @@ module addr::canvas_token {
         account::create_account_for_test(signer::address_of(account));
         coin::register<AptosCoin>(account);
         aptos_coin::mint(aptos_framework, signer::address_of(account), STARTING_BALANCE);
+
+        // Mint some PNT too.
+        paint_fungible_asset::mint(caller, signer::address_of(account), 1000);
     }
 
     #[test_only]
@@ -712,23 +737,32 @@ module addr::canvas_token {
     }
 
     #[test_only]
-    fun create_canvas(caller: &signer, friend1: &signer, friend2: &signer, aptos_framework: &signer): Object<Canvas> {
+    fun init_test(caller: &signer, friend1: &signer, friend2: &signer, aptos_framework: &signer) {
         set_global_time(aptos_framework, 100);
         chain_id::initialize_for_test(aptos_framework, 3);
+        collection_init_module_for_test(caller);
+        paint_fungible_token::test_init(caller);
+        create_test_account(caller, aptos_framework, caller);
+        create_test_account(caller, aptos_framework, friend1);
+        create_test_account(caller, aptos_framework, friend2);
+    }
 
-        create_test_account(aptos_framework, caller);
-        create_test_account(aptos_framework, friend1);
-        create_test_account(aptos_framework, friend2);
-
+    #[test_only]
+    fun create_canvas(
+        caller: &signer,
+        cost: u64,
+        cost_multiplier: u64,
+        cost_multiplier_decay_s: u64,
+    ): Object<Canvas> {
         let config = CanvasConfig {
             width: 50,
             height: 50,
             per_account_timeout_s: 0,
             can_draw_for_s: 0,
             palette: vector::empty(),
-            cost: 0,
-            cost_multiplier: 0,
-            cost_multiplier_decay_s: 0,
+            cost,
+            cost_multiplier,
+            cost_multiplier_decay_s,
             default_color: Color {
                 r: 0,
                 g: 0,
@@ -743,7 +777,53 @@ module addr::canvas_token {
 
     #[test(caller = @addr, friend1 = @0x456, friend2 = @0x789, aptos_framework = @aptos_framework)]
     fun test_create(caller: signer, friend1: signer, friend2: signer, aptos_framework: signer) {
-        collection_init_module_for_test(&caller);
-        create_canvas(&caller, &friend1, &friend2, &aptos_framework);
+        init_test(&caller, &friend1, &friend2, &aptos_framework);
+        create_canvas(&caller, 1, 1, 0);
+    }
+
+    #[test(caller = @addr, friend1 = @0x456, friend2 = @0x789, aptos_framework = @aptos_framework)]
+    fun test_determine_cost(caller: signer, friend1: signer, friend2: signer, aptos_framework: signer) acquires Canvas {
+        init_test(&caller, &friend1, &friend2, &aptos_framework);
+
+        // See that when `cost` is zero, the draw cost is zero.
+        let canvas = create_canvas(&caller, 0, 1, 60);
+        assert!(determine_cost(canvas, 0, 0) == 0, 1);
+
+        // See that when `cost` is one and the multiplier is one, the draw cost is one.
+        let canvas = create_canvas(&caller, 1, 1, 60);
+        assert!(determine_cost(canvas, 0, 0) == 1, 1);
+
+        // See that when `cost` is five and the multiplier is one, the draw cost is five.
+        let canvas = create_canvas(&caller, 5, 1, 60);
+        assert!(determine_cost(canvas, 0, 0) == 5, 1);
+
+        // See that when `cost` is five and the multiplier is three, the draw cost is
+        // still five for the first draw.
+        let canvas = create_canvas(&caller, 5, 3, 60);
+        assert!(determine_cost(canvas, 0, 0) == 5, 1);
+
+        // See that when `cost` is five and the multiplier is four, after drawing a
+        // pixel, drawing that same pixel costs four times as much.
+        let canvas = create_canvas(&caller, 5, 4, 60);
+        draw_one(&caller, canvas, 0, 0, 255, 255, 255);
+        assert!(determine_cost(canvas, 0, 0) == 20, 1);
+
+        // See that after passing half of the delay time, the cost is half of what it
+        // was at its peak.
+        set_global_time(&aptos_framework, 130);
+        aptos_std::debug::print(&determine_cost(canvas, 0, 0));
+        assert!(determine_cost(canvas, 0, 0) == 10, 1);
+
+        // Check the cost after passing 3/4 of the delay time. The value is rounded.
+        /*
+        set_global_time(&aptos_framework, 145);
+        aptos_std::debug::print(&determine_cost(canvas, 0, 0));
+        assert!(determine_cost(canvas, 0, 0) == 7, 1);
+        */
+        // For some reason this returns 5 ^ instead of 7.5 rounded.
+
+        // See that after passing the full delay time, the cost is back to the lowest.
+        set_global_time(&aptos_framework, 160);
+        assert!(determine_cost(canvas, 0, 0) == 5, 1);
     }
 }

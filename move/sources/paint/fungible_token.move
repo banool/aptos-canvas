@@ -47,7 +47,7 @@ module addr::paint_fungible_token {
     }
 
     #[test(creator = @addr)]
-    fun test_init(creator: &signer) {
+    public fun test_init(creator: &signer) {
         init_module(creator);
     }
 
