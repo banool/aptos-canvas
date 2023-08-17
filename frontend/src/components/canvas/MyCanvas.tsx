@@ -1,30 +1,19 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-
-import { Token, Canvas, Color } from "../canvas/generated/types";
-import {
-  Box,
-  Button,
-  Center,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverHeader,
-  VStack,
-  useDisclosure,
-  useToast,
-  Text,
-  Spinner,
-  PopoverTrigger,
-} from "@chakra-ui/react";
-import { getModuleId, useGlobalState } from "../GlobalState";
+import { Token, Canvas, Color } from "../../canvas/generated/types";
+import { Box, Button, Center, useDisclosure, useToast } from "@chakra-ui/react";
+import { getModuleId, useGlobalState } from "../../GlobalState";
 import { useParams } from "react-router-dom";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
-import { HexColorPicker } from "react-colorful";
-import { draw, drawOne } from "../api/transactions";
-import { useQuery } from "react-query";
-import { REFETCH_INTERVAL_MS } from "../api/helpers";
+import { drawOne } from "../../api/transactions";
+import { useGetPixels } from "../../api/hooks/useGetPixels";
+import { CanvasPopover } from "./CanvasPopover";
+import ZoomButtons from "./ZoomButtons";
+import { hexToRgb } from "./helpers";
+import DrawingCanvas from "./DrawingCanvas";
+
+const PIXEL_SIZE = 0.98; // the width of each pixel in the canvas
+const MARGIN_COLOR = "white";
+const INITIAL_SCALE_OFFSET = 0.92;
 
 export const MyCanvas = ({
   canvasData,
@@ -37,41 +26,24 @@ export const MyCanvas = ({
   writeable: boolean;
   canvasVh?: number;
 }) => {
-  const pixelSize = 0.96;
-  const marginColor = "white";
-  const initialScaleOffset = 0.92;
-
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const overlayRef = useRef<HTMLCanvasElement | null>(null);
+  const drawingRef = useRef<HTMLCanvasElement | null>(null);
+  const parentRef = useRef<HTMLDivElement>(null);
 
-  const { data: pngData, error: pngError } = useQuery(
-    ["canvasPng", tokenData.uri],
-    () => fetch(tokenData.uri).then((res) => res.blob()),
-    {
-      refetchOnWindowFocus: false,
-      refetchInterval: REFETCH_INTERVAL_MS,
-    },
-  );
+  const pixels = useGetPixels(tokenData);
 
-  const [pixels, setPixels] = useState<Color[]>([]);
+  // States for drawing mode
+  const [drawModeOn, setDrawModeOn] = useState(false);
+  const [squaresToDraw, setSquaresToDraw] = useState<
+    { x: number; y: number }[]
+  >([]);
 
   // These pixels get drawn over the top of the canvas after we draw the base layer
   // using the png. The key is the index.
   const [pixelsOverride, setPixelsOverride] = useState<Map<number, Color>>(
     new Map(),
   );
-
-  const canvasWidth = parseInt(canvasData.config.width);
-  const canvasHeight = parseInt(canvasData.config.height);
-
-  // Make sure we update the pixels when the canvasData changes.
-  useEffect(() => {
-    pngToPixels(pngData ?? new Blob()).then((pixels) => {
-      setPixels(pixels);
-    });
-  }, [pngData]);
-
-  const parentRef = useRef<HTMLDivElement>(null);
 
   // Store scale and pan in state
   const [scale, setScale] = useState<number | undefined>(undefined);
@@ -88,7 +60,11 @@ export const MyCanvas = ({
     left: 0,
     top: 0,
   });
-  const { isOpen, onOpen, onToggle, onClose } = useDisclosure();
+  const {
+    isOpen: isPopoverOpen,
+    onOpen: onPopoverOpen,
+    onClose: onPopoverClose,
+  } = useDisclosure();
   const [popoverCanBeClosed, setPopoverCanBeClosed] = useState(true);
 
   // Tracking what square we'll submit a transaction for.
@@ -107,7 +83,10 @@ export const MyCanvas = ({
 
   const { connected, signAndSubmitTransaction } = useWallet();
 
-  const [colorToSubmit, setColorToSubmit] = useState(marginColor);
+  const [colorToSubmit, setColorToSubmit] = useState(MARGIN_COLOR);
+
+  const canvasWidth = parseInt(canvasData.config.width);
+  const canvasHeight = parseInt(canvasData.config.height);
 
   const getOffsets = useCallback(() => {
     const parent = parentRef.current;
@@ -130,7 +109,7 @@ export const MyCanvas = ({
     const scaleY = parentHeight / canvasHeight;
 
     // Use the smaller scale factor to ensure the canvas fits within the parent without stretching
-    let s = Math.min(scaleX, scaleY) * initialScaleOffset;
+    let s = Math.min(scaleX, scaleY) * INITIAL_SCALE_OFFSET;
     setInitialScale(s);
     setScale(s);
   }, [canvasHeight, canvasWidth, parentRef]);
@@ -155,18 +134,12 @@ export const MyCanvas = ({
     const parent = parentRef.current;
     const canvas = canvasRef.current;
     const overlay = overlayRef.current;
+    const drawing = drawingRef.current;
     const context = canvas?.getContext("2d");
     const overlayContext = overlay?.getContext("2d");
+    const drawingContext = drawing?.getContext("2d");
 
-    if (
-      !canvas ||
-      !context ||
-      !overlay ||
-      !overlayContext ||
-      !parent ||
-      scale === undefined
-    )
-      return;
+    if (!canvas || !context || !parent || scale === undefined) return;
 
     // https://stackoverflow.com/a/67258046/3846032
     canvas.addEventListener("wheel", handleWheel, { passive: false });
@@ -174,8 +147,16 @@ export const MyCanvas = ({
     // Increase the physical size of the canvas to fill the parent.
     canvas.width = parent.clientWidth;
     canvas.height = parent.clientHeight;
-    overlay.width = parent.clientWidth;
-    overlay.height = parent.clientHeight;
+
+    if (overlay && overlayContext) {
+      overlay.width = parent.clientWidth;
+      overlay.height = parent.clientHeight;
+    }
+
+    if (drawing && drawingContext) {
+      drawing.width = parent.clientWidth;
+      drawing.height = parent.clientHeight;
+    }
 
     // Calculate offsets for centering the art.
     const offsets = getOffsets()!;
@@ -184,28 +165,37 @@ export const MyCanvas = ({
     context.save();
     context.translate(pan.x, pan.y);
     context.scale(scale, scale);
-    overlayContext.save();
-    overlayContext.translate(pan.x, pan.y);
-    overlayContext.scale(scale, scale);
+
+    if (overlay && overlayContext) {
+      overlayContext.save();
+      overlayContext.translate(pan.x, pan.y);
+      overlayContext.scale(scale, scale);
+    }
+
+    if (drawing && drawingContext) {
+      drawingContext.save();
+      drawingContext.translate(pan.x, pan.y);
+      drawingContext.scale(scale, scale);
+    }
 
     // Decide how much of a margin should appear between square.
-    const margin = 1 - pixelSize;
+    const margin = 1 - PIXEL_SIZE;
 
     pixels.forEach((color, index) => {
       const x = (index % canvasWidth) + offsets.x;
       const y = Math.floor(index / canvasWidth) + offsets.y;
 
       // Draw underneath the squares so a margin appears.
-      context.fillStyle = marginColor;
-      context.fillRect(x, y, pixelSize + margin, pixelSize + margin);
+      context.fillStyle = MARGIN_COLOR;
+      context.fillRect(x, y, PIXEL_SIZE + margin, PIXEL_SIZE + margin);
 
       // Draw the squares.
       context.fillStyle = `rgb(${color.r},${color.g},${color.b})`;
       context.fillRect(
         x + margin, // Shift the pixel to the right by the margin
         y + margin, // Shift the pixel down by the margin
-        pixelSize, // Reduce the pixel's width by the margin
-        pixelSize, // Reduce the pixel's height by the margin
+        PIXEL_SIZE, // Reduce the pixel's width by the margin
+        PIXEL_SIZE, // Reduce the pixel's height by the margin
       );
     });
 
@@ -215,18 +205,37 @@ export const MyCanvas = ({
       const y = Math.floor(index / canvasWidth) + offsets.y;
 
       // Draw underneath the squares so a margin appears.
-      context.fillStyle = marginColor;
-      context.fillRect(x, y, pixelSize + margin, pixelSize + margin);
+      context.fillStyle = MARGIN_COLOR;
+      context.fillRect(x, y, PIXEL_SIZE + margin, PIXEL_SIZE + margin);
 
       // Draw the squares.
       context.fillStyle = `rgb(${color.r},${color.g},${color.b})`;
       context.fillRect(
         x + margin, // Shift the pixel to the right by the margin
         y + margin, // Shift the pixel down by the margin
-        pixelSize, // Reduce the pixel's width by the margin
-        pixelSize, // Reduce the pixel's height by the margin
+        PIXEL_SIZE, // Reduce the pixel's width by the margin
+        PIXEL_SIZE, // Reduce the pixel's height by the margin
       );
     }
+
+    // Draw the squares to draw on top.
+    squaresToDraw.forEach((square) => {
+      const x = square.x + offsets.x;
+      const y = square.y + offsets.y;
+
+      // Draw underneath the squares so a margin appears.
+      context.fillStyle = MARGIN_COLOR;
+      context.fillRect(x, y, PIXEL_SIZE + margin, PIXEL_SIZE + margin);
+
+      // Draw the squares.
+      context.fillStyle = `rgb(255,255,0)`;
+      context.fillRect(
+        x + margin, // Shift the pixel to the right by the margin
+        y + margin, // Shift the pixel down by the margin
+        PIXEL_SIZE, // Reduce the pixel's width by the margin
+        PIXEL_SIZE, // Reduce the pixel's height by the margin
+      );
+    });
 
     context.restore();
 
@@ -244,9 +253,11 @@ export const MyCanvas = ({
     pixelsOverride,
     getOffsets,
     handleWheel,
+    drawModeOn,
+    squaresToDraw,
   ]);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const handleMouseMoveOverlay = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const parent = parentRef.current;
     const overlay = overlayRef.current;
     const overlayContext = overlay?.getContext("2d");
@@ -310,23 +321,23 @@ export const MyCanvas = ({
     }
   };
 
-  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const handleMouseDownOverlay = (e: React.MouseEvent<HTMLCanvasElement>) => {
     setDragging(true);
     setLastMousePos({ x: e.clientX, y: e.clientY });
     setLastPan(pan);
   };
 
-  const handleMouseUp = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const handleMouseUpOverlay = (e: React.MouseEvent<HTMLCanvasElement>) => {
     setDragging(false);
     if (pan.x === lastPan.x && pan.y === lastPan.y) {
       // This means the user didn't drag the canvas, they just clicked it. We only want
       // to show the color picker if they click on a square, not drag, so we handle the
       // onClick event here rather than setting onClick on the canvas.
-      handleClick(e);
+      handlePixelClick(e);
     }
   };
 
-  const handleClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const handlePixelClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const parent = parentRef.current;
     const canvas = canvasRef.current;
     const context = canvas?.getContext("2d");
@@ -341,11 +352,12 @@ export const MyCanvas = ({
 
     // Quit out here if the click is outside the canvas.
     if (!(x >= 0 && y >= 0 && x < canvasWidth && y < canvasHeight)) {
+      console.log("Clicked outside canvas");
       return;
     }
 
     setPopoverPos({ left: e.clientX - rect.left, top: e.clientY - rect.top });
-    onToggle();
+    onPopoverOpen();
     setSquareToDraw({ x, y });
   };
 
@@ -398,12 +410,12 @@ export const MyCanvas = ({
         duration: 7000,
         isClosable: true,
       });
-      setColorToSubmit(marginColor);
+      setColorToSubmit(MARGIN_COLOR);
       // On failure, reset the color of the square.
       resetSquare(squareToDraw.x, squareToDraw.y);
     } finally {
       setPopoverCanBeClosed(true);
-      onClose();
+      onPopoverClose();
     }
   };
 
@@ -441,10 +453,25 @@ export const MyCanvas = ({
     });
   };
 
-  // Rather than setting the position of the Popover explicitly, we set the position of
-  // a Box and make the Popover attach to that. This way the Popover arrow works and it
-  // has the freedom to choose where it puts itself (so it doesn't overflow outside the
-  // edge of the screen).
+  const handlePopoverClose = () => {
+    onPopoverClose();
+    setPopoverPos({ left: 0, top: 0 });
+    resetSquare(squareToDraw.x, squareToDraw.y);
+  };
+
+  const startDrawMode = () => {
+    setDrawModeOn(true);
+  };
+
+  const endDrawMode = () => {
+    setDrawModeOn(false);
+    setSquaresToDraw([]);
+  };
+
+  const displayCanvasWidth = canvasWidth * (scale ?? 0);
+  const displayCanvasHeight = canvasHeight * (scale ?? 0);
+  const offsets = getOffsets()!;
+
   return (
     <Center>
       <Box
@@ -456,156 +483,70 @@ export const MyCanvas = ({
       >
         <canvas
           ref={canvasRef}
-          style={{ position: "absolute", cursor: "pointer" }}
-          width={canvasWidth * (scale ?? 0)}
-          height={canvasHeight * (scale ?? 0)}
-          onMouseMove={writeable ? handleMouseMove : undefined}
-          onMouseDown={writeable ? handleMouseDown : undefined}
-          onMouseUp={writeable ? handleMouseUp : undefined}
-        />
-        <canvas
-          ref={overlayRef}
           style={{ position: "absolute", pointerEvents: "none" }}
-          width={canvasWidth * (scale ?? 0)}
-          height={canvasHeight * (scale ?? 0)}
+          width={displayCanvasWidth}
+          height={displayCanvasHeight}
         />
-        {writeable && (
-          <div style={{ position: "absolute", bottom: 20, right: 20 }}>
-            <VStack spacing={3}>
-              <Button
-                colorScheme="cyan"
-                title="Zoom in"
-                onClick={() => zoomIn()}
-              >
-                +
-              </Button>
-              <Button
-                colorScheme="cyan"
-                title="Zoom out"
-                onClick={() => zoomOut()}
-              >
-                -
-              </Button>
-              <Button
-                colorScheme="cyan"
-                title="Reset"
-                onClick={() => resetTransform()}
-              >
-                x
-              </Button>
-            </VStack>
-          </div>
+        {!drawModeOn && (
+          <canvas
+            ref={overlayRef}
+            style={{ position: "absolute", cursor: "pointer" }}
+            width={displayCanvasWidth}
+            height={displayCanvasHeight}
+            onMouseMove={writeable ? handleMouseMoveOverlay : undefined}
+            onMouseDown={writeable ? handleMouseDownOverlay : undefined}
+            onMouseUp={writeable ? handleMouseUpOverlay : undefined}
+          />
         )}
-        <Popover
-          isOpen={writeable && isOpen}
-          onOpen={onOpen}
-          onClose={() => {
-            onClose();
-            setPopoverPos({ left: 0, top: 0 });
-            resetSquare(squareToDraw.x, squareToDraw.y);
-          }}
-          closeOnBlur={popoverCanBeClosed}
-          closeOnEsc={popoverCanBeClosed}
+        {drawModeOn && writeable && (
+          <DrawingCanvas
+            drawingRef={drawingRef}
+            squaresToDraw={squaresToDraw}
+            setSquaresToDraw={setSquaresToDraw}
+            displayCanvasWidth={displayCanvasWidth}
+            displayCanvasHeight={displayCanvasHeight}
+            offsets={offsets}
+            scale={scale}
+            pan={pan}
+          />
+        )}
+        {!drawModeOn && (
+          <ZoomButtons
+            writeable={writeable}
+            zoomIn={zoomIn}
+            zoomOut={zoomOut}
+            resetTransform={resetTransform}
+          />
+        )}
+        <Button
+          colorScheme="cyan"
+          style={{ margin: 4 }}
+          title=""
+          onClick={startDrawMode}
         >
-          <PopoverTrigger>
-            <Box
-              style={{
-                left: `${popoverPos.left}px`,
-                top: `${popoverPos.top}px`,
-                position: "absolute",
-                pointerEvents: "none",
-              }}
-              zIndex={"10"}
-            />
-          </PopoverTrigger>
-          {isOpen && (
-            <PopoverContent>
-              <PopoverHeader>Make your beautiful mark!!</PopoverHeader>
-              <PopoverCloseButton />
-              <PopoverArrow />
-              <PopoverBody>
-                {connected ? (
-                  <>
-                    <HexColorPicker
-                      color={colorToSubmit}
-                      onChange={onChangeColorPicker}
-                    />
-                    <Button
-                      mt={2}
-                      onClick={onSubmitDraw}
-                      isDisabled={hexToRgb(colorToSubmit) === null}
-                    >
-                      {popoverCanBeClosed ? `Draw` : <Spinner />}
-                    </Button>
-                  </>
-                ) : (
-                  <Text>Connect your wallet to draw.</Text>
-                )}
-              </PopoverBody>
-            </PopoverContent>
-          )}
-        </Popover>
+          Start Draw Mode
+        </Button>
+        <Button
+          colorScheme="cyan"
+          style={{ margin: 4 }}
+          title=""
+          onClick={endDrawMode}
+        >
+          End Draw Mode
+        </Button>
+        <CanvasPopover
+          popoverCanBeClosed={popoverCanBeClosed}
+          writeable={writeable}
+          isOpen={isPopoverOpen}
+          onOpen={onPopoverOpen}
+          onPopoverClose={handlePopoverClose}
+          popoverPos={popoverPos}
+          connected={connected}
+          colorToSubmit={colorToSubmit}
+          onSubmitDraw={onSubmitDraw}
+          onChangeColorPicker={onChangeColorPicker}
+        />
       </Box>
     </Center>
   );
 };
-
-function hexToRgb(hex: string) {
-  console.log("Hex color: ", hex);
-  if (hex.includes("Nan")) {
-    return null;
-  }
-  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result
-    ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16),
-      }
-    : null;
-}
-
-// TODO: It'd be better to just write the PNG to the main canvas directly.
-function pngToPixels(pngData: Blob): Promise<Color[]> {
-  return new Promise((resolve, reject) => {
-    const image = new Image();
-    const url = URL.createObjectURL(pngData);
-
-    image.onload = () => {
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-
-      if (ctx === undefined) {
-        resolve([]);
-        return;
-      }
-
-      canvas.width = image.width;
-      canvas.height = image.height;
-
-      ctx!.drawImage(image, 0, 0);
-      const imageData = ctx!.getImageData(0, 0, canvas.width, canvas.height);
-      const pixels = [];
-
-      for (let i = 0; i < imageData.data.length; i += 4) {
-        const color = {
-          r: imageData.data[i],
-          g: imageData.data[i + 1],
-          b: imageData.data[i + 2],
-        };
-
-        pixels.push(color);
-      }
-
-      URL.revokeObjectURL(url);
-      resolve(pixels); // Resolve the Promise with the pixels array
-    };
-
-    image.onerror = (err) => {
-      // Reject the Promise if there's an error
-      reject(err);
-    };
-
-    image.src = url;
-  });
-}
