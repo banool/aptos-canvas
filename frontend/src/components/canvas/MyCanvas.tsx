@@ -1,29 +1,15 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-
-import { Token, Canvas, Color } from "../canvas/generated/types";
-import {
-  Box,
-  Button,
-  Center,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverHeader,
-  VStack,
-  useDisclosure,
-  useToast,
-  Text,
-  Spinner,
-  PopoverTrigger,
-} from "@chakra-ui/react";
-import { getModuleId, useGlobalState } from "../GlobalState";
+import { ReactSketchCanvas } from "react-sketch-canvas";
+import { Token, Canvas, Color } from "../../canvas/generated/types";
+import { Box, Center, useDisclosure, useToast } from "@chakra-ui/react";
+import { getModuleId, useGlobalState } from "../../GlobalState";
 import { useParams } from "react-router-dom";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
-import { HexColorPicker } from "react-colorful";
-import { draw } from "../api/transactions";
-import { useGetPixels } from "../api/hooks/useGetPixels";
+import { draw } from "../../api/transactions";
+import { useGetPixels } from "../../api/hooks/useGetPixels";
+import { CanvasPopover } from "./CanvasPopover";
+import ZoomButtons from "./ZoomButtons";
+import { hexToRgb } from "./helpers";
 
 const PIXEL_SIZE = 0.98; // the width of each pixel in the canvas
 const MARGIN_COLOR = "white";
@@ -348,8 +334,6 @@ export const MyCanvas = ({
   const onSubmitDraw = async () => {
     setPopoverCanBeClosed(false);
 
-    const originalColor = pixels[squareToDraw.y * canvasWidth + squareToDraw.x];
-
     try {
       const out = hexToRgb(colorToSubmit);
       if (out === null) {
@@ -425,6 +409,12 @@ export const MyCanvas = ({
     });
   };
 
+  const handlePopoverClose = () => {
+    onClose();
+    setPopoverPos({ left: 0, top: 0 });
+    resetSquare(squareToDraw.x, squareToDraw.y);
+  };
+
   // Rather than setting the position of the Popover explicitly, we set the position of
   // a Box and make the Popover attach to that. This way the Popover arrow works and it
   // has the freedom to choose where it puts itself (so it doesn't overflow outside the
@@ -454,97 +444,25 @@ export const MyCanvas = ({
           height={canvasHeight * (scale ?? 0)}
         />
         {writeable && (
-          <div style={{ position: "absolute", bottom: 20, right: 20 }}>
-            <VStack spacing={3}>
-              <Button
-                colorScheme="cyan"
-                title="Zoom in"
-                onClick={() => zoomIn()}
-              >
-                +
-              </Button>
-              <Button
-                colorScheme="cyan"
-                title="Zoom out"
-                onClick={() => zoomOut()}
-              >
-                -
-              </Button>
-              <Button
-                colorScheme="cyan"
-                title="Reset"
-                onClick={() => resetTransform()}
-              >
-                x
-              </Button>
-            </VStack>
-          </div>
+          <ZoomButtons
+            zoomIn={zoomIn}
+            zoomOut={zoomOut}
+            resetTransform={resetTransform}
+          />
         )}
-        <Popover
-          isOpen={writeable && isOpen}
+        <CanvasPopover
+          popoverCanBeClosed={popoverCanBeClosed}
+          writeable={writeable}
+          isOpen={isOpen}
           onOpen={onOpen}
-          onClose={() => {
-            onClose();
-            setPopoverPos({ left: 0, top: 0 });
-            resetSquare(squareToDraw.x, squareToDraw.y);
-          }}
-          closeOnBlur={popoverCanBeClosed}
-          closeOnEsc={popoverCanBeClosed}
-        >
-          <PopoverTrigger>
-            <Box
-              style={{
-                left: `${popoverPos.left}px`,
-                top: `${popoverPos.top}px`,
-                position: "absolute",
-                pointerEvents: "none",
-              }}
-              zIndex={"10"}
-            />
-          </PopoverTrigger>
-          {isOpen && (
-            <PopoverContent>
-              <PopoverHeader>Make your beautiful mark!!</PopoverHeader>
-              <PopoverCloseButton />
-              <PopoverArrow />
-              <PopoverBody>
-                {connected ? (
-                  <>
-                    <HexColorPicker
-                      color={colorToSubmit}
-                      onChange={onChangeColorPicker}
-                    />
-                    <Button
-                      mt={2}
-                      onClick={onSubmitDraw}
-                      isDisabled={hexToRgb(colorToSubmit) === null}
-                    >
-                      {popoverCanBeClosed ? `Draw` : <Spinner />}
-                    </Button>
-                  </>
-                ) : (
-                  <Text>Connect your wallet to draw.</Text>
-                )}
-              </PopoverBody>
-            </PopoverContent>
-          )}
-        </Popover>
+          onPopoverClose={handlePopoverClose}
+          popoverPos={popoverPos}
+          connected={connected}
+          colorToSubmit={colorToSubmit}
+          onSubmitDraw={onSubmitDraw}
+          onChangeColorPicker={onChangeColorPicker}
+        />
       </Box>
     </Center>
   );
 };
-
-function hexToRgb(hex: string) {
-  console.log("Hex color: ", hex);
-  if (hex.includes("Nan")) {
-    return null;
-  }
-  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result
-    ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16),
-      }
-    : null;
-}

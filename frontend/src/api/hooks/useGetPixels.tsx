@@ -15,12 +15,6 @@ export function useGetPixels(tokenData: Token) {
     },
   );
 
-  // // These pixels get drawn over the top of the canvas after we draw the base layer
-  // // using the png. The key is the index.
-  // const [pixelsOverride, setPixelsOverride] = useState<Map<number, Color>>(
-  //   new Map(),
-  // );
-
   // Make sure we update the pixels when the canvasData changes.
   useEffect(() => {
     pngToPixels(pngData ?? new Blob()).then((pixels) => {
