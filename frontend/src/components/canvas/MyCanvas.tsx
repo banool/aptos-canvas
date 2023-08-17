@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { ReactSketchCanvas } from "react-sketch-canvas";
 import { Token, Canvas, Color } from "../../canvas/generated/types";
-import { Box, Center, useDisclosure, useToast } from "@chakra-ui/react";
+import { Box, Button, Center, useDisclosure, useToast } from "@chakra-ui/react";
 import { getModuleId, useGlobalState } from "../../GlobalState";
 import { useParams } from "react-router-dom";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
@@ -32,6 +31,9 @@ export const MyCanvas = ({
 
   const pixels = useGetPixels(tokenData);
 
+  // HERE HERE HERE
+  const [drawModeOn, setDrawModeOn] = useState(false);
+
   // These pixels get drawn over the top of the canvas after we draw the base layer
   // using the png. The key is the index.
   const [pixelsOverride, setPixelsOverride] = useState<Map<number, Color>>(
@@ -53,7 +55,11 @@ export const MyCanvas = ({
     left: 0,
     top: 0,
   });
-  const { isOpen, onOpen, onToggle, onClose } = useDisclosure();
+  const {
+    isOpen: isPopoverOpen,
+    onOpen: onPopoverOpen,
+    onClose: onPopoverClose,
+  } = useDisclosure();
   const [popoverCanBeClosed, setPopoverCanBeClosed] = useState(true);
 
   // Tracking what square we'll submit a transaction for.
@@ -290,11 +296,11 @@ export const MyCanvas = ({
       // This means the user didn't drag the canvas, they just clicked it. We only want
       // to show the color picker if they click on a square, not drag, so we handle the
       // onClick event here rather than setting onClick on the canvas.
-      handleClick(e);
+      handlePixelClick(e);
     }
   };
 
-  const handleClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const handlePixelClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const parent = parentRef.current;
     const canvas = canvasRef.current;
     const context = canvas?.getContext("2d");
@@ -309,11 +315,12 @@ export const MyCanvas = ({
 
     // Quit out here if the click is outside the canvas.
     if (!(x >= 0 && y >= 0 && x < canvasWidth && y < canvasHeight)) {
+      console.log("Clicked outside canvas");
       return;
     }
 
     setPopoverPos({ left: e.clientX - rect.left, top: e.clientY - rect.top });
-    onToggle();
+    onPopoverOpen();
     setSquareToDraw({ x, y });
   };
 
@@ -371,7 +378,7 @@ export const MyCanvas = ({
       resetSquare(squareToDraw.x, squareToDraw.y);
     } finally {
       setPopoverCanBeClosed(true);
-      onClose();
+      onPopoverClose();
     }
   };
 
@@ -410,15 +417,22 @@ export const MyCanvas = ({
   };
 
   const handlePopoverClose = () => {
-    onClose();
+    onPopoverClose();
     setPopoverPos({ left: 0, top: 0 });
     resetSquare(squareToDraw.x, squareToDraw.y);
   };
 
-  // Rather than setting the position of the Popover explicitly, we set the position of
-  // a Box and make the Popover attach to that. This way the Popover arrow works and it
-  // has the freedom to choose where it puts itself (so it doesn't overflow outside the
-  // edge of the screen).
+  const startDrawMode = () => {
+    setDrawModeOn(true);
+  };
+
+  const endDrawMode = () => {
+    setDrawModeOn(false);
+  };
+
+  const displayCanvasWidth = canvasWidth * (scale ?? 0);
+  const displayCanvasHeight = canvasHeight * (scale ?? 0);
+
   return (
     <Center>
       <Box
@@ -430,31 +444,36 @@ export const MyCanvas = ({
       >
         <canvas
           ref={canvasRef}
+          style={{ position: "absolute", pointerEvents: "none" }}
+          width={displayCanvasWidth}
+          height={displayCanvasHeight}
+        />
+        <canvas
+          ref={overlayRef}
           style={{ position: "absolute", cursor: "pointer" }}
-          width={canvasWidth * (scale ?? 0)}
-          height={canvasHeight * (scale ?? 0)}
+          width={displayCanvasWidth}
+          height={displayCanvasHeight}
           onMouseMove={writeable ? handleMouseMove : undefined}
           onMouseDown={writeable ? handleMouseDown : undefined}
           onMouseUp={writeable ? handleMouseUp : undefined}
         />
-        <canvas
-          ref={overlayRef}
-          style={{ position: "absolute", pointerEvents: "none" }}
-          width={canvasWidth * (scale ?? 0)}
-          height={canvasHeight * (scale ?? 0)}
+        <ZoomButtons
+          writeable={writeable}
+          zoomIn={zoomIn}
+          zoomOut={zoomOut}
+          resetTransform={resetTransform}
         />
-        {writeable && (
-          <ZoomButtons
-            zoomIn={zoomIn}
-            zoomOut={zoomOut}
-            resetTransform={resetTransform}
-          />
-        )}
+        <Button colorScheme="cyan" title="" onClick={startDrawMode}>
+          Open
+        </Button>
+        <Button colorScheme="cyan" title="" onClick={endDrawMode}>
+          Close
+        </Button>
         <CanvasPopover
           popoverCanBeClosed={popoverCanBeClosed}
           writeable={writeable}
-          isOpen={isOpen}
-          onOpen={onOpen}
+          isOpen={isPopoverOpen}
+          onOpen={onPopoverOpen}
           onPopoverClose={handlePopoverClose}
           popoverPos={popoverPos}
           connected={connected}
