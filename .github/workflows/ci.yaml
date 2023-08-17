@@ -21,7 +21,7 @@ jobs:
     # Install pnpm
     - uses: pnpm/action-setup@v2
       with:
-        version: 8.6.2
+        version: 8.6.1
         run_install: false
 
     # Install deps and build.
