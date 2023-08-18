@@ -22,7 +22,7 @@ export const networkInfo = {
     node_api_url: "https://fullnode.testnet.aptoslabs.com",
     processor_url: "https://testnet.graffio.art",
     featured_canvases: [
-      "0x0aa11d8210439b66a3bb4d2f571659548ab302286e820a763baf827c1abd3165",
+      "0x138ca7e668e519eddae7817ddd3958a33c4e63fb704020208a9deb991a382e95",
     ],
     pntMetadataAddress:
       "0xfc09cf257b28e239a02ee938045f0a93c97e86c233f1a051974a9d08b21a339f",
