@@ -1,0 +1,178 @@
+type ChainId {
+  chainId: Int!
+}
+
+type ChainIdConnection {
+  pageInfo: PageInfo!
+  paginationInfo: PaginationInfo
+  nodes: [ChainId!]!
+  edges: [ChainIdEdge!]!
+}
+
+type ChainIdEdge {
+  cursor: String!
+  node: ChainId!
+}
+
+input ChainIdFilterInput {
+  chainId: IntegerFilterInput
+  and: [ChainIdFilterInput!]
+  or: [ChainIdFilterInput!]
+}
+
+input ChainIdOrderInput {
+  chainId: OrderByEnum
+}
+
+input CursorInput {
+  cursor: String
+  limit: Int!
+}
+
+input IntegerFilterInput {
+  eq: Int
+  ne: Int
+  gt: Int
+  gte: Int
+  lt: Int
+  lte: Int
+  is_in: [Int!]
+  is_not_in: [Int!]
+  is_null: Boolean
+  is_not_null: Boolean
+}
+
+type LastProcessedVersion {
+  processorName: String!
+  version: Int!
+}
+
+type LastProcessedVersionConnection {
+  pageInfo: PageInfo!
+  paginationInfo: PaginationInfo
+  nodes: [LastProcessedVersion!]!
+  edges: [LastProcessedVersionEdge!]!
+}
+
+type LastProcessedVersionEdge {
+  cursor: String!
+  node: LastProcessedVersion!
+}
+
+input LastProcessedVersionFilterInput {
+  processorName: StringFilterInput
+  version: IntegerFilterInput
+  and: [LastProcessedVersionFilterInput!]
+  or: [LastProcessedVersionFilterInput!]
+}
+
+input LastProcessedVersionOrderInput {
+  processorName: OrderByEnum
+  version: OrderByEnum
+}
+
+input OffsetInput {
+  limit: Int!
+  offset: Int!
+}
+
+enum OrderByEnum {
+  ASC
+  DESC
+}
+
+type PageInfo {
+  hasPreviousPage: Boolean!
+  hasNextPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+input PageInput {
+  limit: Int!
+  page: Int!
+}
+
+type PaginationInfo {
+  pages: Int!
+  current: Int!
+  offset: Int!
+  total: Int!
+}
+
+input PaginationInput {
+  cursor: CursorInput
+  page: PageInput
+  offset: OffsetInput
+}
+
+type PixelAttribution {
+  index: Int!
+  canvasAddress: String!
+  artistAddress: String!
+  drawnAtSecs: Int!
+}
+
+type PixelAttributionConnection {
+  pageInfo: PageInfo!
+  paginationInfo: PaginationInfo
+  nodes: [PixelAttribution!]!
+  edges: [PixelAttributionEdge!]!
+}
+
+type PixelAttributionEdge {
+  cursor: String!
+  node: PixelAttribution!
+}
+
+input PixelAttributionFilterInput {
+  index: IntegerFilterInput
+  canvasAddress: StringFilterInput
+  artistAddress: StringFilterInput
+  drawnAtSecs: IntegerFilterInput
+  and: [PixelAttributionFilterInput!]
+  or: [PixelAttributionFilterInput!]
+}
+
+input PixelAttributionOrderInput {
+  index: OrderByEnum
+  canvasAddress: OrderByEnum
+  artistAddress: OrderByEnum
+  drawnAtSecs: OrderByEnum
+}
+
+type Query {
+  chainId(
+    filters: ChainIdFilterInput
+    orderBy: ChainIdOrderInput
+    pagination: PaginationInput
+  ): ChainIdConnection!
+  lastProcessedVersion(
+    filters: LastProcessedVersionFilterInput
+    orderBy: LastProcessedVersionOrderInput
+    pagination: PaginationInput
+  ): LastProcessedVersionConnection!
+  pixelAttribution(
+    filters: PixelAttributionFilterInput
+    orderBy: PixelAttributionOrderInput
+    pagination: PaginationInput
+  ): PixelAttributionConnection!
+}
+
+input StringFilterInput {
+  eq: String
+  ne: String
+  gt: String
+  gte: String
+  lt: String
+  lte: String
+  is_in: [String!]
+  is_not_in: [String!]
+  is_null: Boolean
+  is_not_null: Boolean
+  contains: String
+  starts_with: String
+  ends_with: String
+  like: String
+  not_like: String
+}

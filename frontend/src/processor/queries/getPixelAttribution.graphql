@@ -1,0 +1,10 @@
+query getPixelAttribution($canvasAddress: String, $index: Int) {
+  pixelAttribution(
+    filters: { canvasAddress: { eq: $canvasAddress }, index: { eq: $index } }
+  ) {
+    nodes {
+      artistAddress
+      drawnAtSecs
+    }
+  }
+}

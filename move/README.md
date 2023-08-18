@@ -56,7 +56,7 @@ aptos move generate schema --named-addresses addr=0x3 --schema-path ./
 
 The from within `frontend/` run this:
 ```
-pnpm generate-canvas-types
+pnpm generate-canvas-gql
 ```
 
 For Rust code, you can generate it with the CLI directly. Use this:

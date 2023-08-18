@@ -19,4 +19,9 @@ You must also set the following secret vars:
 poetry run ansible-playbook -i hosts main.yaml --extra-vars "auth_token=todo" --tags config
 ```
 
+Once the initial setup is complete you can wipe and update using this playbook:
+```
+poetry run ansible-playbook -i hosts wipe.yaml --tags testnet
+```
+
 To deploy this to my personal server, see banool/server-setup.

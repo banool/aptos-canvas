@@ -20,5 +20,18 @@ To format your code:
 pnpm fmt
 ```
 
+## Generated Code
+To generate the code for interacting with the processor, do this:
+```
+pnpm generate-processor-gql
+```
+
+To generate the code for interacting with Move resources from the node API, do this:
+```
+pnpm generate-canvas-gql
+```
+
+To learn how to get the schemas for these, see the READMEs in the `processor/` and `move/` directories.
+
 ## Deployment
 The site is deployed automatically via GitHub Pages.

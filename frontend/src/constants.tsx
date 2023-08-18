@@ -24,7 +24,8 @@ export const networkInfo = {
     featured_canvases: [
       "0xb693adc2b70c693019217e95b539a7a3fdd92a033dc491745c0d3ec464807fb1",
     ],
-    pntMetadataAddress: "0xfc09cf257b28e239a02ee938045f0a93c97e86c233f1a051974a9d08b21a339f",
+    pntMetadataAddress:
+      "0xfc09cf257b28e239a02ee938045f0a93c97e86c233f1a051974a9d08b21a339f",
   },
   local: {
     module_address:
