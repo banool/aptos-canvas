@@ -37,7 +37,7 @@ export const networkInfo = {
   },
 };
 
-export const defaultNetworkName = "mainnet" as const;
+export const defaultNetworkName = "testnet" as const;
 
 export const defaultNetworkInfo = networkInfo[defaultNetworkName];
 
