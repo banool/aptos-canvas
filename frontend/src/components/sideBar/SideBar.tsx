@@ -1,5 +1,13 @@
-import { Box, Button, Spacer, VStack, useColorMode } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Divider,
+  Spacer,
+  VStack,
+  useColorMode,
+} from "@chakra-ui/react";
 import DrawModeToggleButton from "./DrawModeToggleButton";
+import PaintInfo from "./PaintInfo";
 
 export const SIDEBAR_WIDTH = 80;
 
@@ -31,6 +39,8 @@ export default function SideBar() {
       <VStack spacing={4}>
         <Button colorScheme="gray">1</Button>
         <Button colorScheme="gray">2</Button>
+        <Divider />
+        <PaintInfo />
       </VStack>
       <Spacer />
       <DrawModeToggleButton />
