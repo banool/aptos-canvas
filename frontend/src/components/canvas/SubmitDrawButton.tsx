@@ -29,9 +29,10 @@ function ConfirmationModal({ paintPrice }: { paintPrice: number }) {
       padding={4}
       fontSize={FONT_SIZE}
     >
-      <Text>{`Beautiful artwork! This will cost ${paintPrice} PNT. Add it to the wall?`}</Text>
+      <Text>{`Beautiful artwork! Add it to the wall?`}</Text>
     </Box>
   );
+  //<Text>{`Beautiful artwork! This will cost ${paintPrice} PNT. Add it to the wall?`}</Text>
 }
 
 export default function SubmitDrawButton({
@@ -90,7 +91,6 @@ export default function SubmitDrawButton({
       });
     } finally {
       setConfirming(false);
-      setDrawModeOn(false);
     }
   };
 
