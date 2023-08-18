@@ -133,13 +133,13 @@
   tasks:
     - name: Clone repo
       ansible.builtin.git:
-        repo: 'https://github.com/aptos-labs/aptos-canvas'
-        dest: "/home/{{ ansible_user_id }}/aptos-canvas"
+        repo: 'https://github.com/aptos-labs/graffio'
+        dest: "/home/{{ ansible_user_id }}/graffio"
         force: true
     - name: Build processor
       ansible.builtin.command: "/home/{{ ansible_user_id }}/.cargo/bin/cargo build -p service --release"
       args:
-        chdir: "/home/{{ ansible_user_id }}/aptos-canvas/processor"
+        chdir: "/home/{{ ansible_user_id }}/graffio/processor"
 
 
 - hosts: webservers

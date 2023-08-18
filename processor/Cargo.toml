@@ -5,10 +5,10 @@ members = ["service", "entities", "migrations"]
 [workspace.package]
 authors = ["Daniel Porteous <daniel@dport.me>"]
 edition = "2021"
-homepage = "https://github.com/banool/aptos-canvas"
+homepage = "https://github.com/aptos-labs/graffio"
 license = "Apache-2.0"
 publish = false
-repository = "https://github.com/banool/aptos-canvas"
+repository = "https://github.com/aptos-labs/graffio"
 rust-version = "1.71"
 
 [workspace.dependencies]

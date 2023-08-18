@@ -75,12 +75,12 @@
     - name: Update repo
       ansible.builtin.command: "git pull"
       args:
-        chdir: "/home/{{ ansible_user_id }}/aptos-canvas"
+        chdir: "/home/{{ ansible_user_id }}/graffio"
 
     - name: Build processor
       ansible.builtin.command: "/home/{{ ansible_user_id }}/.cargo/bin/cargo build -p service --release"
       args:
-        chdir: "/home/{{ ansible_user_id }}/aptos-canvas/processor"
+        chdir: "/home/{{ ansible_user_id }}/graffio/processor"
 
 
 - hosts: webservers
