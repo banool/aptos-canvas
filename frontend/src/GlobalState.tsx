@@ -91,6 +91,6 @@ export const useGlobalState = (): [
   React.useContext(DispatchStateContext),
 ];
 
-export const getModuleId = (state: GlobalState): string => {
-  return `${state.network_info.module_address}::${state.network_info.module_name}`;
+export const getModuleId = (state: GlobalState, module_name: string = "canvas_token"): string => {
+  return `${state.network_info.module_address}::${module_name}`;
 };
