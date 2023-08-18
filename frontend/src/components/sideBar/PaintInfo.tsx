@@ -3,14 +3,14 @@ import { CalendarIcon } from "@chakra-ui/icons";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { useGetPntBalance } from "../../api/hooks/useGetPntBalance";
 
-const BUTTON_SIZE = 48;
-
 // Don't try to use this without the wallet being connected.
 export default function PaintInfo() {
   const { account } = useWallet();
 
-  const { data } = useGetPntBalance(account?.address ?? "", {
-    enabled: !!account,
+  const enabled = !!account;
+
+  const { data, isFetched } = useGetPntBalance(account?.address ?? "", {
+    enabled,
   });
 
   // On chain, it costs 100 units to paint a pixel. PNT, the fungible asset, uses
@@ -19,10 +19,18 @@ export default function PaintInfo() {
   // maintain the illusion that there is no such thing as fractional PNT.
   const pntAmount = Math.floor((data ?? 0) / 100);
 
+  let pntString;
+
+  if (!isFetched && enabled) {
+    pntString = "...";
+  } else {
+    pntString = pntAmount.toLocaleString();
+  }
+
   return (
     <VStack>
       <Icon as={CalendarIcon} />
-      <Text>{pntAmount.toLocaleString()}</Text>
+      <Text>{pntString}</Text>
       <Text>PNT</Text>
     </VStack>
   );
