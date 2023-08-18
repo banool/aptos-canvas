@@ -1,10 +1,11 @@
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { Box, Center, Text } from "@chakra-ui/react";
-import { getModuleId, useGlobalState } from "../../GlobalState";
+import { getGqlUrl, getModuleId, useGlobalState } from "../../GlobalState";
 import { NetworkMismatchPage } from "../../components/NetworkMismatchPage";
 import { useGetAccountResources } from "../../api/hooks/useGetAccountResources";
 import { Token, Canvas } from "../../canvas/generated/types";
 import { MyCanvas } from "../../components/canvas/MyCanvas";
+import { getPixelAttribution } from "../../api";
 
 export const MyCanvasLoader = ({ address }: { address: string }) => {
   const { network } = useWallet();
@@ -12,6 +13,10 @@ export const MyCanvasLoader = ({ address }: { address: string }) => {
   const moduleId = getModuleId(state);
 
   const { data, error, isLoading } = useGetAccountResources(address);
+
+  getPixelAttribution(address, 0, getGqlUrl(state)).then((attribution) => {
+    console.log("yooooooooo", JSON.stringify(attribution));
+  });
 
   // Don't show the main content if the wallet and site networks mismatch.
   if (

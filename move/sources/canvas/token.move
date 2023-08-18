@@ -284,9 +284,9 @@ module addr::canvas_token {
         } else {
             b"devnet"
         };
-        let uri = string::utf8(b"https://canvas-processor-");
+        let uri = string::utf8(b"https://");
         string::append(&mut uri, string::utf8(network_str));
-        string::append(&mut uri, string::utf8(b".dport.me/media/0x"));
+        string::append(&mut uri, string::utf8(b".graffio.art/media/0x"));
         string::append(&mut uri, object_address_string);
         string::append(&mut uri, string::utf8(b".png"));
 

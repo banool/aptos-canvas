@@ -1,7 +1,7 @@
 import { useQuery, UseQueryResult } from "react-query";
 import { getPixelAttribution, PixelAttributionInner } from "../../api";
 import { ResponseError } from "../../api/client";
-import { useGlobalState } from "../../GlobalState";
+import { getGqlUrl, useGlobalState } from "../../GlobalState";
 import { REFETCH_INTERVAL_MS } from "../helpers";
 
 export function useGetPixelAttribution(
@@ -16,19 +16,11 @@ export function useGetPixelAttribution(
   } = {},
 ): UseQueryResult<PixelAttributionInner | null, ResponseError> {
   const [state, _setState] = useGlobalState();
+  const gqlUrl = getGqlUrl(state);
 
   const result = useQuery<PixelAttributionInner | null, ResponseError>(
-    [
-      "pixelAttribution",
-      { canvasAddress, index },
-      state.network_info.indexer_url,
-    ],
-    () =>
-      getPixelAttribution(
-        canvasAddress,
-        index,
-        state.network_info.indexer_url!,
-      ),
+    ["pixelAttribution", { canvasAddress, index }, gqlUrl],
+    () => getPixelAttribution(canvasAddress, index, gqlUrl),
     {
       refetchOnWindowFocus: false,
       enabled: options.enabled,

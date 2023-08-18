@@ -86,6 +86,10 @@ export function isValidAccountAddress(accountAddr: string): boolean {
   return /^0x[a-fA-F0-9]{1,64}$/.test(accountAddr);
 }
 
+export function toLongWithoutZeroX(addr: string): string {
+  return addr.replace("0x", "").padStart(64, "0");
+}
+
 export function getDatetimePretty(unixtimeSecs: number) {
   var a = new Date(unixtimeSecs * 1000);
   var months = [

@@ -97,3 +97,7 @@ export const getModuleId = (
 ): string => {
   return `${state.network_info.module_address}::${module_name}`;
 };
+
+export const getGqlUrl = (state: GlobalState): string => {
+  return `${state.network_info.processor_url}/gql`;
+};

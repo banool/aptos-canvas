@@ -11,6 +11,7 @@ import { NetworkName } from "../constants";
 import { PixelAttribution } from "../processor/generated/types";
 import { getSdk } from "../processor/generated/queries";
 import { GraphQLClient } from "graphql-request";
+import { toLongWithoutZeroX } from "../utils";
 
 export function getLedgerInfoWithoutResponseError(
   nodeUrl: string,
@@ -112,11 +113,14 @@ export type PixelAttributionInner = {
 export async function getPixelAttribution(
   canvasAddress: string,
   index: number,
-  indexerUrl: string,
+  gqlUrl: string,
 ): Promise<PixelAttributionInner | null> {
-  const client = new GraphQLClient(indexerUrl);
+  const client = new GraphQLClient(gqlUrl);
   const sdk = getSdk(client);
-  let out = await sdk.getPixelAttribution({ canvasAddress, index });
+  let out = await sdk.getPixelAttribution({
+    canvasAddress: toLongWithoutZeroX(canvasAddress),
+    index,
+  });
   if (out.pixelAttribution.nodes.length === 0) {
     return null;
   }
