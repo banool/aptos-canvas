@@ -20,15 +20,26 @@ export type Color = {
 };
 
 export const BRUSH_COLORS = [
-  { r: 255, g: 0, b: 0 },
-  { r: 0, g: 255, b: 0 },
-  { r: 0, g: 0, b: 255 },
-  { r: 255, g: 255, b: 0 },
-  { r: 255, g: 0, b: 255 },
-  { r: 0, g: 255, b: 255 },
-  { r: 0, g: 0, b: 0 },
-  { r: 255, g: 255, b: 255 },
+  "#000000",
+  "#FFFFFF",
+  "#009EFD",
+  "#00C503",
+  "#FFC600",
+  "#FF7D00",
+  "#FA006A",
+  "#C400C7",
 ];
+
+// export const BRUSH_COLORS = [
+//   { r: 255, g: 0, b: 0 },
+//   { r: 0, g: 255, b: 0 },
+//   { r: 0, g: 0, b: 255 },
+//   { r: 255, g: 255, b: 0 },
+//   { r: 255, g: 0, b: 255 },
+//   { r: 0, g: 255, b: 255 },
+//   { r: 0, g: 0, b: 0 },
+//   { r: 255, g: 255, b: 255 },
+// ];
 
 export const BRUSH_SIZE = { min: 1, max: 8, default: 1 };
 
