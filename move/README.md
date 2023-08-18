@@ -29,7 +29,7 @@ aptos move run --assume-yes --function-id `yq .profiles.$NETWORK.account < .apto
 
 Create a canvas (where it costs 12 PNT to draw a pixel):
 ```
-aptos move run --assume-yes --function-id `yq .profiles.$NETWORK.account < .aptos/config.yaml`::canvas_token::create --args string:"My Canvas" string:"My Canvas" u64:50 u64:40 u64:0 u64:0 u64:12 u64:1 u64:60 u8:255 u8:255 u8:255 bool:false --profile $NETWORK
+aptos move run --assume-yes --function-id `yq .profiles.$NETWORK.account < .aptos/config.yaml`::canvas_token::create --args string:"My Canvas" string:"My Canvas" u64:50 u64:40 u64:0 u64:0 u64:100 u64:2 u64:60 u8:255 u8:255 u8:255 bool:true bool:true --profile $NETWORK
 ```
 
 Get the address of the object created by the previous command:
@@ -39,7 +39,12 @@ curl localhost:8080/v1/transactions/by_hash/0xe6a7b044015180e07e5878dc8d87729010
 
 Draw on the canvas:
 ```
-aptos move run --assume-yes --function-id `yq .profiles.$NETWORK.account < .aptos/config.yaml`::canvas_token::draw --args address:0x123 u64:42 u64:24 u8:64 u8:215 u8:178 --profile $NETWORK
+aptos move run --assume-yes --function-id `yq .profiles.$NETWORK.account < .aptos/config.yaml`::canvas_token::draw_one --args address:0x123 u64:42 u64:24 u8:64 u8:215 u8:178 --profile $NETWORK
+```
+
+Get the address of the PNT Metadata:
+```
+aptos move view --assume-yes --function-id `yq .profiles.$NETWORK.account < .aptos/config.yaml`::paint_fungible_asset::get_metadata --profile $NETWORK
 ```
 
 
@@ -56,5 +61,5 @@ pnpm generate-canvas-types
 
 For Rust code, you can generate it with the CLI directly. Use this:
 ```
-aptos move generate rust --named-addresses addr=0x3 --generate-to ../processor/src/generated
+aptos move generate rust --named-addresses addr=0x3 --generate-to ../processor/service/src/generated
 ```

@@ -13,6 +13,8 @@ Run the processor:
 rm -rf /tmp/canvases && mkdir /tmp/canvases && cargo run -p service -- --config-path configs/local.yaml
 ```
 
+The API will be running at http://127.0.0.1:7645. You can access the gql playground at http://127.0.0.1:7645/gql.
+
 ## Installing
 
 ## Updating DB
