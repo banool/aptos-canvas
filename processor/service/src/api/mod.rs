@@ -97,7 +97,7 @@ impl Api {
 
         // Build the routes.
         info!("API server starting");
-        let cors = Cors::new().allow_methods(vec![Method::GET]);
+        let cors = Cors::new().allow_methods(vec![Method::GET, Method::POST]);
         let app = Route::new()
             .at("/", get(root))
             .at(
