@@ -419,13 +419,14 @@ module addr::canvas_token {
         };
 
         let seconds_since_last_drawn = now_seconds() - drawn_at_s;
-        if (seconds_since_last_drawn >= canvas_.config.cost_multiplier_decay_s) {
-            canvas_.config.cost
+        let override_cost = if (seconds_since_last_drawn >= canvas_.config.cost_multiplier_decay_s) {
+            0
         } else {
             let seconds_remaining = canvas_.config.cost_multiplier_decay_s - seconds_since_last_drawn;
-            let cost = canvas_.config.cost * canvas_.config.cost_multiplier;
-            math64::mul_div(cost, seconds_remaining, canvas_.config.cost_multiplier_decay_s)
-        }
+            let cost_differential = canvas_.config.cost * canvas_.config.cost_multiplier - canvas_.config.cost;
+            math64::mul_div(cost_differential, seconds_remaining, canvas_.config.cost_multiplier_decay_s)
+        };
+        canvas_.config.cost + override_cost
     }
 
     fun assert_allowlisted_to_draw(canvas: Object<Canvas>, caller_addr: address) acquires Canvas {
@@ -802,16 +803,11 @@ module addr::canvas_token {
         // See that after passing half of the delay time, the cost is half of what it
         // was at its peak.
         set_global_time(&aptos_framework, 130);
-        aptos_std::debug::print(&determine_cost(canvas, 0, 0));
-        assert!(determine_cost(canvas, 0, 0) == 10, 1);
+        assert!(determine_cost(canvas, 0, 0) == 12, 1);
 
         // Check the cost after passing 3/4 of the delay time. The value is rounded.
-        /*
         set_global_time(&aptos_framework, 145);
-        aptos_std::debug::print(&determine_cost(canvas, 0, 0));
-        assert!(determine_cost(canvas, 0, 0) == 7, 1);
-        */
-        // For some reason this returns 5 ^ instead of 7.5 rounded.
+        assert!(determine_cost(canvas, 0, 0) == 8, 1);
 
         // See that after passing the full delay time, the cost is back to the lowest.
         set_global_time(&aptos_framework, 160);
