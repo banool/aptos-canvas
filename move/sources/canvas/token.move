@@ -18,7 +18,7 @@ module addr::canvas_token {
     use std::vector;
     use std::timestamp::now_seconds;
     use aptos_framework::chain_id::{get as get_chain_id};
-    use aptos_std::fixed_point64;
+    use aptos_std::math64;
     use aptos_std::object::{Self, ExtendRef, Object};
     use aptos_std::string_utils;
     use aptos_std::smart_table::{Self, SmartTable};
@@ -422,18 +422,8 @@ module addr::canvas_token {
         if (seconds_since_last_drawn >= canvas_.config.cost_multiplier_decay_s) {
             canvas_.config.cost
         } else {
-            // heat_proportion will be close to 0 if the pixel was just drawn, and close
-            // to 1 the closer the last draw time is to the decay time.
-            let heat_proportion = fixed_point64::create_from_rational(
-                (seconds_since_last_drawn as u128),
-                (canvas_.config.cost_multiplier_decay_s as u128),
-            );
-            let one = fixed_point64::create_from_rational(1, 1);
-            let inverse_heat = fixed_point64::sub(one, heat_proportion);
-            (fixed_point64::multiply_u128(
-                (canvas_.config.cost * canvas_.config.cost_multiplier as u128),
-                inverse_heat,
-            ) as u64)
+            let cost = canvas_.config.cost * canvas_.config.cost_multiplier;
+            math64::mul_div(cost, seconds_since_last_drawn, canvas_.config.cost_multiplier_decay_s)
         }
     }
 
