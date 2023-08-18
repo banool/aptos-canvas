@@ -1,6 +1,7 @@
+use super::{CanvasDbStorageTrait, UpdateAttributionIntent};
 use anyhow::{Context, Result};
 use aptos_processor_framework::StorageTrait;
-use entities::{chain_id, last_processed_version};
+use entities::{chain_id, last_processed_version, pixel_attribution};
 use migrations::{Migrator, MigratorTrait};
 use sea_orm::{
     sea_query::OnConflict, ConnectionTrait, Database, DatabaseConnection, DbBackend, EntityTrait,
@@ -34,6 +35,48 @@ impl PostgresStorage {
         info!("Built postgresql storage");
 
         Ok(Self { connection })
+    }
+}
+
+#[async_trait::async_trait]
+impl CanvasDbStorageTrait for PostgresStorage {
+    async fn update_attribution(&self, intent: UpdateAttributionIntent) -> Result<()> {
+        let new_attribution = pixel_attribution::ActiveModel {
+            index: sea_orm::Set(intent.index as i64),
+            canvas_address: sea_orm::Set(intent.canvas_address.to_string()),
+            artist_address: sea_orm::Set(intent.artist_address.to_string()),
+            drawn_at_secs: sea_orm::Set(intent.drawn_at_secs as i64),
+        };
+
+        let query = pixel_attribution::Entity::insert(new_attribution)
+            .on_conflict(
+                OnConflict::columns(vec![
+                    pixel_attribution::Column::Index,
+                    pixel_attribution::Column::CanvasAddress,
+                ])
+                .value(pixel_attribution::Column::Index, intent.index as i64)
+                .value(
+                    pixel_attribution::Column::CanvasAddress,
+                    intent.canvas_address.to_string(),
+                )
+                .value(
+                    pixel_attribution::Column::ArtistAddress,
+                    intent.artist_address.to_string(),
+                )
+                .value(
+                    pixel_attribution::Column::DrawnAtSecs,
+                    intent.drawn_at_secs as i64,
+                )
+                .to_owned(),
+            )
+            .build(DbBackend::Postgres);
+
+        self.connection
+            .execute(query)
+            .await
+            .context("Failed to update attribution")?;
+
+        Ok(())
     }
 }
 

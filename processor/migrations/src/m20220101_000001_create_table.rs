@@ -53,13 +53,16 @@ impl MigrationTrait for Migration {
                     .if_not_exists()
                     .col(
                         ColumnDef::new(PixelAttribution::Index)
-                            .primary_key()
                             .big_integer()
-                            .not_null()
-                            .unique_key(),
+                            .not_null(),
                     )
                     .col(
-                        ColumnDef::new(PixelAttribution::Address)
+                        ColumnDef::new(PixelAttribution::CanvasAddress)
+                            .string()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(PixelAttribution::ArtistAddress)
                             .string()
                             .not_null(),
                     )
@@ -67,6 +70,12 @@ impl MigrationTrait for Migration {
                         ColumnDef::new(PixelAttribution::DrawnAtSecs)
                             .big_integer()
                             .not_null(),
+                    )
+                    .primary_key(
+                        &mut IndexCreateStatement::new()
+                            .col(PixelAttribution::Index)
+                            .col(PixelAttribution::CanvasAddress)
+                            .to_owned(),
                     )
                     .to_owned(),
             )
@@ -103,6 +112,7 @@ enum LastProcessedVersion {
 enum PixelAttribution {
     Table,
     Index,
-    Address,
+    CanvasAddress,
+    ArtistAddress,
     DrawnAtSecs,
 }

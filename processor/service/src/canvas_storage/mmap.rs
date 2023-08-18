@@ -73,12 +73,13 @@ impl CanvasStorageTrait for MmapCanvasStorage {
     async fn write_pixel(&self, intent: WritePixelIntent) -> Result<()> {
         // Get an existing mmap for the canvas file or initialize a new one.
         let mut mmap = self.mmaps.entry(intent.canvas_address).or_insert_with(|| {
+            let filename = self.get_filename(&intent.canvas_address);
             let file = OpenOptions::new()
                 .read(true)
                 .write(true)
                 .create(false)
-                .open(self.get_filename(&intent.canvas_address))
-                .expect("Failed to open file");
+                .open(&filename)
+                .expect(format!("Failed to open file {}", filename.display()).as_str());
             unsafe { MmapMut::map_mut(&file).expect("Failed to mmap file") }
         });
 

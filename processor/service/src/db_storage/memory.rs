@@ -1,3 +1,4 @@
+use super::{CanvasDbStorageTrait, UpdateAttributionIntent};
 use anyhow::Result;
 use aptos_processor_framework::StorageTrait;
 use std::sync::Arc;
@@ -41,6 +42,13 @@ impl StorageTrait for MemoryStorage {
         version: u64,
     ) -> Result<()> {
         *self.last_processed_version.lock().await = Some(version);
+        Ok(())
+    }
+}
+
+#[async_trait::async_trait]
+impl CanvasDbStorageTrait for MemoryStorage {
+    async fn update_attribution(&self, _intent: UpdateAttributionIntent) -> Result<()> {
         Ok(())
     }
 }

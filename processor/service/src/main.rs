@@ -52,6 +52,7 @@ async fn main() -> Result<()> {
     let processor = Arc::new(CanvasProcessor::new(
         config.canvas_processor_config.clone(),
         canvas_storage.clone(),
+        db_storage.clone(),
     ));
 
     // From the DB, read the last version we processed.

@@ -7,7 +7,9 @@ use sea_orm::entity::prelude::*;
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub index: i64,
-    pub address: String,
+    #[sea_orm(primary_key, auto_increment = false)]
+    pub canvas_address: String,
+    pub artist_address: String,
     pub drawn_at_secs: i64,
 }
 
