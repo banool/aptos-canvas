@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Token, Canvas, Color } from "../../canvas/generated/types";
-import { Box, Button, useDisclosure, useToast } from "@chakra-ui/react";
+import { Box, useDisclosure, useToast } from "@chakra-ui/react";
 import { getModuleId, useGlobalState } from "../../GlobalState";
 import { useParams } from "react-router-dom";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
@@ -11,21 +11,18 @@ import ZoomButtons from "./ZoomButtons";
 import { hexToRgb } from "./helpers";
 import DrawingCanvas from "./DrawingCanvas";
 import { StyledCanvasBox } from "./StyledCanvasBox";
+import { useDrawMode } from "../../context/DrawModeContext";
 
 const PIXEL_SIZE = 0.98; // the width of each pixel in the canvas
 const MARGIN_COLOR = "white";
-const INITIAL_SCALE_OFFSET = 0.92;
+const INITIAL_SCALE_OFFSET = 1; // How much to scale the canvas by initially, for example 1.5 means 150% of the canvas size.
 
 export const MyCanvas = ({
   canvasData,
   tokenData,
-  writeable,
-  canvasVh = 88,
 }: {
   canvasData: Canvas;
   tokenData: Token;
-  writeable: boolean;
-  canvasVh?: number;
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const overlayRef = useRef<HTMLCanvasElement | null>(null);
@@ -34,8 +31,7 @@ export const MyCanvas = ({
 
   const pixels = useGetPixels(tokenData);
 
-  // States for drawing mode
-  const [drawModeOn, setDrawModeOn] = useState(false);
+  const { drawModeOn } = useDrawMode();
   const [squaresToDraw, setSquaresToDraw] = useState<
     { x: number; y: number }[]
   >([]);
@@ -94,6 +90,7 @@ export const MyCanvas = ({
     if (!parent || scale === undefined) return;
     const x = (parent.clientWidth / scale - canvasWidth) / 2;
     const y = (parent.clientHeight / scale - canvasHeight) / 2;
+    // console.log("Offsets", x, y);
     return { x, y };
   }, [canvasHeight, canvasWidth, scale]);
 
@@ -130,6 +127,12 @@ export const MyCanvas = ({
     },
     [scale],
   );
+
+  useEffect(() => {
+    if (!drawModeOn) {
+      setSquaresToDraw([]);
+    }
+  }, [drawModeOn]);
 
   useEffect(() => {
     const parent = parentRef.current;
@@ -461,15 +464,6 @@ export const MyCanvas = ({
     resetSquare(squareToDraw.x, squareToDraw.y);
   };
 
-  const startDrawMode = () => {
-    setDrawModeOn(true);
-  };
-
-  const endDrawMode = () => {
-    setDrawModeOn(false);
-    setSquaresToDraw([]);
-  };
-
   const displayCanvasWidth = canvasWidth * (scale ?? 0);
   const displayCanvasHeight = canvasHeight * (scale ?? 0);
   const offsets = getOffsets()!;
@@ -495,12 +489,12 @@ export const MyCanvas = ({
             style={{ position: "absolute", cursor: "pointer" }}
             width={displayCanvasWidth}
             height={displayCanvasHeight}
-            onMouseMove={writeable ? handleMouseMoveOverlay : undefined}
-            onMouseDown={writeable ? handleMouseDownOverlay : undefined}
-            onMouseUp={writeable ? handleMouseUpOverlay : undefined}
+            onMouseMove={handleMouseMoveOverlay}
+            onMouseDown={handleMouseDownOverlay}
+            onMouseUp={handleMouseUpOverlay}
           />
         )}
-        {drawModeOn && writeable && (
+        {drawModeOn && (
           <DrawingCanvas
             drawingRef={drawingRef}
             squaresToDraw={squaresToDraw}
@@ -514,31 +508,13 @@ export const MyCanvas = ({
         )}
         {!drawModeOn && (
           <ZoomButtons
-            writeable={writeable}
             zoomIn={zoomIn}
             zoomOut={zoomOut}
             resetTransform={resetTransform}
           />
         )}
-        <Button
-          colorScheme="cyan"
-          style={{ margin: 4 }}
-          title=""
-          onClick={startDrawMode}
-        >
-          Start Draw Mode
-        </Button>
-        <Button
-          colorScheme="cyan"
-          style={{ margin: 4 }}
-          title=""
-          onClick={endDrawMode}
-        >
-          End Draw Mode
-        </Button>
         <CanvasPopover
           popoverCanBeClosed={popoverCanBeClosed}
-          writeable={writeable}
           isOpen={isPopoverOpen}
           onOpen={onPopoverOpen}
           onPopoverClose={handlePopoverClose}

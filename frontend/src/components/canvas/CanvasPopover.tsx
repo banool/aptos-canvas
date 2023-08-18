@@ -19,7 +19,6 @@ import { HexColorPicker } from "react-colorful";
 // edge of the screen).
 export const CanvasPopover = ({
   popoverCanBeClosed,
-  writeable,
   isOpen,
   onOpen,
   onPopoverClose,
@@ -30,7 +29,6 @@ export const CanvasPopover = ({
   onChangeColorPicker,
 }: {
   popoverCanBeClosed: boolean;
-  writeable: boolean;
   isOpen: boolean;
   onOpen: () => void;
   onPopoverClose: () => void;
@@ -42,7 +40,7 @@ export const CanvasPopover = ({
 }) => {
   return (
     <Popover
-      isOpen={writeable && isOpen}
+      isOpen={isOpen}
       onOpen={onOpen}
       onClose={onPopoverClose}
       closeOnBlur={popoverCanBeClosed}
