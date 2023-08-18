@@ -7,6 +7,7 @@ import { useParams } from "react-router-dom";
 import BottomComponentWrapper from "./BottomComponentWrapper";
 import { useState } from "react";
 import { DrawPixelIntent } from "./DrawingCanvas";
+import { useDrawMode } from "../../context/DrawModeContext";
 
 // TODO: move to colors.ts
 const BG_COLOR_LIGHT = "#ffffff";
@@ -48,6 +49,7 @@ export default function SubmitDrawButton({
   const { connected, signAndSubmitTransaction } = useWallet();
 
   const [confirming, setConfirming] = useState(false);
+  const { setDrawModeOn } = useDrawMode();
 
   // TODO: @dport get paint price
   const dummyPaintPrice = 130;
@@ -87,7 +89,8 @@ export default function SubmitDrawButton({
         isClosable: true,
       });
     } finally {
-      // TODO: close the confirmation modal
+      setConfirming(false);
+      setDrawModeOn(false);
     }
   };
 

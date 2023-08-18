@@ -40,11 +40,8 @@ export const CanvasPopover = ({
 
   const pixelIndex = calculateIndex(popoverPos.x, popoverPos.y, canvasWidth);
 
-  const { data: attributionData } = useGetPixelAttribution(
-    canvasAddress,
-    pixelIndex,
-    { enabled: isOpen },
-  );
+  const { data: attributionData, isLoading: attributionIsLoading } =
+    useGetPixelAttribution(canvasAddress, pixelIndex, { enabled: isOpen });
 
   const artistAddress = attributionData?.artistAddress
     ? `0x${attributionData.artistAddress}`
@@ -123,6 +120,10 @@ export const CanvasPopover = ({
                   {`Expires in ${timeLeft.formattedTime}`}
                 </Text>
               </>
+            ) : attributionIsLoading ? (
+              <Text fontSize={11} marginY={1}>
+                {"Loading..."}
+              </Text>
             ) : (
               <Text fontSize={11} marginY={1}>
                 {"Untouched wall"}
