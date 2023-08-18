@@ -46,7 +46,9 @@ export const CanvasPopover = ({
     { enabled: isOpen },
   );
 
-  const artistAddress = attributionData?.artistAddress ?? "Never drawn on!";
+  const artistAddress = attributionData?.artistAddress
+    ? `0x${attributionData.artistAddress}`
+    : "Never drawn on!";
   const drawnAtSecs = attributionData?.drawnAtSecs;
 
   const { data: ansData } = useGetAnsNames([artistAddress], {
