@@ -1,11 +1,12 @@
 import { useQuery, UseQueryResult } from "react-query";
-import { getPntBalance } from "../../api";
+import { getPixelAttribution, PixelAttributionInner } from "../../api";
 import { ResponseError } from "../../api/client";
 import { useGlobalState } from "../../GlobalState";
 import { REFETCH_INTERVAL_MS } from "../helpers";
 
-export function useGetPntBalance(
-  address: string,
+export function useGetPixelAttribution(
+  canvasAddress: string,
+  index: number,
   options: {
     enabled?: boolean;
     // If you want to refetch the query when some additional criteria changes,
@@ -13,15 +14,20 @@ export function useGetPntBalance(
     // the state value given as additionalQueryCriteria changes.
     additionalQueryCriteria?: any;
   } = {},
-): UseQueryResult<number, ResponseError> {
+): UseQueryResult<PixelAttributionInner | null, ResponseError> {
   const [state, _setState] = useGlobalState();
 
-  const result = useQuery<number, ResponseError>(
-    ["pntBalance", { address }, state.network_info.node_api_url],
+  const result = useQuery<PixelAttributionInner | null, ResponseError>(
+    [
+      "pixelAttribution",
+      { canvasAddress, index },
+      state.network_info.indexer_url,
+    ],
     () =>
-      getPntBalance(
-        { address, pntMetadataAddress: state.network_info.pntMetadataAddress },
-        state.network_info.node_api_url,
+      getPixelAttribution(
+        canvasAddress,
+        index,
+        state.network_info.indexer_url!,
       ),
     {
       refetchOnWindowFocus: false,

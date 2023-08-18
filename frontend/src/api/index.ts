@@ -8,6 +8,9 @@ import {
 } from "aptos";
 import { withResponseError } from "./client";
 import { NetworkName } from "../constants";
+import { PixelAttribution } from "../processor/generated/types";
+import { getSdk } from "../processor/generated/queries";
+import { GraphQLClient } from "graphql-request";
 
 export function getLedgerInfoWithoutResponseError(
   nodeUrl: string,
@@ -89,4 +92,36 @@ export async function getAnsAddress(
 ): Promise<string | null> {
   const ansClient = getAnsClient(network);
   return await ansClient.getAddressByName(name);
+}
+
+export type PixelAttributionInner = {
+  artistAddress: string;
+  drawnAtSecs: number;
+};
+
+/**
+ * Get the attribution information for a pixel.
+ *
+ * @param canvasAddress The address of the canvas.
+ * @param index The index of the pixel we want to check attribution for.
+ * @param indexerUrl The URL of the indexer.
+ *
+ * @returns The artist address and the time the pixel was drawn if there is attribution
+ * information, null otherwise.
+ */
+export async function getPixelAttribution(
+  canvasAddress: string,
+  index: number,
+  indexerUrl: string,
+): Promise<PixelAttributionInner | null> {
+  const client = new GraphQLClient(indexerUrl);
+  const sdk = getSdk(client);
+  let out = await sdk.getPixelAttribution({ canvasAddress, index });
+  if (out.pixelAttribution.nodes.length === 0) {
+    return null;
+  }
+  return {
+    artistAddress: out.pixelAttribution.nodes[0].artistAddress,
+    drawnAtSecs: out.pixelAttribution.nodes[0].drawnAtSecs,
+  };
 }
