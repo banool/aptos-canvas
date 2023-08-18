@@ -22,7 +22,7 @@ export const networkInfo = {
     node_api_url: "https://fullnode.testnet.aptoslabs.com",
     indexer_url: "https://indexer-testnet.staging.gcp.aptosdev.com/v1/graphql",
     featured_canvases: [
-      "0xb693adc2b70c693019217e95b539a7a3fdd92a033dc491745c0d3ec464807fb1",
+      "0xa52e0c2ac0b3bd32eab2990187beb644e26406e2654798a193ce360b4987a310",
     ],
     pntMetadataAddress:
       "0xfc09cf257b28e239a02ee938045f0a93c97e86c233f1a051974a9d08b21a339f",
