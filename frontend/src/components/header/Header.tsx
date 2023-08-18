@@ -56,7 +56,7 @@ export default function Header() {
         <Flex alignItems="center" gap="2" flex="1">
           <Box>
             <Link to="/">
-              <Heading size="md">Aptos Canvas</Heading>
+              <Heading size="md">Graffio</Heading>
             </Link>
           </Box>
         </Flex>
