@@ -1,5 +1,5 @@
 [Unit]
-Description=Aptos Canvas Processor {{ network }}
+Description=Processor for {{ network }}
 Wants=network.target
 After=network-online.target
 
@@ -8,7 +8,7 @@ Restart=always
 TimeoutStopSec=10
 
 # We assume that the binary has already been built at this path.
-# We assume that a database called canvas_{{ network }} already exists in the DB.
+# We assume that a database called graffio_{{ network }} already exists in the DB.
 ExecStart=/home/{{ unix_user }}/aptos-canvas/processor/target/release/service --config-path /var/canvases/{{ network }}/config.yaml
 
 [Install]

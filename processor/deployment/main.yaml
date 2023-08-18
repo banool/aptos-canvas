@@ -100,9 +100,6 @@
     - database
     - db
     - postgresql
-  vars:
-    user: "{{ mysql_user }}"
-    password: "{{ mysql_password }}"
   become: true
   tasks:
     - name: Install Postgres
@@ -117,26 +114,26 @@
         state: started
     - name: Create database for testnet
       become: true
-      become_user: Postgres
-      ansible.builtin.command: createdb canvas_testnet
+      become_user: postgres
+      ansible.builtin.command: createdb graffio_testnet
     - name: Create database for mainnet
       become: true
       become_user: postgres
-      ansible.builtin.command: createdb canvas_mainnet
-    - name: Create canvas superuser
+      ansible.builtin.command: createdb graffio_mainnet
+    - name: Create superuser
       become: true
       become_user: postgres
-      ansible.builtin.command: psql -c "CREATE ROLE canvas WITH LOGIN SUPERUSER PASSWORD 'pword';"
+      ansible.builtin.command: psql -c "CREATE ROLE graffio WITH LOGIN SUPERUSER PASSWORD 'pword';"
 
 
 - hosts: webservers
   tags:
     - binary
-  name: Build aptos canvas processor
+  name: Build aptos processor
   tasks:
     - name: Clone repo
       ansible.builtin.git:
-        repo: 'https://github.com/banool/aptos-canvas'
+        repo: 'https://github.com/aptos-labs/aptos-canvas'
         dest: "/home/{{ ansible_user_id }}/aptos-canvas"
         force: true
     - name: Build processor
@@ -151,14 +148,14 @@
     - configs
   name: Create processor configs
   tasks:
-  - name: Make canvas image directory for testnet
+  - name: Make image directory for testnet
     become: true
     ansible.builtin.file:
       path: "/var/canvases/testnet"
       state: directory
       owner: "{{ ansible_user_id }}"
       mode: '0777'
-  - name: Make canvas image directory for mainnet
+  - name: Make image directory for mainnet
     become: true
     ansible.builtin.file:
       path: "/var/canvases/mainnet"
@@ -169,10 +166,10 @@
     become: true
     vars:
       txn_stream_service_address: "35.223.137.149:50051"
-      canvas_contract_address: "0x481d6509302e3379b9a8cf524da0000feee18f811d1da7e5addc7f64cdaaac60"
+      canvas_contract_address: "0x5047733bb1360184c72e42fabb906a614cc547d751fc5764d2f74c9fd723035a"
       network: testnet
-      api_port: 6677
-      initial_starting_version: 613358990
+      api_port: 7677
+      initial_starting_version: 640109325
     ansible.builtin.template:
       src: templates/processor/config.yaml.j2
       dest: "/var/canvases/testnet/config.yaml"
@@ -183,9 +180,9 @@
     become: true
     vars:
       txn_stream_service_address: "34.30.218.153:50051"
-      canvas_contract_address: "0xf3946c9408beecf8b37e441113c4ad3fd3752b9bed03a8a63764304edfdb3162"
+      canvas_contract_address: "0x5047733bb1360184c72e42fabb906a614cc547d751fc5764d2f74c9fd723035a"
       network: mainnet
-      api_port: 6678
+      api_port: 7678
       initial_starting_version: 215986449
     ansible.builtin.template:
       src: templates/processor/config.yaml.j2
@@ -196,12 +193,12 @@
 
 
 - hosts: webservers
-  name: Install aptos canvas processor systemd config for testnet
+  name: Install processor systemd config for testnet
   tags:
     - systemd
     - testnet
   tasks:
-  - name: Create aptos canvas processor systemd spec file for testnet
+  - name: Create processor systemd spec file for testnet
     become: true
     vars:
       network: testnet
@@ -222,12 +219,12 @@
 
 
 - hosts: webservers
-  name: Install aptos canvas processor systemd config for mainnet
+  name: Install processor systemd config for mainnet
   tags:
     - systemd
     - mainnet
   tasks:
-  - name: Create aptos canvas processor systemd spec file for mainnet
+  - name: Create processor systemd spec file for mainnet
     become: true
     vars:
       network: mainnet
@@ -291,7 +288,7 @@
       ansible.builtin.command: curl https://ipinfo.io/ip
       register: public_ip
     - name: Get IP of domain
-      ansible.builtin.command: "dig -4 +short canvas-processor-testnet.dport.me"
+      ansible.builtin.command: "dig -4 +short mainnet.graffio.art"
       register: domain_ip
     - name: Print debug success when both IPs are the same
       debug:
@@ -320,11 +317,11 @@
         mode: '0755'
     - name: Run acme.sh to get certs for all the sites
       become: true
-      # To make the cert be called canvas-processor-testnet.dport.me, we pass that separately first.
-      ansible.builtin.shell: sudo su root -c '/root/.acme.sh/acme.sh --issue --standalone -d canvas-processor-testnet.dport.me -d {{comma_separated_sites.replace(",canvas-processor-testnet.dport.me,", ",")}} --force'
+      # To make the cert be called testnet.graffio.art, we pass that separately first.
+      ansible.builtin.shell: sudo su root -c '/root/.acme.sh/acme.sh --issue --standalone -d testnet.graffio.art -d {{comma_separated_sites.replace(",testnet.graffio.art,", ",")}} --force'
     - name: Install the certs into /etc/nginx/danielcerts/
       become: true
-      ansible.builtin.shell: sudo su root -c '/root/.acme.sh/acme.sh --install-cert -d canvas-processor-testnet.dport.me --key-file /etc/nginx/danielcerts/key.pem --fullchain-file /etc/nginx/danielcerts/fullchain.pem --reloadcmd "systemctl restart nginx"'
+      ansible.builtin.shell: sudo su root -c '/root/.acme.sh/acme.sh --install-cert -d testnet.graffio.art --key-file /etc/nginx/danielcerts/key.pem --fullchain-file /etc/nginx/danielcerts/fullchain.pem --reloadcmd "systemctl restart nginx"'
     - name: Enable / restart nginx
       become: true
       ansible.builtin.systemd:

@@ -1,8 +1,8 @@
-{% set domains = ["canvas-processor-mainnet.dport.me"] %}
+{% set domains = ["mainnet.graffio.art"] %}
 {% extends "base.j2" %}
 {% block mainbody %}
   location / {
     include proxy_params;
-    proxy_pass http://127.0.0.1:6678;
+    proxy_pass http://127.0.0.1:7678;
   }
 {% endblock %}

@@ -1,0 +1,113 @@
+---
+- hosts: webservers
+  name: Stop testnet processor
+  tags:
+    - systemd
+    - testnet
+  tasks:
+  - name: Stop for testnet
+    ansible.builtin.systemd:
+      name: aptos-canvas-processor-testnet
+      daemon_reload: true
+      enabled: true
+      state: stopped
+      scope: user
+
+
+- hosts: webservers
+  name: Stop mainnet processor
+  tags:
+    - systemd
+    - mainnet
+  tasks:
+  - name: Stop for mainnet
+    ansible.builtin.systemd:
+      name: aptos-canvas-processor-mainnet
+      daemon_reload: true
+      enabled: true
+      state: stopped
+      scope: user
+
+
+- hosts: dbservers
+  name: Wipe DB
+  tags:
+    - database
+    - db
+    - testnet
+  become: true
+  tasks:
+    - name: Drop database
+      become: true
+      become_user: postgres
+      ansible.builtin.command: psql -c "DROP DATABASE graffio_testnet;"
+    - name: Create database for testnet
+      become: true
+      become_user: postgres
+      ansible.builtin.command: createdb graffio_testnet
+
+
+- hosts: dbservers
+  name: Wipe DB
+  tags:
+    - database
+    - db
+    - mainnet
+  become: true
+  tasks:
+    - name: Drop database
+      become: true
+      become_user: postgres
+      ansible.builtin.command: psql -c "DROP DATABASE graffio_mainnet;"
+    - name: Create database for testnet
+      become: true
+      become_user: postgres
+      ansible.builtin.command: createdb graffio_mainnet
+
+
+- hosts: webservers
+  name: Pull and rebuild binary
+  tags:
+    - binary
+    - testnet
+    - mainnet
+  tasks:
+    - name: Update repo
+      ansible.builtin.command: "git pull"
+      args:
+        chdir: "/home/{{ ansible_user_id }}/aptos-canvas"
+
+    - name: Build processor
+      ansible.builtin.command: "/home/{{ ansible_user_id }}/.cargo/bin/cargo build -p service --release"
+      args:
+        chdir: "/home/{{ ansible_user_id }}/aptos-canvas/processor"
+
+
+- hosts: webservers
+  name: Start testnet processor
+  tags:
+    - systemd
+    - testnet
+  tasks:
+  - name: Start for testnet
+    ansible.builtin.systemd:
+      name: aptos-canvas-processor-testnet
+      daemon_reload: true
+      enabled: true
+      state: started
+      scope: user
+
+
+- hosts: webservers
+  name: Start mainnet processor
+  tags:
+    - systemd
+    - mainnet
+  tasks:
+  - name: Start for mainnet
+    ansible.builtin.systemd:
+      name: aptos-canvas-processor-mainnet
+      daemon_reload: true
+      enabled: true
+      state: started
+      scope: user

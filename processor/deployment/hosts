@@ -1,5 +1,5 @@
 [webservers]
-dport@34.28.160.23 ansible_python_interpreter=/usr/bin/python3
+dport@34.173.2.65  ansible_python_interpreter=/usr/bin/python3
 
 [dbservers]
-dport@34.28.160.23 ansible_python_interpreter=/usr/bin/python3
+dport@34.173.2.65  ansible_python_interpreter=/usr/bin/python3
