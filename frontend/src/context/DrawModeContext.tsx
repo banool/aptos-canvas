@@ -5,23 +5,29 @@ interface DrawModeContextType {
   setDrawModeOn: React.Dispatch<React.SetStateAction<boolean>>;
   brushSize: number;
   setBrushSize: React.Dispatch<React.SetStateAction<number>>;
-  brushColor: string;
-  setBrushColor: React.Dispatch<React.SetStateAction<string>>;
+  brushColor: Color;
+  setBrushColor: React.Dispatch<React.SetStateAction<Color>>;
 }
 
 const DrawModeContext = createContext<DrawModeContextType | undefined>(
   undefined,
 );
 
+export type Color = {
+  r: number;
+  g: number;
+  b: number;
+};
+
 export const BRUSH_COLORS = [
-  "#FF0000",
-  "#00FF00",
-  "#0000FF",
-  "#FFFF00",
-  "#FF00FF",
-  "#00FFFF",
-  "#000000",
-  "#FFFFFF",
+  { r: 255, g: 0, b: 0 },
+  { r: 0, g: 255, b: 0 },
+  { r: 0, g: 0, b: 255 },
+  { r: 255, g: 255, b: 0 },
+  { r: 255, g: 0, b: 255 },
+  { r: 0, g: 255, b: 255 },
+  { r: 0, g: 0, b: 0 },
+  { r: 255, g: 255, b: 255 },
 ];
 
 export const BRUSH_SIZE = { min: 1, max: 8, default: 1 };
@@ -31,7 +37,7 @@ export const DrawModeProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const [drawModeOn, setDrawModeOn] = useState<boolean>(false);
   const [brushSize, setBrushSize] = useState<number>(BRUSH_SIZE.default);
-  const [brushColor, setBrushColor] = useState<string>(BRUSH_COLORS[0]);
+  const [brushColor, setBrushColor] = useState<Color>(BRUSH_COLORS[0]);
 
   return (
     <DrawModeContext.Provider

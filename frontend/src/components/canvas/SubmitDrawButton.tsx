@@ -6,6 +6,7 @@ import { getModuleId, useGlobalState } from "../../GlobalState";
 import { useParams } from "react-router-dom";
 import BottomComponentWrapper from "./BottomComponentWrapper";
 import { useState } from "react";
+import { DrawPixelIntent } from "./DrawingCanvas";
 
 // TODO: move to colors.ts
 const BG_COLOR_LIGHT = "#ffffff";
@@ -37,7 +38,7 @@ export default function SubmitDrawButton({
   squaresToDraw,
 }: {
   canvasAddress: string;
-  squaresToDraw: { x: number; y: number }[];
+  squaresToDraw: DrawPixelIntent[];
 }) {
   const toast = useToast();
   const [state] = useGlobalState();
@@ -51,21 +52,12 @@ export default function SubmitDrawButton({
 
   // TODO: @dport submit transaction for squaresToDraw instead of squareToDraw
   const submitDraw = async () => {
-    const colorToSubmit = "#555555";
-
     try {
-      const out = hexToRgb(colorToSubmit);
-      if (out === null) {
-        throw `Failed to parse color: ${colorToSubmit}`;
-      }
-      const { r, g, b } = out;
-      // TODO: Temporary hack, squaresToDraw should have the color info attached
-      // on a per pixel basis.
       const xs = squaresToDraw.map((square) => square.x);
       const ys = squaresToDraw.map((square) => square.y);
-      const rs = new Array(squaresToDraw.length).fill(r);
-      const gs = new Array(squaresToDraw.length).fill(g);
-      const bs = new Array(squaresToDraw.length).fill(b);
+      const rs = squaresToDraw.map((square) => square.color.r);
+      const gs = squaresToDraw.map((square) => square.color.g);
+      const bs = squaresToDraw.map((square) => square.color.b);
       await draw(
         signAndSubmitTransaction,
         moduleId,
