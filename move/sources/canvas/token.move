@@ -422,8 +422,9 @@ module addr::canvas_token {
         if (seconds_since_last_drawn >= canvas_.config.cost_multiplier_decay_s) {
             canvas_.config.cost
         } else {
+            let seconds_remaining = canvas_.config.cost_multiplier_decay_s - seconds_since_last_drawn;
             let cost = canvas_.config.cost * canvas_.config.cost_multiplier;
-            math64::mul_div(cost, seconds_since_last_drawn, canvas_.config.cost_multiplier_decay_s)
+            math64::mul_div(cost, seconds_remaining, canvas_.config.cost_multiplier_decay_s)
         }
     }
 
