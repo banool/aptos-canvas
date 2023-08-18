@@ -406,7 +406,12 @@ export const MyCanvas = ({
             resetTransform={resetTransform}
           />
         )}
-        {drawModeOn && <SubmitDrawButton squaresToDraw={squaresToDraw} />}
+        {drawModeOn && (
+          <SubmitDrawButton
+            squaresToDraw={squaresToDraw}
+            canvasAddress={canvasAddress}
+          />
+        )}
         <CanvasPopover
           openPopover={openPopover}
           popoverPos={popoverPos}
