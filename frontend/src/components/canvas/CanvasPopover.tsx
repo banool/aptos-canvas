@@ -121,11 +121,11 @@ export const CanvasPopover = ({
                 </Text>
               </>
             ) : attributionIsLoading ? (
-              <Text fontSize={11} marginY={1}>
+              <Text fontSize={11} marginY={1} color="white">
                 {"Loading..."}
               </Text>
             ) : (
-              <Text fontSize={11} marginY={1}>
+              <Text fontSize={11} marginY={1} color="white">
                 {"Untouched wall"}
               </Text>
             )}
