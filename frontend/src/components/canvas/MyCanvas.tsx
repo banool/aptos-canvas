@@ -407,6 +407,7 @@ export const MyCanvas = ({
         {drawModeOn && (
           <SubmitDrawButton
             squaresToDraw={squaresToDraw}
+            setSquaresToDraw={setSquaresToDraw}
             canvasAddress={canvasAddress}
           />
         )}

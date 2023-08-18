@@ -36,9 +36,11 @@ function ConfirmationModal({ paintPrice }: { paintPrice: number }) {
 export default function SubmitDrawButton({
   canvasAddress,
   squaresToDraw,
+  setSquaresToDraw,
 }: {
   canvasAddress: string;
   squaresToDraw: DrawPixelIntent[];
+  setSquaresToDraw: (squares: DrawPixelIntent[]) => void;
 }) {
   const toast = useToast();
   const [state] = useGlobalState();
@@ -90,6 +92,7 @@ export default function SubmitDrawButton({
   };
 
   const closeConfirmationModal = () => {
+    setSquaresToDraw([]);
     setConfirming(false);
   };
 
@@ -141,6 +144,7 @@ export default function SubmitDrawButton({
         alignItems="center"
         width={BUTTON_WIDTH}
         fontSize={FONT_SIZE}
+        isDisabled={squaresToDraw.length === 0}
         onClick={openConfirmationModal}
       >
         Finish Drawing
