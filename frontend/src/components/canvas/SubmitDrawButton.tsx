@@ -56,7 +56,6 @@ export default function SubmitDrawButton({
   // TODO: @dport get paint price
   const dummyPaintPrice = 130;
 
-  // TODO: @dport submit transaction for squaresToDraw instead of squareToDraw
   const submitDraw = async () => {
     try {
       const xs = squaresToDraw.map((square) => square.x);
@@ -64,17 +63,29 @@ export default function SubmitDrawButton({
       const rs = squaresToDraw.map((square) => square.color.r);
       const gs = squaresToDraw.map((square) => square.color.g);
       const bs = squaresToDraw.map((square) => square.color.b);
-      await draw(
-        signAndSubmitTransaction,
-        moduleId,
-        state.network_info.node_api_url,
-        canvasAddress,
-        xs,
-        ys,
-        rs,
-        gs,
-        bs,
-      );
+
+      const chunkSize = 500;
+
+      const xsChunks = chunkArray(xs, chunkSize);
+      const ysChunks = chunkArray(ys, chunkSize);
+      const rsChunks = chunkArray(rs, chunkSize);
+      const gsChunks = chunkArray(gs, chunkSize);
+      const bsChunks = chunkArray(bs, chunkSize);
+
+      // This isn't ideal since it will prompt the user `xsChunks.length` times.
+      for (let i = 0; i < xsChunks.length; i++) {
+        await draw(
+          signAndSubmitTransaction,
+          moduleId,
+          state.network_info.node_api_url,
+          canvasAddress,
+          xsChunks[i],
+          ysChunks[i],
+          rsChunks[i],
+          gsChunks[i],
+          bsChunks[i],
+        );
+      }
       toast({
         title: "Success!",
         description: "Successfully drew pixels!!",
@@ -171,4 +182,14 @@ export default function SubmitDrawButton({
       </HStack>
     </BottomComponentWrapper>
   );
+}
+
+function chunkArray<T>(array: T[], size: number): T[][] {
+  const chunked = [];
+  let index = 0;
+  while (index < array.length) {
+    chunked.push(array.slice(index, size + index));
+    index += size;
+  }
+  return chunked;
 }

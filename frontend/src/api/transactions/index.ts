@@ -5,7 +5,7 @@ async function submitTransaction(
   fullnodeUrl: string,
   transaction: any,
 ) {
-  console.log("Submitting transaction", JSON.stringify(transaction));
+  // console.log("Submitting transaction", JSON.stringify(transaction));
   const pendingTransaction = await signAndSubmitTransaction(transaction);
   const client = new AptosClient(fullnodeUrl);
   await client.waitForTransactionWithResult(pendingTransaction.hash, {
@@ -67,7 +67,7 @@ export async function draw(
     type_arguments: [],
     arguments: [canvasAddress, xs, ys, reds, greens, blues],
   };
-  console.log(JSON.stringify(transaction));
+  // console.log(JSON.stringify(transaction));
   await submitTransaction(signAndSubmitTransaction, fullnodeUrl, transaction);
 }
 
