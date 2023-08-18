@@ -24,7 +24,7 @@ aptos move publish --named-addresses addr=$NETWORK --assume-yes --profile $NETWO
 
 Mint PNT to an account:
 ```
-aptos move run --assume-yes --function-id $NETWORK::paint_fungible_asset::mint --args address:`yq .profiles.$NETWORK.account < .aptos/config.yaml` u64:1000 --profile $NETWORK
+aptos move run --assume-yes --function-id $NETWORK::paint_fungible_asset::mint --args address:`yq .profiles.$NETWORK.account < .aptos/config.yaml` u64:200000 --profile $NETWORK
 ```
 
 Create a canvas (where it costs 12 PNT to draw a pixel):
