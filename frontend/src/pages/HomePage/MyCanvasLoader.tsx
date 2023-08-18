@@ -1,20 +1,12 @@
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
-import { Box, Center, Flex, Text } from "@chakra-ui/react";
+import { Box, Center, Text } from "@chakra-ui/react";
 import { getModuleId, useGlobalState } from "../../GlobalState";
 import { NetworkMismatchPage } from "../../components/NetworkMismatchPage";
 import { useGetAccountResources } from "../../api/hooks/useGetAccountResources";
-import { ObjectCore, Token, Canvas } from "../../canvas/generated/types";
+import { Token, Canvas } from "../../canvas/generated/types";
 import { MyCanvas } from "../../components/canvas/MyCanvas";
 
-export const MyCanvasLoader = ({
-  address,
-  writeable,
-  canvasVh,
-}: {
-  address: string;
-  writeable: boolean;
-  canvasVh?: number;
-}) => {
+export const MyCanvasLoader = ({ address }: { address: string }) => {
   const { network } = useWallet();
   const [state, _] = useGlobalState();
   const moduleId = getModuleId(state);
@@ -56,10 +48,6 @@ export const MyCanvasLoader = ({
     (resource) => resource.type === `${moduleId}::Canvas`,
   );
 
-  const objectCoreResource = data!.find(
-    (resource) => resource.type === "0x1::object::ObjectCore",
-  );
-
   const tokenResource = data!.find(
     (resource) => resource.type === "0x4::token::Token",
   );
@@ -73,17 +61,11 @@ export const MyCanvasLoader = ({
   }
 
   const canvasData: Canvas = canvasResource.data as any;
-  const objectCoreData: ObjectCore = objectCoreResource!.data as any;
   const tokenData: Token = tokenResource!.data as any;
 
   return (
     <Box>
-      <MyCanvas
-        canvasData={canvasData}
-        tokenData={tokenData}
-        writeable={writeable}
-        canvasVh={canvasVh}
-      />
+      <MyCanvas canvasData={canvasData} tokenData={tokenData} />
     </Box>
   );
 };

@@ -1,17 +1,15 @@
 import { Button, VStack } from "@chakra-ui/react";
 
 export default function ZoomButtons({
-  writeable,
   zoomIn,
   zoomOut,
   resetTransform,
 }: {
-  writeable: boolean;
   zoomIn: () => void;
   zoomOut: () => void;
   resetTransform: () => void;
 }) {
-  return writeable ? (
+  return (
     <div style={{ position: "absolute", bottom: 20, right: 20 }}>
       <VStack spacing={3}>
         <Button colorScheme="cyan" title="Zoom in" onClick={() => zoomIn()}>
@@ -29,5 +27,5 @@ export default function ZoomButtons({
         </Button>
       </VStack>
     </div>
-  ) : null;
+  );
 }
