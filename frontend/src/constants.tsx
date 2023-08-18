@@ -30,8 +30,8 @@ export const networkInfo = {
   local: {
     module_address:
       "0xfbc45a84bd65b000d259ac91a8f314c93313e6d6787dbac71bdaf044f661a4f8",
-    processor_url: "http://localhost:8080",
-    indexer_url: "http://127.0.0.1:7645",
+    node_api_url: "http://localhost:8080",
+    processor_url: "http://127.0.0.1:7645",
     featured_canvases: [],
     pntMetadataAddress: "todo",
   },

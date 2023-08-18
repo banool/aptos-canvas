@@ -96,7 +96,6 @@ impl Api {
             .context("Failed to build schema")?;
 
         // Build the routes.
-        info!("API server starting");
         let cors = Cors::new().allow_methods(vec![Method::GET, Method::POST]);
         let app = Route::new()
             .at("/", get(root))
@@ -110,6 +109,7 @@ impl Api {
             .with(Tracing);
 
         // Run the server.
+        info!("API server starting");
         Server::new(TcpListener::bind((
             self.config.listen_address.as_str(),
             self.config.api_port,
