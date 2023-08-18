@@ -14,10 +14,6 @@ export const MyCanvasLoader = ({ address }: { address: string }) => {
 
   const { data, error, isLoading } = useGetAccountResources(address);
 
-  getPixelAttribution(address, 0, getGqlUrl(state)).then((attribution) => {
-    console.log("yooooooooo", JSON.stringify(attribution));
-  });
-
   // Don't show the main content if the wallet and site networks mismatch.
   if (
     network &&
