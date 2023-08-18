@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, useColorMode } from "@chakra-ui/react";
+import { Box, Center, useColorMode } from "@chakra-ui/react";
 import "../css/wallet_selector.css";
 import "@aptos-labs/wallet-adapter-ant-design/dist/index.css";
 import SideBar from "../components/sideBar/SideBar";
@@ -30,7 +30,7 @@ export default function MainLayout({ children }: LayoutProps) {
           bg={isDark ? BG_COLOR_DARK : BG_COLOR_LIGHT}
         >
           <Header />
-          {children}
+          <Center>{children}</Center>
         </Box>
       </Box>
     </DrawModeProvider>

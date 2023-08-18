@@ -31,7 +31,7 @@ export const MyCanvas = ({
 
   const pixels = useGetPixels(tokenData);
 
-  const { drawModeOn } = useDrawMode();
+  const { drawModeOn, brushColor } = useDrawMode();
   const [squaresToDraw, setSquaresToDraw] = useState<
     { x: number; y: number }[]
   >([]);
@@ -232,7 +232,7 @@ export const MyCanvas = ({
       context.fillRect(x, y, PIXEL_SIZE + margin, PIXEL_SIZE + margin);
 
       // Draw the squares.
-      context.fillStyle = `rgb(255,255,0)`;
+      context.fillStyle = brushColor;
       context.fillRect(
         x + margin, // Shift the pixel to the right by the margin
         y + margin, // Shift the pixel down by the margin
@@ -469,7 +469,7 @@ export const MyCanvas = ({
   const offsets = getOffsets()!;
 
   return (
-    <StyledCanvasBox>
+    <StyledCanvasBox canvasData={canvasData}>
       <Box
         flex={1}
         bg="white"

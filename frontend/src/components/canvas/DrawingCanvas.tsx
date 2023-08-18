@@ -1,7 +1,6 @@
 import { Box } from "@chakra-ui/react";
 import React, { useState } from "react";
-
-const DEFAULT_BRUSH_SIZE = 2;
+import { useDrawMode } from "../../context/DrawModeContext";
 
 // Simple linear interpolation between two points
 function getInterpolatePoints(x1: number, y1: number, x2: number, y2: number) {
@@ -66,11 +65,12 @@ export default function DrawingCanvas({
   scale: number | undefined;
   pan: { x: number; y: number };
 }) {
-  const [brushSize, setBrushSize] = useState(DEFAULT_BRUSH_SIZE);
   const [isDrawing, setIsDrawing] = useState(false);
   const [prevPoint, setPrevPoints] = useState<{ x: number; y: number } | null>(
     null,
   );
+
+  const { brushSize } = useDrawMode();
 
   const handleMouseMoveDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const drawing = drawingRef.current;
