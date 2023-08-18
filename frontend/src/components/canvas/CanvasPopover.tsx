@@ -50,7 +50,7 @@ export const CanvasPopover = ({
   const drawnAtSecs = attributionData?.drawnAtSecs;
 
   const { data: ansData } = useGetAnsNames([artistAddress], {
-    enabled: !!artistAddress,
+    enabled: !!attributionData,
   });
 
   const artistName = ansData?.[0].name ?? null;
