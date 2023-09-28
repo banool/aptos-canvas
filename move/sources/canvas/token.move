@@ -383,7 +383,7 @@ module addr::canvas_token {
             if (smart_table::contains(&canvas_.last_contribution_s, caller_addr)) {
                 let last_contribution = smart_table::borrow(&canvas_.last_contribution_s, caller_addr);
                 assert!(
-                    now > (*last_contribution + canvas_.config.per_account_timeout_s),
+                    now >= (*last_contribution + canvas_.config.per_account_timeout_s),
                     error::invalid_state(E_MUST_WAIT),
                 );
                 *smart_table::borrow_mut(&mut canvas_.last_contribution_s, caller_addr) = now;
@@ -760,7 +760,7 @@ module addr::canvas_token {
         let config = CanvasConfig {
             width: 50,
             height: 50,
-            per_account_timeout_s: 0,
+            per_account_timeout_s: 1,
             can_draw_for_s: 0,
             palette: vector::empty(),
             cost,
@@ -772,7 +772,7 @@ module addr::canvas_token {
                 b: 0,
             },
             can_draw_multiple_pixels_at_once: false,
-            owner_is_super_admin: false,
+            owner_is_super_admin: true,
         };
 
         create_(caller, string::utf8(b"description"), string::utf8(b"name"), config)
@@ -823,5 +823,44 @@ module addr::canvas_token {
         // See that after passing the full delay time, the cost is back to the lowest.
         set_global_time(&aptos_framework, 160);
         assert!(determine_cost(canvas, 0, 0) == 5, 1);
+    }
+
+    #[test(caller = @addr, friend1 = @0x456, friend2 = @0x789, aptos_framework = @aptos_framework)]
+    #[expected_failure(abort_code = 196614, location = addr::canvas_token)]
+    fun test_per_account_timeout(caller: signer, friend1: signer, friend2: signer, aptos_framework: signer) acquires Canvas {
+        init_test(&caller, &friend1, &friend2, &aptos_framework);
+        // Initially per account timeout to 1 second
+        let canvas = create_canvas(&caller, 0, 1, 60);
+        draw(&friend1, canvas, vector[1], vector[1], vector[1], vector[1], vector[1]);
+        // Wait for 1 second
+        timestamp::fast_forward_seconds(1);
+        // Should be able to draw now since timeout already passed
+        draw(&friend1, canvas, vector[1], vector[1], vector[1], vector[1], vector[1]);
+        // Cannot draw immediately
+        draw(&friend1, canvas, vector[1], vector[1], vector[1], vector[1], vector[1]);
+    }
+
+    #[test(caller = @addr, friend1 = @0x456, friend2 = @0x789, aptos_framework = @aptos_framework)]
+    fun test_admin_can_update_per_account_timeout(caller: signer, friend1: signer, friend2: signer, aptos_framework: signer) acquires Canvas {
+        init_test(&caller, &friend1, &friend2, &aptos_framework);
+        // Initially per account timeout to 1 second
+        let canvas = create_canvas(&caller, 0, 1, 60);
+        draw(&friend1, canvas, vector[1], vector[1], vector[1], vector[1], vector[1]);
+        // Update per account timeout to 2 seconds
+        update_per_account_timeout(&caller, canvas, 2);
+        // Wait for 2 second
+        timestamp::fast_forward_seconds(2);
+        // Should be able to draw now since timeout already passed
+        draw(&friend1, canvas, vector[1], vector[1], vector[1], vector[1], vector[1]);
+    }
+
+    #[test(caller = @addr, friend1 = @0x456, friend2 = @0x789, aptos_framework = @aptos_framework)]
+    #[expected_failure(abort_code = 196612, location = addr::canvas_token)]
+    fun test_nonadmin_cannot_update_per_account_timeout(caller: signer, friend1: signer, friend2: signer, aptos_framework: signer) acquires Canvas {
+        init_test(&caller, &friend1, &friend2, &aptos_framework);
+        // Initially per account timeout to 1 second
+        let canvas = create_canvas(&caller, 0, 1, 60);
+        // Non admin cannot Update per account timeout to 2 seconds
+        update_per_account_timeout(&friend1, canvas, 2);
     }
 }
