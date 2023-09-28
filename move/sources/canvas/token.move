@@ -44,9 +44,6 @@ module addr::canvas_token {
     /// but they're not an admin / there are no admins at all.
     const E_CALLER_NOT_ADMIN: u64 = 4;
 
-    /// The caller tried to call a function that requires collection owner privileges.
-    const E_CALLER_NOT_COLLECTION_OWNER: u64 = 9;
-
     /// The caller tried to draw a pixel but the canvas is no longer open for new
     /// contributions, and never will be, as per `can_draw_for_s`.
     const E_CANVAS_CLOSED: u64 = 5;
@@ -63,6 +60,12 @@ module addr::canvas_token {
 
     /// Vectors provided to draw were of different lengths.
     const E_INVALID_VECTOR_LENGTHS: u64 = 9;
+
+    /// The caller tried to call a function that requires collection owner privileges.
+    const E_CALLER_NOT_COLLECTION_OWNER: u64 = 10;
+
+    /// The caller exceeds the max number of pixels per draw.
+    const E_EXCEED_MAX_NUMBER_OF_PIXELS_PER_DRAW: u64 = 11;
 
     /// Based on the allowlist and/or blocklist (or lack thereof), the caller is
     /// allowed to contribute to the canvas.
@@ -155,6 +158,9 @@ module addr::canvas_token {
         /// ability to add / remove additional admins. Set at creation time and can
         /// never be changed.
         owner_is_super_admin: bool,
+
+        /// Max number of pixels can draw at one time
+        max_number_of_pixels_per_draw: u64,
     }
 
     struct Pixel has copy, drop, store {
@@ -191,6 +197,7 @@ module addr::canvas_token {
         default_color_b: u8,
         can_draw_multiple_pixels_at_once: bool,
         owner_is_super_admin: bool,
+        max_number_of_pixels_per_draw: u64,
     ) {
         let config = CanvasConfig {
             width,
@@ -208,6 +215,7 @@ module addr::canvas_token {
             },
             can_draw_multiple_pixels_at_once,
             owner_is_super_admin,
+            max_number_of_pixels_per_draw,
         };
         create_(caller, description, name, config);
     }
@@ -326,6 +334,24 @@ module addr::canvas_token {
             error::invalid_argument(E_INVALID_VECTOR_LENGTHS),
         );
 
+        let canvas_ = borrow_global<Canvas>(object::object_address(&canvas));
+
+        // If `can_draw_for_s` is non-zero, confirm that the canvas is still open.
+        if (canvas_.config.can_draw_for_s > 0) {
+            let now = now_seconds();
+            assert!(
+                now <= (canvas_.created_at_s + canvas_.config.can_draw_for_s),
+                error::invalid_state(E_CANVAS_CLOSED),
+            );
+        };
+
+        assert!(
+            vector::length(&xs) <= canvas_.config.max_number_of_pixels_per_draw,
+            error::invalid_argument(E_EXCEED_MAX_NUMBER_OF_PIXELS_PER_DRAW),
+        );
+
+        assert_timeout_and_update_last_contribution_time(signer::address_of(caller), canvas);
+
         let i = 0;
         let len = vector::length(&xs);
         while (i < len) {
@@ -340,7 +366,7 @@ module addr::canvas_token {
     }
 
     /// Draw a single pixel to the canvas. We consider the top left corner 0,0.
-    public entry fun draw_one(
+    public fun draw_one(
         caller: &signer,
         canvas: Object<Canvas>,
         x: u64,
@@ -355,7 +381,6 @@ module addr::canvas_token {
         assert_allowlisted_to_draw(canvas, caller_addr);
 
         let cost = determine_cost(canvas, x, y);
-        let caller_is_admin = is_admin(canvas, caller_addr);
 
         let canvas_ = borrow_global_mut<Canvas>(object::object_address(&canvas));
 
@@ -377,6 +402,20 @@ module addr::canvas_token {
             paint_fungible_asset::burn(caller_addr, cost);
         };
 
+        // Write the pixel.
+        let color = Color { r, g, b };
+        let pixel = Pixel { color, drawn_at_s: now_seconds() };
+        let index = y * canvas_.config.width + x;
+        smart_table::upsert(&mut canvas_.pixels, index, pixel);
+    }
+
+    fun assert_timeout_and_update_last_contribution_time(
+        caller_addr: address,
+        canvas: Object<Canvas>,
+    ) acquires Canvas {
+        let caller_is_admin = is_admin(canvas, caller_addr);
+        let canvas_ = borrow_global_mut<Canvas>(object::object_address(&canvas));
+
         // If there is a per-account timeout, first confirm that the caller is allowed
         // to write a pixel, and if so, update their last contribution time.
         if (canvas_.config.per_account_timeout_s > 0) {
@@ -395,12 +434,6 @@ module addr::canvas_token {
                 smart_table::add(&mut canvas_.last_contribution_s, caller_addr, now);
             };
         };
-
-        // Write the pixel.
-        let color = Color { r, g, b };
-        let pixel = Pixel { color, drawn_at_s: now_seconds() };
-        let index = y * canvas_.config.width + x;
-        smart_table::upsert(&mut canvas_.pixels, index, pixel);
     }
 
     #[view]
@@ -606,6 +639,17 @@ module addr::canvas_token {
         simple_set::remove(&mut canvas_.blocklisted_artists, &addr);
     }
 
+    public entry fun update_max_number_of_piexls_per_draw(
+        caller: &signer,
+        canvas: Object<Canvas>,
+        updated_max_number_of_pixels_per_draw: u64,
+    ) acquires Canvas {
+        let caller_addr = signer::address_of(caller);
+        assert_is_admin(canvas, caller_addr);
+        let canvas_ = borrow_global_mut<Canvas>(object::object_address(&canvas));
+        canvas_.config.max_number_of_pixels_per_draw = updated_max_number_of_pixels_per_draw
+    }
+
     public entry fun clear(
         caller: &signer,
         canvas: Object<Canvas>,
@@ -766,6 +810,7 @@ module addr::canvas_token {
             },
             can_draw_multiple_pixels_at_once: false,
             owner_is_super_admin: true,
+            max_number_of_pixels_per_draw: 1,
         };
 
         create_(caller, string::utf8(b"description"), string::utf8(b"name"), config)
@@ -818,9 +863,13 @@ module addr::canvas_token {
         assert!(determine_cost(canvas, 0, 0) == 5, 1);
     }
 
-
     #[test(caller = @addr, friend1 = @0x456, friend2 = @0x789, aptos_framework = @aptos_framework)]
-    fun test_admin_not_restricted_by_per_account_timeout(caller: signer, friend1: signer, friend2: signer, aptos_framework: signer) acquires Canvas {
+    fun test_admin_not_restricted_by_per_account_timeout(
+        caller: signer,
+        friend1: signer,
+        friend2: signer,
+        aptos_framework: signer
+    ) acquires Canvas {
         init_test(&caller, &friend1, &friend2, &aptos_framework);
         // Initially per account timeout to 1 second
         let canvas = create_canvas(&caller, 0, 1, 60);
@@ -828,5 +877,57 @@ module addr::canvas_token {
         draw(&caller, canvas, vector[1], vector[1], vector[1], vector[1], vector[1]);
         draw(&caller, canvas, vector[1], vector[1], vector[1], vector[1], vector[1]);
         draw(&caller, canvas, vector[1], vector[1], vector[1], vector[1], vector[1]);
+    }
+
+    #[test(caller = @addr, friend1 = @0x456, friend2 = @0x789, aptos_framework = @aptos_framework)]
+    #[expected_failure(abort_code = 65547, location = addr::canvas_token)]
+    fun test_max_number_of_pixels_per_draw(
+        caller: signer,
+        friend1: signer,
+        friend2: signer,
+        aptos_framework: signer
+    ) acquires Canvas {
+        init_test(&caller, &friend1, &friend2, &aptos_framework);
+        // Initially set max number of pixels can draw to 1
+        let canvas = create_canvas(&caller, 0, 1, 60);
+        // Can draw 1 pixel
+        draw(&friend1, canvas, vector[1], vector[1], vector[1], vector[1], vector[1]);
+        // Cannot draw 2 pixels
+        draw(&friend1, canvas, vector[1, 2], vector[1, 2], vector[1, 2], vector[1, 2], vector[1, 2]);
+    }
+
+    #[test(caller = @addr, friend1 = @0x456, friend2 = @0x789, aptos_framework = @aptos_framework)]
+    #[expected_failure(abort_code = 196612, location = addr::canvas_token)]
+    fun test_only_admin_can_update_max_number_of_pixels_per_draw(
+        caller: signer,
+        friend1: signer,
+        friend2: signer,
+        aptos_framework: signer
+    ) acquires Canvas {
+        init_test(&caller, &friend1, &friend2, &aptos_framework);
+        // Initially set max number of pixels per draw to 1
+        let canvas = create_canvas(&caller, 0, 1, 60);
+        // Non admin cannot update max number of pixels per draw to 2
+        update_max_number_of_piexls_per_draw(&friend1, canvas, 2);
+    }
+
+    #[test(caller = @addr, friend1 = @0x456, friend2 = @0x789, aptos_framework = @aptos_framework)]
+    fun test_admin_can_update_max_number_of_pixels_per_draw(
+        caller: signer,
+        friend1: signer,
+        friend2: signer,
+        aptos_framework: signer
+    ) acquires Canvas {
+        init_test(&caller, &friend1, &friend2, &aptos_framework);
+        // Initially set max number of pixels per draw to 1
+        let canvas = create_canvas(&caller, 0, 1, 60);
+        // Can draw 1 pixel
+        draw(&friend1, canvas, vector[1], vector[1], vector[1], vector[1], vector[1]);
+        // Update max number of pixels per draw to 2
+        update_max_number_of_piexls_per_draw(&caller, canvas, 2);
+        // Wait for 1 second
+        timestamp::fast_forward_seconds(1);
+        // Can draw 2 pixels now
+        draw(&friend1, canvas, vector[1, 2], vector[1, 2], vector[1, 2], vector[1, 2], vector[1, 2]);
     }
 }
