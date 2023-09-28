@@ -602,6 +602,17 @@ module addr::canvas_token {
         simple_set::remove(&mut canvas_.blocklisted_artists, &addr);
     }
 
+    public entry fun update_per_account_timeout(
+        caller: &signer,
+        canvas: Object<Canvas>,
+        updated_per_account_timeout_s: u64,
+    ) acquires Canvas {
+        let caller_addr = signer::address_of(caller);
+        assert_is_admin(canvas, caller_addr);
+        let canvas_ = borrow_global_mut<Canvas>(object::object_address(&canvas));
+        canvas_.config.per_account_timeout_s = updated_per_account_timeout_s
+    }
+
     public entry fun clear(
         caller: &signer,
         canvas: Object<Canvas>,
