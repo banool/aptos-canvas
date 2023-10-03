@@ -15,6 +15,8 @@ pub struct GcsFlusherConfig {
     bucket_name: String,
 }
 
+/// This assumes that we're running inside GCP. If we're not then this won't work
+/// because we use ClientConfig::default().with_auth() to create the client.
 #[derive(Clone)]
 pub struct GcsFlusher {
     config: GcsFlusherConfig,

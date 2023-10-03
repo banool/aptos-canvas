@@ -19,6 +19,7 @@ use tracing::info;
 const CANVAS_TOKEN_MODULE_NAME: &str = "canvas_token";
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct CanvasProcessorConfig {
     // TODO: This should be an Address instead
     pub canvas_contract_address: String,

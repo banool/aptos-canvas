@@ -11,6 +11,7 @@ use serde::{Deserialize, Serialize};
 use tracing::info;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct PostgresMetadataStorageConfig {
     pub connection_string: String,
 }

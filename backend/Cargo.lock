@@ -66,22 +66,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "250f629c0161ad8107cf89319e990051fae62832fd343083bea452d93e2205fd"
 
 [[package]]
-name = "all-in-one"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "api",
- "clap",
- "futures",
- "processor",
- "serde",
- "serde_yaml",
- "tokio",
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
 name = "allocator-api2"
 version = "0.2.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3575,6 +3559,25 @@ dependencies = [
  "ryu",
  "serde",
  "unsafe-libyaml",
+]
+
+[[package]]
+name = "service"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "api",
+ "clap",
+ "flusher",
+ "futures",
+ "metadata-storage",
+ "pixel-storage",
+ "processor",
+ "serde",
+ "serde_yaml",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]

@@ -23,6 +23,7 @@ use std::{
 // the mmap on shutdown.
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct MmapPixelStorageConfig {
     pub storage_directory: PathBuf,
 }

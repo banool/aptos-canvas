@@ -3,13 +3,13 @@
 //! doesn't use anything private, so this is all just for dev convenience / dedupe.
 
 use crate::{CanvasProcessor, CanvasProcessorConfig};
-use anyhow::{Context as AnyhowContext, Result};
+use anyhow::Result;
 use aptos_processor_framework::{
     CommonStorageConfig, Dispatcher, DispatcherConfig, GrpcStreamSubscriber,
     GrpcStreamSubscriberConfig, ProcessorTrait, StorageTrait, StreamSubscriberTrait,
 };
-use metadata_storage::{PostgresMetadataStorage, PostgresMetadataStorageConfig};
-use pixel_storage::{MmapPixelStorage, MmapPixelStorageConfig};
+use metadata_storage::PostgresMetadataStorage;
+use pixel_storage::MmapPixelStorage;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use tokio::task::JoinHandle;
@@ -22,33 +22,15 @@ pub struct RunConfig {
     pub dispatcher_config: DispatcherConfig,
     pub common_storage_config: CommonStorageConfig,
     pub processor_config: CanvasProcessorConfig,
-    pub pixel_storage_config: MmapPixelStorageConfig,
-    pub metadata_storage_config: PostgresMetadataStorageConfig,
-}
-
-/// Task handles and other things the caller might want, e.g. references to storage.
-pub struct RunHandles {
-    pub task_handles: Vec<JoinHandle<()>>,
-    pub pixels_storage: Arc<MmapPixelStorage>,
-    pub metadata_storage: Arc<PostgresMetadataStorage>,
 }
 
 /// Build all the relevant pieces required to run the processor, and the processor
 /// itself, and spawn tokio tasks for them. This returns handles to those tasks.
-pub async fn run(config: RunConfig) -> Result<RunHandles> {
-    // Build pixels storage, which is what lets us read and write to the representation
-    // of the canvas on disk.
-    let pixels_storage = Arc::new(MmapPixelStorage::new(config.pixel_storage_config.clone()));
-
-    // Build the metadata storage, which is what lets us read and write to the DB. This
-    // is generally necessary for all processors since they need somewhere to at least
-    // keep track of the last version they processed.
-    let metadata_storage = Arc::new(
-        PostgresMetadataStorage::new(config.metadata_storage_config.clone())
-            .await
-            .context("Failed to initialize Postgres storage")?,
-    );
-
+pub async fn run(
+    config: RunConfig,
+    metadata_storage: Arc<PostgresMetadataStorage>,
+    pixels_storage: Arc<MmapPixelStorage>,
+) -> Result<Vec<JoinHandle<()>>> {
     // Build the canvas processor, which is what processes transactions and updates the
     // canvas storage and the DB.
     let processor = Arc::new(CanvasProcessor::new(
@@ -96,9 +78,5 @@ pub async fn run(config: RunConfig) -> Result<RunHandles> {
 
     let task_handles = vec![dispatcher_task, channel_handle.join_handle];
 
-    Ok(RunHandles {
-        task_handles,
-        pixels_storage,
-        metadata_storage,
-    })
+    Ok(task_handles)
 }

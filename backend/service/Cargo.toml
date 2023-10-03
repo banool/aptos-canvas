@@ -1,5 +1,5 @@
 [package]
-name = "all-in-one"
+name = "service"
 description = "todo"
 version = "0.1.0"
 
@@ -15,6 +15,9 @@ rust-version = { workspace = true }
 [dependencies]
 # Internal
 api = { workspace = true }
+flusher = { workspace = true }
+metadata-storage = { workspace = true }
+pixel-storage = { workspace = true }
 processor = { workspace = true }
 
 # External

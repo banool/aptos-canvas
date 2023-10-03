@@ -1,7 +1,6 @@
 [workspace]
 resolver = "2"
 members = [
-    "all-in-one",
     "api",
     "entities",
     "flusher",
@@ -10,6 +9,7 @@ members = [
     "move-types",
     "pixel-storage",
     "processor",
+    "service",
 ]
 
 [workspace.package]
@@ -31,6 +31,7 @@ metadata-storage = { path = "metadata-storage" }
 move-types = { path = "move-types" }
 pixel-storage = { path = "pixel-storage" }
 processor = { path = "processor" }
+service = { path = "service" }
 
 # External
 aptos-move-graphql-scalars = { git = "https://github.com/aptos-labs/aptos-core", branch = "banool/custom-scalars" }
