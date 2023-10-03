@@ -227,7 +227,7 @@ impl CanvasProcessor {
                         });
                         update_attribution_intents.push(UpdateAttributionIntent {
                             canvas_address,
-                            artist_address: sender.clone(),
+                            artist_address: sender,
                             index,
                             drawn_at_secs: pixel.drawn_at_s.0,
                         });

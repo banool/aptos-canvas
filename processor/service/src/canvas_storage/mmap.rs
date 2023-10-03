@@ -79,7 +79,7 @@ impl CanvasStorageTrait for MmapCanvasStorage {
                 .write(true)
                 .create(false)
                 .open(&filename)
-                .expect(format!("Failed to open file {}", filename.display()).as_str());
+                .unwrap_or_else(|_| panic!("Failed to open file {}", filename.display()));
             unsafe { MmapMut::map_mut(&file).expect("Failed to mmap file") }
         });
 

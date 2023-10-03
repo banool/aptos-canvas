@@ -13,6 +13,6 @@ repository = { workspace = true }
 rust-version = { workspace = true }
 
 [dependencies]
-sea-orm = { workspace = true }
 async-graphql = { workspace = true }
+sea-orm = { workspace = true }
 seaography = { workspace = true }
