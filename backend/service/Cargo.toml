@@ -23,6 +23,7 @@ processor = { workspace = true }
 # External
 anyhow = { workspace = true }
 clap = { workspace = true }
+figment = { workspace = true }
 futures = { workspace = true }
 serde = { workspace = true }
 serde_yaml = { workspace = true }

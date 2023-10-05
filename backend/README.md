@@ -14,6 +14,9 @@ When I say "pixel data" I mean specifically the pixels of the canvas. When I say
 - `move-types`: The `src/` in this dir is generated based on the GraphQL schema representation of the ABI of the Move module. See below for how to regenerate it.
 - `service`: Top level service that ties it all together. It can run the 3 desired combinations of services. We do this all in one place for convenience since coupling all the deps isn't a big deal.
 
+## Configuration
+The `service` crate uses [Figment](https://github.com/SergioBenitez/Figment) to parse configuration. This means you can set config values in a file as well as env vars and they will be parsed hierarchically and merged into one final config. For more information about how this works see the `Config::from_str` function in [`service/src/config.rs`](service/src/config.rs).
+
 ## Local Development
 Spin up a local development environment (node API + txn stream service):
 ```
