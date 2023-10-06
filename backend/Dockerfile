@@ -10,7 +10,9 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry \
     # only build the service binary
     cargo build --config net.git-fetch-with-cli=true --release -p service
 
-FROM debian:bullseye
+FROM debian:bullseye-slim
+
+RUN apt-get update && apt-get install -y extra-runtime-dependencies && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 COPY --link --from=builder /repo/target/release/service /usr/local/bin/service
