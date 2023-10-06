@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.4
-FROM rust:1.72 as builder
+FROM rust:1.72-bullseye as builder
 
 WORKDIR /repo
 COPY --link Cargo.toml Cargo.lock /repo/
@@ -12,7 +12,7 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry \
 
 FROM debian:bullseye-slim
 
-RUN apt-get update && apt-get install -y extra-runtime-dependencies && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y build-essential && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 COPY --link --from=builder /repo/target/release/service /usr/local/bin/service
