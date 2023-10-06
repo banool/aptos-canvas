@@ -77,6 +77,10 @@ pub struct ProcessorOnlyConfig {
     pub processor_config: RunConfig,
     pub pixel_storage_config: MmapPixelStorageConfig,
     pub metadata_storage_config: PostgresMetadataStorageConfig,
+    // We take these params to know where to run the API but in main.rs we don't
+    // actually hook up the pixel or metadata APIs, we only run the root API so
+    // we can respond to health checks.
+    pub api_config: ApiConfig,
     pub gcs_flusher: GcsFlusherConfig,
 }
 

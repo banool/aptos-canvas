@@ -84,6 +84,15 @@ async fn main() -> Result<()> {
                 GcsFlusher::new(config.gcs_flusher.clone(), pixels_storage.clone()).await?;
             let gcs_flusher_task = gcs_flusher.run();
             tasks.push(gcs_flusher_task);
+
+            // Run the API, but without the pixel or metadata APIs attached.
+            let route = build_full_route(None, None)?;
+            let api_task = tokio::spawn(async move {
+                let result = start_api(config.api_config, route).await;
+                eprintln!("API finished unexpectedly: {:?}", result);
+            });
+            tasks.push(api_task);
+
             tasks
         },
         Config::MetadataApiOnly(config) => {

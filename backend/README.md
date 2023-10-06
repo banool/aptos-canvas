@@ -53,6 +53,19 @@ If you added a new table, make sure to go register it with the API GraphQL schem
 ## Generating Move types
 See [../move/README.md](../move/README.md).
 
+## Building Docker Image
+Make sure you have a Docker buildx builder set up, then run this:
+```
+GIT_SHA=local GCP_DOCKER_ARTIFACT_REPO=local docker buildx bake --progress=plain --load -f ./docker-bake.hcl
+```
+
+Use the image like this:
+```
+docker run local/graffio-backend:local
+```
+
+You may need to prefix that with `DOCKER_DEFAULT_PLATFORM=linux/amd64` if you built this image using the remote builder and you're on an ARM machine.
+
 ## Notes
 - The GraphQL API only accepts account addresses in LONG form without the leading 0x. It returns them the same way.
 - For now, the best way to get the schema.graphql file is to go to http://127.0.0.1:7645/metadata/gql and use the Download -> SDL button.

@@ -10,7 +10,7 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry \
     # only build the service binary
     cargo build --config net.git-fetch-with-cli=true --release -p service
 
-FROM buildpack-deps:bullseye
+FROM debian:bullseye
 
 WORKDIR /app
 COPY --link --from=builder /repo/target/release/service /usr/local/bin/service
