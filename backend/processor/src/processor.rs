@@ -72,18 +72,28 @@ impl ProcessorTrait for CanvasProcessor {
         let mut all_write_pixel_intents = Vec::new();
         let mut all_update_attribution_intents = Vec::new();
         for transaction in transactions {
+            // Skip failed transactions.
+            if let Some(info) = &transaction.info {
+                if !info.success {
+                    continue;
+                }
+            }
+
             // todo process canvas_token::create and create images for that
             // todo create a storage interface with like create that takes in a default color
             // a width and height, then methods for writing pixels to it, and also reading
             // the full thing. it should handle the read update write process inside it
-            let (write_pixel_intents, update_attribution_intents) = self
-                .process_draw(&transaction)
-                .context("Failed at process_draw")?;
+            let (write_pixel_intents, update_attribution_intents) =
+                self.process_draw(&transaction).context(format!(
+                    "Failed at process_draw for txn version {}",
+                    transaction.version
+                ))?;
             all_write_pixel_intents.extend(write_pixel_intents);
             all_update_attribution_intents.extend(update_attribution_intents);
-            let create_canvas_intent = self
-                .process_create(&transaction)
-                .context("Failed at process_create")?;
+            let create_canvas_intent = self.process_create(&transaction).context(format!(
+                "Failed at process_create for txn version {}",
+                transaction.version
+            ))?;
             if let Some(create_canvas_intent) = create_canvas_intent {
                 all_create_canvas_intents.push(create_canvas_intent);
             }
@@ -95,8 +105,6 @@ impl ProcessorTrait for CanvasProcessor {
             num_canvases_to_create = all_create_canvas_intents.len(),
             num_pixels_to_write = all_write_pixel_intents.len()
         );
-
-        // TODO: Parallelize this.
 
         // Create canvases.
         for create_canvas_intent in all_create_canvas_intents {
@@ -193,7 +201,7 @@ impl CanvasProcessor {
 
         let first_arg = clean_entry_function_payload.arguments[0].clone();
 
-        let obj: Object = serde_json::from_value(first_arg).unwrap();
+        let obj: Object = serde_json::from_value(first_arg).context("Failed to parse as Object")?;
         let canvas_address = obj.inner;
 
         let draw_value_type = format!(

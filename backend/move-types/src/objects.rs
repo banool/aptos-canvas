@@ -241,6 +241,11 @@ pub struct Collection {
     pub mutation_events: EventHandle,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct CollectionConfig {
+    pub max_width: U64,
+    pub max_height: U64,
+}
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct CollectionRefs {
     pub transfer_ref: _0x1__object__TransferRef,
     pub mutator_ref: _0x4__collection__MutatorRef,

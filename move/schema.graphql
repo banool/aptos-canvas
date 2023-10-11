@@ -241,6 +241,11 @@ type Collection {
 	mutation_events: EventHandle!
 }
 
+type CollectionConfig {
+	max_width: U64!
+	max_height: U64!
+}
+
 type CollectionRefs {
 	transfer_ref: _0x1__object__TransferRef!
 	mutator_ref: _0x4__collection__MutatorRef!
