@@ -1,16 +1,25 @@
 "use client";
 
+import { useWallet } from "@aptos-labs/wallet-adapter-react";
+import { createEntryPayload } from "@thalalabs/surf";
+import { useState } from "react";
 import { flex } from "styled-system/patterns";
 
+import { ABI } from "@/constants/abi";
+import { APP_CONFIG } from "@/constants/config";
 import { emitCanvasCommand, useCanvasState } from "@/contexts/canvas";
+import { useAptosNetworkState } from "@/contexts/wallet";
 
 import { Button } from "../Button";
 import { toast } from "../Toast";
 
 export function CanvasActions() {
+  const network = useAptosNetworkState((s) => s.network);
+  const { signAndSubmitTransaction } = useWallet();
   const setViewOnly = useCanvasState((s) => s.setViewOnly);
   const pixelsChanged = useCanvasState((s) => s.pixelsChanged);
   const changedPixelsCount = Object.keys(pixelsChanged).length;
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const cancel = () => {
     setViewOnly(true);
@@ -20,12 +29,48 @@ export function CanvasActions() {
     emitCanvasCommand("clearChangedPixels");
   };
 
-  const finishDrawing = () => {
-    toast({
-      id: "finish-not-implemented",
-      variant: "warning",
-      content: "Sorry, not implemented yet",
-    });
+  const finishDrawing = async () => {
+    setIsSubmitting(true);
+
+    const xs = [];
+    const ys = [];
+    const rs = [];
+    const gs = [];
+    const bs = [];
+    for (const pixelChanged of Object.values(pixelsChanged)) {
+      xs.push(pixelChanged.x);
+      ys.push(pixelChanged.y);
+      rs.push(pixelChanged.r);
+      gs.push(pixelChanged.g);
+      bs.push(pixelChanged.b);
+    }
+    const payload = createEntryPayload(ABI, {
+      function: "draw",
+      type_arguments: [],
+      arguments: [APP_CONFIG[network].canvasTokenAddr, xs, ys, rs, gs, bs],
+    }).rawPayload;
+
+    try {
+      await signAndSubmitTransaction({
+        type: "entry_function_payload",
+        ...payload,
+      });
+      const { optimisticUpdates } = useCanvasState.getState();
+      const newOptimisticUpdates = [...optimisticUpdates].concat({
+        imagePatch: pixelsChanged,
+        committedAt: Date.now(),
+      });
+      useCanvasState.setState({ pixelsChanged: {}, optimisticUpdates: newOptimisticUpdates });
+      toast({ id: "add-success", variant: "success", content: "Added!" });
+    } catch {
+      toast({
+        id: "add-failure",
+        variant: "error",
+        content: "Error occurred. Please check your wallet connection and try again.",
+      });
+    }
+
+    setIsSubmitting(false);
   };
 
   return (
@@ -45,7 +90,12 @@ export function CanvasActions() {
           Cancel
         </Button>
       )}
-      <Button variant="primary" disabled={!changedPixelsCount} onClick={finishDrawing}>
+      <Button
+        variant="primary"
+        disabled={!changedPixelsCount}
+        loading={isSubmitting}
+        onClick={finishDrawing}
+      >
         Finish Drawing
       </Button>
     </div>

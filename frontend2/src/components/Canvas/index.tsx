@@ -234,7 +234,21 @@ export function Canvas({ height, width, baseImage }: CanvasProps) {
     const image = imageRef.current;
     if (!canvas || !image) return;
 
-    const [tempCanvas, cleanUp] = createTempCanvas(baseImage, PIXELS_PER_SIDE);
+    // Apply optimistic updates to base image
+    const newPixelArray = new Uint8ClampedArray(baseImage);
+    const { optimisticUpdates } = useCanvasState.getState();
+    const imagePatches = optimisticUpdates.map((ou) => ou.imagePatch);
+    for (const imagePatch of imagePatches) {
+      for (const pixelChanged of Object.values(imagePatch)) {
+        const index = (pixelChanged.y * PIXELS_PER_SIDE + pixelChanged.x) * 4;
+        newPixelArray[index + 0] = pixelChanged.r; // R value
+        newPixelArray[index + 1] = pixelChanged.g; // G value
+        newPixelArray[index + 2] = pixelChanged.b; // B value
+        newPixelArray[index + 3] = 255; // A value
+      }
+    }
+
+    const [tempCanvas, cleanUp] = createTempCanvas(newPixelArray, PIXELS_PER_SIDE);
 
     // Update fabric image with data from temporary canvas and clean up when done
     image.setSrc(tempCanvas.toDataURL(), () => {
@@ -243,7 +257,7 @@ export function Canvas({ height, width, baseImage }: CanvasProps) {
     });
 
     useCanvasState.setState({ pixelsChanged: {} });
-    pixelArrayRef.current = new Uint8ClampedArray(baseImage);
+    pixelArrayRef.current = new Uint8ClampedArray(newPixelArray);
   });
 
   return <canvas ref={canvasRef} />;
