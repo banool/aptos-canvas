@@ -23,7 +23,13 @@ Spin up a local development environment (node API + txn stream service):
 aptos node run-local-testnet --force-restart --assume-yes
 ```
 
+Recreate the DB:
+```
+psql postgres://dport@127.0.0.1:5432/postgres -c 'DROP DATABASE IF EXISTS canvas' && psql postgres://dport@127.0.0.1:5432/postgres -c 'CREATE DATABASE canvas'
+```
+
 Run the processor:
+
 ```
 rm -rf /tmp/canvases && mkdir /tmp/canvases && cargo run -p service -- -c configs/local.yaml
 ```

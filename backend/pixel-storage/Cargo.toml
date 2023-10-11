@@ -24,3 +24,4 @@ dashmap = { workspace = true }
 image = { workspace = true }
 memmap2 = { workspace = true }
 serde = { workspace = true }
+tracing = { workspace = true }

@@ -4,9 +4,10 @@ processor_config:
     indexer_grpc_data_service_address: https://grpc.testnet.aptoslabs.com:443
     auth_token: dummy_token
   dispatcher_config: {}
-  common_storage_config: {}
+  common_storage_config:
+    initial_starting_version: 701566480
   processor_config:
-    canvas_contract_address: "0x86feec20612d1d6708657fcc693d540c334da23b64d56955679761e41abf1ab7"
+    canvas_contract_address: "0xb764b4baa21a53b7af4ea6688674d385e3255871021de12ddd6be5e004e92fec"
 pixel_storage_config:
   storage_directory: /tmp/canvases
 metadata_storage_config:

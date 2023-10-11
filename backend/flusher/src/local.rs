@@ -40,7 +40,7 @@ impl LocalFlusher {
 
     pub async fn write_image(&self, canvas_address: Address, png_data: Vec<u8>) -> Result<()> {
         let extension = "png";
-        let filename = format!("images/{}.{}", canvas_address, extension);
+        let filename = format!("{}.{}", canvas_address, extension);
 
         std::fs::write(self.config.flush_dir.join(filename), png_data)
             .context("Failed to write image to disk")?;
