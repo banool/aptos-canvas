@@ -1,7 +1,6 @@
 use super::{utils::get_image, CreateCanvasIntent, PixelStorageTrait, WritePixelIntent};
 use anyhow::{Context, Result};
 use aptos_move_graphql_scalars::Address;
-use dashmap::DashMap;
 use memmap2::MmapMut;
 use move_types::Color;
 use serde::{Deserialize, Serialize};
@@ -10,8 +9,10 @@ use std::{
     fs::{File, OpenOptions},
     io::Write,
     path::{Path, PathBuf},
+    sync::Arc,
 };
-use tracing::error;
+use tokio::sync::RwLock;
+use tracing::{error, info};
 
 // There could be an alternate implementation where instead of using the mmap, for
 // every pixel we read the png, update the pixel, and write the png back to disk.
@@ -33,14 +34,14 @@ pub struct MmapPixelStorageConfig {
 #[derive(Debug)]
 pub struct MmapPixelStorage {
     config: MmapPixelStorageConfig,
-    mmaps: DashMap<Address, MmapMut>,
+    mmaps: Arc<RwLock<HashMap<Address, MmapMut>>>,
 }
 
 impl MmapPixelStorage {
     pub fn new(config: MmapPixelStorageConfig) -> Self {
         Self {
             config,
-            mmaps: DashMap::new(),
+            mmaps: Arc::new(RwLock::new(HashMap::new())),
         }
     }
 
@@ -56,7 +57,9 @@ impl PixelStorageTrait for MmapPixelStorage {
     /// stored as 3 bytes (r, g, b) and the width and height are stored at the end of
     /// the file as 8 bytes each.
     async fn create_canvas(&self, intent: CreateCanvasIntent) -> Result<()> {
-        let mut file = File::create(self.get_filename(&intent.canvas_address))?;
+        let filename = self.get_filename(&intent.canvas_address);
+        info!("Creating canvas file: {:?}", filename.display());
+        let mut file = File::create(&filename)?;
 
         // Calculate the total number of pixels
         let num_pixels = intent.width * intent.height;
@@ -76,12 +79,15 @@ impl PixelStorageTrait for MmapPixelStorage {
         // Write the data to the file.
         file.write_all(&data)?;
 
+        info!("Created canvas file: {:?}", filename.display());
+
         Ok(())
     }
 
     async fn write_pixel(&self, intent: WritePixelIntent) -> Result<()> {
         // Get an existing mmap for the canvas file or initialize a new one.
-        let mut mmap = self.mmaps.entry(intent.canvas_address).or_insert_with(|| {
+        let mut mmaps = self.mmaps.write().await;
+        let mmap = mmaps.entry(intent.canvas_address).or_insert_with(|| {
             let filename = self.get_filename(&intent.canvas_address);
             let file = match OpenOptions::new()
                 .read(true)
@@ -108,19 +114,12 @@ impl PixelStorageTrait for MmapPixelStorage {
     }
 
     async fn get_canvas_as_png(&self, canvas_address: &Address) -> Result<Vec<u8>> {
-        let mmap = self.mmaps.entry(*canvas_address).or_insert_with(|| {
-            let file = OpenOptions::new()
-                .read(true)
-                .write(true)
-                .create(false)
-                .open(self.get_filename(canvas_address))
-                .expect("Failed to open file");
-            unsafe { MmapMut::map_mut(&file).expect("Failed to mmap file") }
-        });
+        let mmaps = self.mmaps.read().await;
+        let mmap = mmaps.get(canvas_address).context("Failed to find canvas")?;
 
         // Get the width and height from the end of the file.
         let (width, height) =
-            read_width_and_height(&mmap).context("Failed to read width and height")?;
+            read_width_and_height(mmap).context("Failed to read width and height")?;
 
         // Read the data from the file as a vector of Colors.
         let mut data = Vec::with_capacity((width * height) as usize);
@@ -148,11 +147,8 @@ impl PixelStorageTrait for MmapPixelStorage {
     /// also nothing to flush.
     async fn get_canvases_as_pngs(&self) -> Result<HashMap<Address, Vec<u8>>> {
         let mut pngs = HashMap::new();
-        let addresses = self
-            .mmaps
-            .iter()
-            .map(|mmap| *mmap.key())
-            .collect::<Vec<_>>();
+        let mmaps = self.mmaps.read().await;
+        let addresses = mmaps.iter().map(|mmap| *mmap.0).collect::<Vec<_>>();
         for address in addresses {
             let png = self.get_canvas_as_png(&address).await?;
             pngs.insert(address, png);
