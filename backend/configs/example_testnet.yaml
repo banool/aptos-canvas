@@ -2,12 +2,12 @@ type: all_in_one
 processor_config:
   stream_subscriber_config:
     indexer_grpc_data_service_address: https://grpc.testnet.aptoslabs.com:443
-    auth_token: dummy_token
+    auth_token: replace_me
   dispatcher_config: {}
   common_storage_config:
-    initial_starting_version: 701566480
+    initial_starting_version: 709391160
   processor_config:
-    canvas_contract_address: "0xb764b4baa21a53b7af4ea6688674d385e3255871021de12ddd6be5e004e92fec"
+    canvas_contract_address: "0xbb71ff0f8e8780c0e8a53cf003116ab96dc877394cf2cf4d54e71c1667373146"
 pixel_storage_config:
   storage_directory: /tmp/canvases
 metadata_storage_config:
