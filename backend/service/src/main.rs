@@ -14,11 +14,22 @@ use metadata_storage::PostgresMetadataStorage;
 use pixel_storage::MmapPixelStorage;
 use processor::run;
 use std::sync::Arc;
+use tokio::runtime::Builder;
 use tracing::Level;
 use tracing_subscriber::FmtSubscriber;
 
-#[tokio::main]
-async fn main() -> Result<()> {
+fn main() -> Result<()> {
+    Builder::new_multi_thread()
+        // To make work stealing work properly when a task blocks.
+        // See https://github.com/tokio-rs/tokio/issues/4323.
+        .disable_lifo_slot()
+        .enable_all()
+        .build()
+        .context("Failed to build tokio runtime")?
+        .block_on(main_inner())
+}
+
+async fn main_inner() -> Result<()> {
     let args = Args::parse();
     let config = Config::try_from(args)?;
 
