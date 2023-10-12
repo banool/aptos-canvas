@@ -147,8 +147,10 @@ impl PixelStorageTrait for MmapPixelStorage {
     /// also nothing to flush.
     async fn get_canvases_as_pngs(&self) -> Result<HashMap<Address, Vec<u8>>> {
         let mut pngs = HashMap::new();
-        let mmaps = self.mmaps.read().await;
-        let addresses = mmaps.iter().map(|mmap| *mmap.0).collect::<Vec<_>>();
+        let addresses = {
+            let mmaps = self.mmaps.read().await;
+            mmaps.iter().map(|mmap| *mmap.0).collect::<Vec<_>>()
+        };
         for address in addresses {
             let png = self.get_canvas_as_png(&address).await?;
             pngs.insert(address, png);
