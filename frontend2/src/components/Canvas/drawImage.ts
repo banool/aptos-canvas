@@ -1,5 +1,6 @@
 import { fabric } from "fabric";
 
+import { MAX_PIXELS_PER_TXN } from "@/constants/canvas";
 import { useCanvasState } from "@/contexts/canvas";
 import { createTempCanvas } from "@/utils/tempCanvas";
 
@@ -91,15 +92,16 @@ export function alterImagePixels({
   // Filter out out-of-bounds points
   points = points.filter(({ x, y }) => x >= 0 && x < size && y >= 0 && y < size);
 
-  const nextPixelsChanged = { ...pixelsChanged };
+  const nextPixelsChanged = new Map(pixelsChanged);
   for (const point of points) {
-    nextPixelsChanged[`${point.x}-${point.y}`] = {
+    if (nextPixelsChanged.size >= MAX_PIXELS_PER_TXN) break;
+    nextPixelsChanged.set(`${point.x}-${point.y}`, {
       x: point.x,
       y: point.y,
       r: strokeColor.red,
       g: strokeColor.green,
       b: strokeColor.blue,
-    };
+    });
     const index = (point.y * size + point.x) * 4;
     pixelArray[index + 0] = strokeColor.red; // R value
     pixelArray[index + 1] = strokeColor.green; // G value
