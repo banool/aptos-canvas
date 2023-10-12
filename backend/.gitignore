@@ -52,5 +52,4 @@ TAGS.*
 config.mk
 config.stamp
 Session.vim
-.cargo
 no_llvm_build
