@@ -23,6 +23,10 @@ const CANVAS_TOKEN_MODULE_NAME: &str = "canvas_token";
 pub struct CanvasProcessorConfig {
     // TODO: This should be an Address instead
     pub canvas_contract_address: String,
+
+    /// If set, disable metadata processing and only process pixel data.
+    #[serde(default)]
+    pub disable_metadata_processing: bool,
 }
 
 #[derive(Debug)]
@@ -133,23 +137,26 @@ impl ProcessorTrait for CanvasProcessor {
                 .context("Failed to write pixel in storage")?;
         }
 
-        // Update attribution.
-        let len = all_update_attribution_intents.len();
-        for (i, update_attribution_intent) in all_update_attribution_intents.into_iter().enumerate()
-        {
-            info!(
-                "Updating attribution for canvas {} index {} (intent {}/{} from txns {} to {})",
-                update_attribution_intent.canvas_address,
-                update_attribution_intent.index,
-                i + 1,
-                len,
-                start_version,
-                end_version
-            );
-            self.metadata_storage
-                .update_attribution(update_attribution_intent)
-                .await
-                .context("Failed to update attribution in storage")?;
+        if !self.config.disable_metadata_processing {
+            // Update attribution.
+            let len = all_update_attribution_intents.len();
+            for (i, update_attribution_intent) in
+                all_update_attribution_intents.into_iter().enumerate()
+            {
+                info!(
+                    "Updating attribution for canvas {} index {} (intent {}/{} from txns {} to {})",
+                    update_attribution_intent.canvas_address,
+                    update_attribution_intent.index,
+                    i + 1,
+                    len,
+                    start_version,
+                    end_version
+                );
+                self.metadata_storage
+                    .update_attribution(update_attribution_intent)
+                    .await
+                    .context("Failed to update attribution in storage")?;
+            }
         }
 
         Ok((start_version, end_version))
