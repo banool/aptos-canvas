@@ -2,7 +2,7 @@
 FROM rust:1.72-bullseye as builder
 
 WORKDIR /repo
-COPY --link Cargo.toml Cargo.lock /repo/
+COPY --link .cargo Cargo.toml Cargo.lock /repo/
 COPY --link . /repo/
 
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
