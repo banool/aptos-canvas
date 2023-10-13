@@ -84,31 +84,49 @@ impl PixelStorageTrait for MmapPixelStorage {
         Ok(())
     }
 
-    async fn write_pixel(&self, intent: WritePixelIntent) -> Result<()> {
-        // Get an existing mmap for the canvas file or initialize a new one.
-        let mut mmaps = self.mmaps.write().await;
-        let mmap = mmaps.entry(intent.canvas_address).or_insert_with(|| {
-            let filename = self.get_filename(&intent.canvas_address);
-            let file = match OpenOptions::new()
-                .read(true)
-                .write(true)
-                .create(false)
-                .open(&filename)
-            {
-                Ok(file) => file,
-                Err(e) => {
-                    error!("Failed to open file {}: {}", filename.display(), e);
-                    panic!("Failed to open file {}: {}", filename.display(), e);
-                },
-            };
-            unsafe { MmapMut::map_mut(&file).expect("Failed to mmap file") }
-        });
+    async fn write_pixels(&self, intents: Vec<WritePixelIntent>) -> Result<()> {
+        // Create a map of canvas address to intents.
+        let mut canvas_to_intents = HashMap::new();
+        for intent in intents.into_iter() {
+            canvas_to_intents
+                .entry(intent.canvas_address)
+                .or_insert_with(Vec::new)
+                .push(intent);
+        }
 
-        // Write the pixel to the file through the mmap.
-        let index = intent.index as usize;
-        mmap[index * 3] = intent.color.r;
-        mmap[index * 3 + 1] = intent.color.g;
-        mmap[index * 3 + 2] = intent.color.b;
+        for (canvas_address, intents) in canvas_to_intents.into_iter() {
+            info!(
+                "Writing {} pixels to canvas {}",
+                intents.len(),
+                canvas_address,
+            );
+            // Get an existing mmap for the canvas file or initialize a new one.
+            let mut mmaps = self.mmaps.write().await;
+            let mmap = mmaps.entry(canvas_address).or_insert_with(|| {
+                let filename = self.get_filename(&canvas_address);
+                let file = match OpenOptions::new()
+                    .read(true)
+                    .write(true)
+                    .create(false)
+                    .open(&filename)
+                {
+                    Ok(file) => file,
+                    Err(e) => {
+                        error!("Failed to open file {}: {}", filename.display(), e);
+                        panic!("Failed to open file {}: {}", filename.display(), e);
+                    },
+                };
+                unsafe { MmapMut::map_mut(&file).expect("Failed to mmap file") }
+            });
+
+            // Write the pixel to the file through the mmap.
+            for intent in intents {
+                let index = intent.index as usize;
+                mmap[index * 3] = intent.color.r;
+                mmap[index * 3 + 1] = intent.color.g;
+                mmap[index * 3 + 2] = intent.color.b;
+            }
+        }
 
         Ok(())
     }
