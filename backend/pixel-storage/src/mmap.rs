@@ -11,7 +11,7 @@ use std::{
     path::{Path, PathBuf},
     sync::Arc,
 };
-use tokio::sync::RwLock;
+use tokio::sync::Mutex;
 use tracing::{error, info};
 
 // There could be an alternate implementation where instead of using the mmap, for
@@ -24,6 +24,13 @@ use tracing::{error, info};
 // use `map_mut` when creating the mmap). So there should be no need to manually flush
 // the mmap on shutdown.
 
+// Note: Everything we do here is synchronous, so we could consider making the trait
+// require non async functions. If that were the case, we could safely use std Mutex
+// instead of tokio Mutex. Given the function is async, even if now it would be safe
+// to use std Mutex because there are no awaits, it's possible in the future we'll add
+// one and then hold the std Mutex across an await point, which is not safe. So just to
+// be defensive we use tokio Mutex.
+
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct MmapPixelStorageConfig {
@@ -34,14 +41,14 @@ pub struct MmapPixelStorageConfig {
 #[derive(Debug)]
 pub struct MmapPixelStorage {
     config: MmapPixelStorageConfig,
-    mmaps: Arc<RwLock<HashMap<Address, MmapMut>>>,
+    mmaps: Arc<Mutex<HashMap<Address, MmapMut>>>,
 }
 
 impl MmapPixelStorage {
     pub fn new(config: MmapPixelStorageConfig) -> Self {
         Self {
             config,
-            mmaps: Arc::new(RwLock::new(HashMap::new())),
+            mmaps: Arc::new(Mutex::new(HashMap::new())),
         }
     }
 
@@ -101,7 +108,7 @@ impl PixelStorageTrait for MmapPixelStorage {
                 intents_len, canvas_address,
             );
             // Get an existing mmap for the canvas file or initialize a new one.
-            let mut mmaps = self.mmaps.write().await;
+            let mut mmaps = self.mmaps.lock().await;
             let mmap = mmaps.entry(canvas_address).or_insert_with(|| {
                 let filename = self.get_filename(&canvas_address);
                 let file = match OpenOptions::new()
@@ -139,7 +146,7 @@ impl PixelStorageTrait for MmapPixelStorage {
 
     async fn get_canvas_as_png(&self, canvas_address: &Address) -> Result<Vec<u8>> {
         let (data, width, height) = {
-            let mmaps = self.mmaps.read().await;
+            let mmaps = self.mmaps.lock().await;
             let mmap = mmaps.get(canvas_address).context("Failed to find canvas")?;
 
             // Get the width and height from the end of the file.
@@ -175,7 +182,7 @@ impl PixelStorageTrait for MmapPixelStorage {
     async fn get_canvases_as_pngs(&self) -> Result<HashMap<Address, Vec<u8>>> {
         let mut pngs = HashMap::new();
         let addresses = {
-            let mmaps = self.mmaps.read().await;
+            let mmaps = self.mmaps.lock().await;
             mmaps.iter().map(|mmap| *mmap.0).collect::<Vec<_>>()
         };
         for address in addresses {
