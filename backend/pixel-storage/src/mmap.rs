@@ -123,7 +123,7 @@ impl PixelStorageTrait for MmapPixelStorage {
                 intents_len, canvas_address,
             );
 
-            // Write the pixel to the file through the mmap.
+            // Write the pixels to the file through the mmap.
             for intent in intents {
                 let index = intent.index as usize;
                 mmap[index * 3] = intent.color.r;
@@ -138,23 +138,26 @@ impl PixelStorageTrait for MmapPixelStorage {
     }
 
     async fn get_canvas_as_png(&self, canvas_address: &Address) -> Result<Vec<u8>> {
-        let mmaps = self.mmaps.read().await;
-        let mmap = mmaps.get(canvas_address).context("Failed to find canvas")?;
+        let (data, width, height) = {
+            let mmaps = self.mmaps.read().await;
+            let mmap = mmaps.get(canvas_address).context("Failed to find canvas")?;
 
-        // Get the width and height from the end of the file.
-        let (width, height) =
-            read_width_and_height(mmap).context("Failed to read width and height")?;
+            // Get the width and height from the end of the file.
+            let (width, height) =
+                read_width_and_height(mmap).context("Failed to read width and height")?;
 
-        // Read the data from the file as a vector of Colors.
-        let mut data = Vec::with_capacity((width * height) as usize);
-        for i in 0..width * height {
-            let index = i as usize;
-            data.push(Color {
-                r: mmap[index * 3],
-                g: mmap[index * 3 + 1],
-                b: mmap[index * 3 + 2],
-            });
-        }
+            // Read the data from the file as a vector of Colors.
+            let mut data = Vec::with_capacity((width * height) as usize);
+            for i in 0..width * height {
+                let index = i as usize;
+                data.push(Color {
+                    r: mmap[index * 3],
+                    g: mmap[index * 3 + 1],
+                    b: mmap[index * 3 + 2],
+                });
+            }
+            (data, width, height)
+        };
 
         // Convert the data to a png.
         let png = get_image(data, width as u32, height as u32)
