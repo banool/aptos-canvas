@@ -95,10 +95,10 @@ impl PixelStorageTrait for MmapPixelStorage {
         }
 
         for (canvas_address, intents) in canvas_to_intents.into_iter() {
+            let intents_len = intents.len();
             info!(
-                "Writing {} pixels to canvas {}",
-                intents.len(),
-                canvas_address,
+                "Will write {} pixels to canvas {}",
+                intents_len, canvas_address,
             );
             // Get an existing mmap for the canvas file or initialize a new one.
             let mut mmaps = self.mmaps.write().await;
@@ -118,6 +118,10 @@ impl PixelStorageTrait for MmapPixelStorage {
                 };
                 unsafe { MmapMut::map_mut(&file).expect("Failed to mmap file") }
             });
+            info!(
+                "Got mmap, will write {} pixels to canvas {}",
+                intents_len, canvas_address,
+            );
 
             // Write the pixel to the file through the mmap.
             for intent in intents {
@@ -126,6 +130,8 @@ impl PixelStorageTrait for MmapPixelStorage {
                 mmap[index * 3 + 1] = intent.color.g;
                 mmap[index * 3 + 2] = intent.color.b;
             }
+
+            info!("Wrote {} pixels to canvas {}", intents_len, canvas_address,);
         }
 
         Ok(())
