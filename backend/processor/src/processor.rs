@@ -120,16 +120,18 @@ impl ProcessorTrait for CanvasProcessor {
         }
 
         // Write pixels.
-        info!(
-            "Writing {} pixels (from txns {} to {})",
-            all_write_pixel_intents.len(),
-            start_version,
-            end_version
-        );
-        self.pixels_storage
-            .write_pixels(all_write_pixel_intents)
-            .await
-            .context("Failed to write pixel in storage")?;
+        if !all_write_pixel_intents.is_empty() {
+            info!(
+                "Writing {} pixels (from txns {} to {})",
+                all_write_pixel_intents.len(),
+                start_version,
+                end_version
+            );
+            self.pixels_storage
+                .write_pixels(all_write_pixel_intents)
+                .await
+                .context("Failed to write pixel in storage")?;
+        }
 
         if !self.config.disable_metadata_processing {
             // Update attribution.
